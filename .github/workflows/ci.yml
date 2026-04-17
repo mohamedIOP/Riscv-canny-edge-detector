@@ -1,0 +1,30 @@
+name: RISC-V Build and Test
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    # 1. Grab the latest code from the repository
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    # 2. Install the exact compiler and emulator we used locally
+    - name: Install RISC-V Toolchain and QEMU
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y g++-riscv64-linux-gnu qemu-user
+
+    # 3. Compile the C++ program using your Makefile
+    - name: Compile Code
+      run: make
+
+    # 4. Run the I/O test with QEMU
+    - name: Run QEMU Test
+      run: make run
