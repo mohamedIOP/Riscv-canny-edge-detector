@@ -1,0 +1,8 @@
+# Ignore compiled executables
+canny
+
+# Ignore raw image outputs
+output.raw
+
+# Ignore raw image inputs
+input.raw
