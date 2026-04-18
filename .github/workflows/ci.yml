@@ -55,6 +55,10 @@ jobs:
         make -j$(nproc)
         make install
 
+    # Create the test file required by the syscalls
+    - name: Generate Dummy Input Image
+      run: dd if=/dev/urandom of=input.raw bs=1 count=65536
+
     # 6. Compile the code using the newly built compiler
     - name: Compile Code
       run: |
