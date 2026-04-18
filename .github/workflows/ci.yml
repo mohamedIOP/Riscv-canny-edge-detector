@@ -1,4 +1,4 @@
-name: RISC-V Build and Test
+name: RISC-V Vector Build and Test
 
 on:
   push:
@@ -8,23 +8,61 @@ on:
 
 jobs:
   build-and-test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     steps:
-    # 1. Grab the latest code from the repository
     - name: Checkout code
       uses: actions/checkout@v4
 
-    # 2. Install the exact compiler and emulator we used locally
-    - name: Install RISC-V Toolchain and QEMU
+    # 1. Install all system dependencies required for building from source
+    - name: Install System Dependencies
       run: |
-        sudo apt-get update
-        sudo apt-get install -y g++-riscv64-linux-gnu qemu-user
+        sudo apt update
+        sudo apt install -y autoconf automake build-essential bison flex texinfo gperf libtool patchutils bc cmake libglib2.0-dev libpixman-1-dev libslirp-dev ninja-build libmpc-dev libmpfr-dev libgmp-dev zlib1g-dev libexpat-dev
 
-    # 3. Compile the C++ program using your Makefile
+    # 2. Check if we already built the toolchain in a previous run to save time
+    - name: Cache RISC-V Toolchain
+      id: cache-riscv
+      uses: actions/cache@v4
+      with:
+        path: /home/runner/riscv-toolchain
+        key: ${{ runner.os }}-riscv-toolchain-rv64gcv
+
+    # 3. Build the toolchain ONLY if it wasn't found in the cache
+    - name: Build RISC-V Toolchain
+      if: steps.cache-riscv.outputs.cache-hit != 'true'
+      run: |
+        git clone https://github.com/riscv-collab/riscv-gnu-toolchain --recursive --depth 1 --shallow-submodules
+        cd riscv-gnu-toolchain
+        ./configure --prefix=/home/runner/riscv-toolchain --with-arch=rv64gcv --with-abi=lp64d
+        make -j$(nproc)
+
+    # 4. Check if we already built QEMU in a previous run
+    - name: Cache QEMU
+      id: cache-qemu
+      uses: actions/cache@v4
+      with:
+        path: /home/runner/qemu-install
+        key: ${{ runner.os }}-qemu-riscv64
+
+    # 5. Build QEMU ONLY if it wasn't found in the cache
+    - name: Build QEMU
+      if: steps.cache-qemu.outputs.cache-hit != 'true'
+      run: |
+        git clone https://github.com/qemu/qemu --depth 1
+        cd qemu
+        ./configure --target-list=riscv64-linux-user --enable-plugins --prefix=/home/runner/qemu-install
+        make -j$(nproc)
+        make install
+
+    # 6. Compile the code using the newly built compiler
     - name: Compile Code
-      run: make
+      run: |
+        export PATH="/home/runner/riscv-toolchain/bin:$PATH"
+        make
 
-    # 4. Run the I/O test with QEMU
+    # 7. Test the code using the newly built emulator
     - name: Run QEMU Test
-      run: make run
+      run: |
+        export PATH="/home/runner/riscv-toolchain/bin:/home/runner/qemu-install/bin:$PATH"
+        make run
