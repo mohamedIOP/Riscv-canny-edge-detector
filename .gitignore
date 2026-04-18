@@ -1,6 +1,8 @@
 # Ignore compiled executables
 canny
 
-# Ignore raw image outputs
-output.raw
+# Ignore all object files
+*.o
 
+# Ignore ALL raw image binaries (input.raw, output.raw, etc.)
+*.raw
