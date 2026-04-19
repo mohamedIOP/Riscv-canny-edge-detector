@@ -43,7 +43,16 @@ cd riscv-gnu-toolchain
 ./configure --prefix=$HOME/riscv-toolchain --with-arch=rv64gcv --with-abi=lp64d
 make -j$(nproc)
 ```
-
+If there is a problem after configure line with "python venv creation failed" just run
+```bash
+sudo apt install -y python3-venv
+```
+Then run 
+```bash
+./configure --target-list=riscv64-linux-user --enable-plugins
+make -j$(nproc)
+sudo make install
+```
 ### Step 3: Build QEMU Emulator
 We need QEMU to emulate the RISC-V vector instructions locally.
 ```bash
