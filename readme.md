@@ -43,16 +43,7 @@ cd riscv-gnu-toolchain
 ./configure --prefix=$HOME/riscv-toolchain --with-arch=rv64gcv --with-abi=lp64d
 make -j$(nproc)
 ```
-If there is a problem after configure line with "python venv creation failed" just run
-```bash
-sudo apt install -y python3-venv
-```
-Then run 
-```bash
-./configure --target-list=riscv64-linux-user --enable-plugins
-make -j$(nproc)
-sudo make install
-```
+
 ### Step 3: Build QEMU Emulator
 We need QEMU to emulate the RISC-V vector instructions locally.
 ```bash
@@ -63,7 +54,16 @@ cd qemu
 make -j$(nproc)
 make install
 ```
-
+If there is a problem after configure line with "python venv creation failed" just run
+```bash
+sudo apt install -y python3-venv
+```
+Then run 
+```bash
+./configure --target-list=riscv64-linux-user --enable-plugins
+make -j$(nproc)
+sudo make install
+```
 ### Step 4: Add Tools to Your PATH
 To let your terminal know where the newly built tools are, add them to your environment variables. Run this command to append it to your `.bashrc` profile:
 ```bash
