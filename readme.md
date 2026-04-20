@@ -59,7 +59,7 @@ Run the following command to continue building using only 2 cores:
 ```bash
 make -j2
 ```
-ّذذ
+
 ### Verifying the Toolchain Installation
 
 After the build completes and you have added the toolchain to your `PATH`, it is crucial to verify that the correct compiler version is installed and supports the Vector extension (RVV 1.0).
