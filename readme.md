@@ -45,32 +45,24 @@ cd riscv-gnu-toolchain
 ./configure --prefix=$HOME/riscv-toolchain --with-arch=rv64gcv --with-abi=lp64d
 make -j$(nproc)
 ```
-### Troubleshooting: If it appears for you (`Killed` Error During Toolchain Build)
+### Troubleshooting in step 2 : 
+If it appears for you (`Killed` Error During Toolchain Build) or 
+it appears for you on terminal (deleting intermediate file `.........` on lines) 
 
-**Issue:** While building the RISC-V toolchain using `make -j$(nproc)`, the process might suddenly stop and output an error similar to:
-`fatal error: Killed signal terminated program cc1plus` 
-followed by multiple `Terminated` messages.
-
-**Cause:** Building the GCC compiler (specifically the `insn-emit-*.cc` files) is extremely memory-intensive. Using `make -j$(nproc)` forces the system to compile multiple massive files concurrently using all available CPU cores. This can exhaust your system's RAM, causing the Linux Kernel's Out-Of-Memory (OOM) killer to terminate the process to prevent system crashes.
-
-**Solution:** Do not start over! The `make` utility saves your progress. You simply need to resume the build process with fewer parallel jobs to reduce RAM consumption. 
-
-Run the following command to continue building using only 2 cores:
+click enter 
+And Run the following command to continue building using only 2 cores:
 ```bash
 make -j2
 ```
 
-### Verifying the Toolchain Installation
-
-After the build completes and you have added the toolchain to your `PATH`, it is crucial to verify that the correct compiler version is installed and supports the Vector extension (RVV 1.0).
-
-** Check the Compiler Version:**
-Run the following command in your terminal:
+If the "WSL" app shutdown suddenly 
+open again and run this commands 
 ```bash
-riscv64-unknown-elf-g++ --version
+cd ~
+cd riscv-gnu-toolchain
+./configure --prefix=$HOME/riscv-toolchain --with-arch=rv64gcv --with-abi=lp64d
+make -j2
 ```
-Expected Output: The compiler should report GCC version 13.x, 14.x, or newer (e.g., 15.2.0).
-
 
 ### Step 3: Build QEMU Emulator
 We need QEMU to emulate the RISC-V vector instructions locally.
@@ -103,6 +95,11 @@ Verification:
 qemu-riscv64 --version
 ``` 
 should report QEMU 9.x or newer. 
+
+```bash
+riscv64-unknown-elf-g++ --version
+```
+should report GCC version 13.x, 14.x, or newer (e.g., 15.2.0)
 ---
 
 ## 💻 Working with the Project
