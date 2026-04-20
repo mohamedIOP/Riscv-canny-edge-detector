@@ -27,6 +27,7 @@ If you are on Windows and do not have a Linux environment, you must use Windows 
 
 ### Step 1: Install System Dependencies
 Open the "WSL" app from your Start menu
+
 Install the required packages to build the compiler and emulator from source.
 ```bash
 sudo apt update
