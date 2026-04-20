@@ -98,7 +98,11 @@ To let your terminal know where the newly built tools are, add them to your envi
 echo 'export PATH="$HOME/riscv-toolchain/bin:$HOME/qemu-install/bin:$PATH"' >> ~/.bashrc
 source ~/.bashrc
 ```
-
+Verification: 
+```bash
+qemu-riscv64 --version
+``` 
+should report QEMU 9.x or newer. 
 ---
 
 ## 💻 Working with the Project
