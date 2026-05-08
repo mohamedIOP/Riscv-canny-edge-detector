@@ -11,7 +11,12 @@ run: $(TARGET)
 	qemu-riscv64 -cpu rv64,v=true,vlen=128 ./$(TARGET) input.raw 256 256 output.raw
 
 clean:
-	rm -f $(TARGET) output.rawg
-run_tests:
-	g++ -std=c++14 "Phase 2/src/gaussian.cpp" "Phase 2/src/sobel.cpp" src/pipeline.cpp tests/test_pipeline.cpp -I"Phase 2/include" -o pipeline_tests -lgtest -lgtest_main -lpthread
-	./pipeline_tests
+	rm -f $(TARGET) output.raw
+test:
+	g++ -std=c++17 \
+	    tests/test_pipeline.cpp \
+	    src/pipeline.cpp \
+	    src/gaussian.cpp \
+	    src/sobel.cpp \
+	    -lgtest -lgtest_main -pthread \
+	    -o runTests
