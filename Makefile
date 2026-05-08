@@ -12,3 +12,11 @@ run: $(TARGET)
 
 clean:
 	rm -f $(TARGET) output.raw
+test:
+	g++ -std=c++17 \
+	    tests/test_pipeline.cpp \
+	    src/pipeline.cpp \
+	    src/gaussian.cpp \
+	    src/sobel.cpp \
+	    -lgtest -lgtest_main -pthread \
+	    -o runTests
