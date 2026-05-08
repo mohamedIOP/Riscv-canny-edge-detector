@@ -1,14 +1,17 @@
-CXX = riscv64-unknown-elf-g++
-TARGET = canny
-CXXFLAGS = -static -march=rv64gcv -mabi=lp64d -O3 -std=c++17
+CXX = g++
+CXXFLAGS = -std=c++17
 
-all: $(TARGET)
+TEST_SRC = tests/test_pipeline.cpp \
+           src/pipeline.cpp \
+           src/gaussian.cpp \
+           src/sobel.cpp
 
-$(TARGET): main.cpp
-	$(CXX) $(CXXFLAGS) main.cpp -o $(TARGET)
+TARGET = runTests
 
-run: $(TARGET)
-	qemu-riscv64 -cpu rv64,v=true,vlen=128 ./$(TARGET) input.raw 256 256 output.raw
+build:
+	$(CXX) $(CXXFLAGS) $(TEST_SRC) -lgtest -lgtest_main -pthread -o $(TARGET)
 
-clean:
-	rm -f $(TARGET) output.raw
+run:
+	./$(TARGET)
+
+test: build run
