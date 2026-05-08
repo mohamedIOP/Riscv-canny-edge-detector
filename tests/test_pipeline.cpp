@@ -22,20 +22,20 @@ TEST(SanityCheck, OnePlusOne) {
 
 // TEST: UniformImageStaysUniform
 // --------------------------------
-// IDEA: If every pixel in the image has the same value (100),
-// then after Gaussian blur, the interior pixels must still be 100.
+// IDEA: If every pixel in the image has the same value (128),
+// then after Gaussian blur, the interior pixels must still be 128.
 // Because blurring averages a pixel with its neighbors —
 // if all neighbors are equal, the average equals the same value.
 //
 // NOTE: We skip the border pixels (first/last 2 rows and columns)
 // because the 5x5 kernel has radius=2, and border pixels
 // get averaged with zeros outside the image (zero-padding),
-// which makes them slightly less than 100. That is correct behavior.
+// which makes them slightly less than 128. That is correct behavior.
 TEST(GaussianBlur, UniformImageStaysUniform) {
     int width = 10, height = 10;
 
-    // Create input image: all pixels = 100
-    vector<uint8_t> input(width * height, 100);
+    // Create input image: all pixels = 128
+    vector<uint8_t> input(width * height, 128);
 
     // Create output image: all zeros (will be filled by blur)
     vector<uint8_t> output(width * height, 0);
@@ -53,11 +53,29 @@ TEST(GaussianBlur, UniformImageStaysUniform) {
     for (int y = 2; y < height - 2; y++) {
         for (int x = 2; x < width - 2; x++) {
             // Convert 2D position (y,x) to 1D index: y * width + x
-            EXPECT_EQ(output[y * width + x], 100);
+            EXPECT_NEAR(output[y * width + x], 128,1); // allow +-1 rounding
         }
     }
 }
+//all-black image must stay all-black after blur
+TEST(GaussianBlur, AllBlackStaysBlack) {
+    int width = 10, height = 10;
 
+    vector<uint8_t> input(width * height, 0);
+    vector<uint8_t> output(width * height, 0);
+
+    canny::gaussian_blur_5x5(
+        input.data(),
+        output.data(),
+        width,
+        height
+    );
+
+    // no border skipping needed — black * any weight = black
+    for (int i = 0; i < width * height; i++) {
+        EXPECT_EQ(output[i], 0);
+    }
+}
 // TEST: ImpulseResponse
 // --------------------------------
 // IDEA: Place one bright pixel (255) in the center of a dark image (all 0s).
@@ -88,6 +106,9 @@ TEST(GaussianBlur, ImpulseResponse) {
     EXPECT_GT(output[3 * width + 3], output[3 * width + 4]); // center > right
     EXPECT_GT(output[3 * width + 3], output[2 * width + 3]); // center > above
     EXPECT_GT(output[3 * width + 3], output[4 * width + 3]); // center > below
+    //check symmetry — left must equal right, above must equal below
+    EXPECT_EQ(output[3 * width + 2], output[3 * width + 4]); // left == right
+    EXPECT_EQ(output[2 * width + 3], output[4 * width + 3]); // above == below
 }
 
 // ================================================================
@@ -201,6 +222,29 @@ TEST(SobelGradient, HorizontalEdgeDetected) {
     // Gy should be large (strong vertical change)
     // Gx should be small (no horizontal change)
     EXPECT_GT(abs(Gy[3 * width + 3]), abs(Gx[3 * width + 3]));
+}
+// diagonal edge → both Gx and Gy must be significant
+TEST(SobelGradient, DiagonalEdgeDetected) {
+    int width = 7, height = 7;
+
+    vector<uint8_t> input(width * height, 0);
+    for (int r = 0; r < height; r++)
+        for (int c = 0; c < width; c++)
+            if (c >= r) input[r * width + c] = 255;
+
+    vector<int16_t> Gx(width * height, 0);
+    vector<int16_t> Gy(width * height, 0);
+
+    canny::sobel_gradients(
+        input.data(),
+        Gx.data(),
+        Gy.data(),
+        width,
+        height
+    );
+
+    EXPECT_GT(abs(Gx[3 * width + 3]), 0);
+    EXPECT_GT(abs(Gy[3 * width + 3]), 0);
 }
 
 // ================================================================
