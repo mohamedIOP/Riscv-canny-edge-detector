@@ -130,3 +130,67 @@ make run
 If successful, the terminal will print out the simulated Vector Length (VLEN) and execute the program!
 
 ---
+### 2. Generate a Test Image
+**Do not commit raw images to the repository.** Before running tests, generate a dummy test image using the terminal:
+```bash
+dd if=/dev/urandom of=input.raw bs=1 count=65536
+```
+
+### 3. Compile and Run
+Compile the C++ code using the custom bare-metal compiler:
+```bash
+make clean
+make
+```
+
+Run the code through the QEMU emulator:
+```bash
+make run
+```
+If successful, the terminal will print out the simulated Vector Length (VLEN) and execute the program!
+
+---
+
+## Visual Pipeline — How to Run
+
+### Requirements
+```bash
+pip3 install pillow --break-system-packages
+```
+
+### Step 1 — Convert your image to raw
+```bash
+python3 convert_image.py your_image.png
+```
+
+### Step 2 — Run the pipeline
+```bash
+make visual
+```
+This will generate:
+- `./Output_Images/output_gaussian.raw` → image after Gaussian blur
+- `./Output_Images/output_edges.raw`    → image after Sobel edge detection
+
+### Step 3 — View the results
+```bash
+python3 view_image.py ./Input_Images/input.raw 128 128
+python3 view_image.py ./Output_Images/output_gaussian.raw 128 128
+python3 view_image.py ./Output_Images/output_edges.raw 128 128
+```
+
+### Step 4 — Open PNG results
+```bash
+explorer.exe .
+```
+You will find:
+- `./Input_Images/input.png`           → original image
+- `./Output_Images/output_gaussian.png` → after blur
+- `./Output_Images/output_edges.png`    → edges only
+
+---
+
+## Run Unit Tests
+```bash
+make test
+./runTests
+```
