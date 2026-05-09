@@ -3,6 +3,8 @@
 #include <vector>
 #include "gaussian.hpp"
 #include "sobel.hpp"
+#include "magnitude.hpp"
+#include "direction.hpp"
 #include <cmath>
 
 using namespace std;
@@ -59,5 +61,29 @@ int main() {
     }
     writeImage("./Output_Images/output_edges.raw", magnitude);
     cout << "Sobel edges done  → output_edges.raw" << endl;
+// ── Step 5: Magnitude L1 ──────────────────
+vector<uint8_t> mag_out(width * height);
+canny::magnitude_l1(
+    Gx.data(),
+    Gy.data(),
+    mag_out.data(),
+    width,
+    height
+);
+writeImage("./Output_Images/output_magnitude.raw", mag_out);
+cout << "Magnitude done → output_magnitude.raw" << endl;
+
+// ── Step 6: Gradient Direction ────────────
+vector<uint8_t> dir_out(width * height);
+canny::gradient_direction(
+    Gx.data(),
+    Gy.data(),
+    dir_out.data(),
+    width,
+    height
+);
+writeImage("./Output_Images/output_direction.raw", dir_out);
+cout << "Direction done → output_direction.raw" << endl;
+
     return 0;
 }
