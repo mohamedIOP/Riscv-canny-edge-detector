@@ -170,12 +170,15 @@ make visual
 This will generate:
 - `./Output_Images/output_gaussian.raw` → image after Gaussian blur
 - `./Output_Images/output_edges.raw`    → image after Sobel edge detection
-
+- `./Output_Images/output_magnitude.raw` → image after Magnitude
+- `./Output_Images/output_direction.raw` → image after Direction
 ### Step 3 — View the results
 ```bash
 python3 view_image.py ./Input_Images/input.raw 128 128
 python3 view_image.py ./Output_Images/output_gaussian.raw 128 128
 python3 view_image.py ./Output_Images/output_edges.raw 128 128
+python3 view_image.py ./Output_Images/output_magnitude.raw 128 128
+python3 view_image.py ./Output_Images/output_direction.raw 128 128
 ```
 
 ### Step 4 — Open PNG results
