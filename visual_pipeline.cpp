@@ -1,8 +1,8 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
-#include "src/gaussian.hpp"
-#include "src/sobel.hpp"
+#include "gaussian.hpp"
+#include "sobel.hpp"
 #include <cmath>
 
 using namespace std;
