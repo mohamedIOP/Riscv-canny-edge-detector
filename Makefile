@@ -1,6 +1,6 @@
 CXX = riscv64-unknown-elf-g++
 TARGET = canny
-CXXFLAGS = -static -march=rv64gcv -mabi=lp64d -O3 -std=c++17
+CXXFLAGS = -static -march=rv64gcv -mabi=lp64d -O3 -std=c++17 -I"Phase 2/include"
 
 all: $(TARGET)
 
@@ -16,7 +16,8 @@ test:
 	g++ -std=c++17 \
 	    tests/test_pipeline.cpp \
 	    src/pipeline.cpp \
-	    src/gaussian.cpp \
-	    src/sobel.cpp \
+	    "Phase 2"/src/gaussian.cpp \
+	    "Phase 2"/src/sobel.cpp \
 	    -lgtest -lgtest_main -pthread \
 	    -o runTests
+		./runTests

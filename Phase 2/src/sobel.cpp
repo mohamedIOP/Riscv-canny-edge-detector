@@ -1,4 +1,4 @@
-#include "sobel.hpp"
+#include "../include/sobel.hpp"
 
 namespace canny {
 
