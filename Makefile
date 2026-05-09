@@ -21,3 +21,9 @@ test:
 	    -lgtest -lgtest_main -pthread \
 	    -o runTests
 		./runTests
+visual:
+        g++ -std=c++17 visual_pipeline.cpp \
+            src/gaussian.cpp \
+            src/sobel.cpp \
+            -o visual_pipeline
+        ./visual_pipeline
