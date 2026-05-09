@@ -1,11 +1,13 @@
-import numpy as np
-import matplotlib.pyplot as plt
+from PIL import Image
+import sys
 
-# 1. Load the raw binary data and reshape it into a 256x256 grid
-image = np.fromfile('output.raw', dtype=np.uint8).reshape(256, 256)
+path   = sys.argv[1]
+width  = int(sys.argv[2])
+height = int(sys.argv[3])
 
-# 2. Display the image using a grayscale color map
-plt.imshow(image, cmap='gray')
-plt.title("input.raw")
-plt.axis('off') # Hides the axis numbers
-plt.show()
+with open(path, "rb") as f:
+    data = f.read()
+
+img = Image.frombytes("L", (width, height), data)
+img.save(path.replace(".raw", ".png"))
+print(f"Saved: {path.replace('.raw', '.png')}")
