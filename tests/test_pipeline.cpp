@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 #include "../src/pipeline.hpp"
-#include "../src/gaussian.hpp"
-#include "../src/sobel.hpp"
+#include "../Phase 2/include/gaussian.hpp"
+#include "../Phase 2/include/sobel.hpp"
 #include <vector>
 #include <cmath>
 #include <algorithm>

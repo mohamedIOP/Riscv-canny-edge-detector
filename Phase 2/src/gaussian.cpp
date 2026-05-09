@@ -1,4 +1,4 @@
-#include "gaussian.hpp"
+#include "../include/gaussian.hpp"
 
 namespace canny {
 

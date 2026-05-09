@@ -1,8 +1,9 @@
 #pragma once
 #include <cstdint>
 #include <cstddef>
-#include "gaussian.hpp"
-#include "sobel.hpp"
+#include "../Phase 2/include/gaussian.hpp"
+#include "../Phase 2/include/sobel.hpp"
+
 
 // Generic convolution template interface
 // PixelType = uint8_t for grayscale images
