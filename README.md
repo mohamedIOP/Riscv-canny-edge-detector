@@ -9,7 +9,7 @@ pip3 install pillow --break-system-packages
 
 ### Step 1 — Convert your image to raw
 ```bash
-python3 convert_image.py your_image.jpg
+python3 convert_image.py your_image.png
 ```
 
 ### Step 2 — Run the pipeline
