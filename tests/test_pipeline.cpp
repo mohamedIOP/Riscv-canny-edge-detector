@@ -1,6 +1,8 @@
 #include <gtest/gtest.h>
 #include "../src/pipeline.hpp"
 #include "../Phase 2/include/gaussian.hpp"
+#include "../Phase 2/include/magnitude.hpp"
+#include "../Phase 2/include/direction.hpp"
 #include "../Phase 2/include/sobel.hpp"
 #include <vector>
 #include <cmath>
@@ -287,5 +289,92 @@ TEST(Magnitude, L1AlwaysGreaterOrEqualL2) {
         EXPECT_GT(L1, 0);   // L1 must not be zero
         EXPECT_GT(L2, 0);   // L2 must not be zero
         EXPECT_GE(L1, L2);  // L1 (200) >= L2 (141) ✓
+    }
+}
+// ================================================================
+// MAGNITUDE_L1 FUNCTION TESTS
+// ================================================================
+
+TEST(Magnitude, L1OutputNonZeroOnEdge) {
+    size_t width = 5, height = 5;
+    vector<int16_t> Gx(width * height, 100);
+    vector<int16_t> Gy(width * height, 100);
+    vector<uint8_t> mag(width * height, 0);
+
+    canny::magnitude_l1(
+        Gx.data(), Gy.data(), mag.data(), width, height
+    );
+
+    // gradients are non-zero → magnitude must be non-zero
+    for (size_t i = 0; i < width * height; i++) {
+        EXPECT_GT(mag[i], 0);
+    }
+}
+
+TEST(Magnitude, L1ZeroOnFlatImage) {
+    size_t width = 5, height = 5;
+    vector<int16_t> Gx(width * height, 0);
+    vector<int16_t> Gy(width * height, 0);
+    vector<uint8_t> mag(width * height, 0);
+
+    canny::magnitude_l1(
+        Gx.data(), Gy.data(), mag.data(), width, height
+    );
+
+    // all gradients zero → magnitude must be zero
+    for (size_t i = 0; i < width * height; i++) {
+        EXPECT_EQ(mag[i], 0);
+    }
+}
+
+// ================================================================
+// GRADIENT DIRECTION TESTS
+// ================================================================
+
+TEST(Direction, VerticalEdgeIsDirection0) {
+    size_t width = 7, height = 7;
+    // large Gx, zero Gy → horizontal gradient → direction 0
+    vector<int16_t> Gx(width * height, 500);
+    vector<int16_t> Gy(width * height, 0);
+    vector<uint8_t> dir(width * height, 0);
+
+    canny::gradient_direction(
+        Gx.data(), Gy.data(), dir.data(), width, height
+    );
+
+    for (size_t i = 0; i < width * height; i++) {
+        EXPECT_EQ(dir[i], 0);
+    }
+}
+
+TEST(Direction, HorizontalEdgeIsDirection2) {
+    size_t width = 7, height = 7;
+    // zero Gx, large Gy → vertical gradient → direction 2
+    vector<int16_t> Gx(width * height, 0);
+    vector<int16_t> Gy(width * height, 500);
+    vector<uint8_t> dir(width * height, 0);
+
+    canny::gradient_direction(
+        Gx.data(), Gy.data(), dir.data(), width, height
+    );
+
+    for (size_t i = 0; i < width * height; i++) {
+        EXPECT_EQ(dir[i], 2);
+    }
+}
+
+TEST(Direction, DiagonalIsDirection1or3) {
+    size_t width = 7, height = 7;
+    // equal Gx and Gy → diagonal → direction 1 or 3
+    vector<int16_t> Gx(width * height, 300);
+    vector<int16_t> Gy(width * height, 300);
+    vector<uint8_t> dir(width * height, 0);
+
+    canny::gradient_direction(
+        Gx.data(), Gy.data(), dir.data(), width, height
+    );
+
+    for (size_t i = 0; i < width * height; i++) {
+        EXPECT_TRUE(dir[i] == 1 || dir[i] == 3);
     }
 }

@@ -15,17 +15,22 @@ clean:
 
 test:
 	g++ -std=c++17 \
+	-I"Phase 2/include" \
 	tests/test_pipeline.cpp \
 	src/pipeline.cpp \
 	"Phase 2"/src/gaussian.cpp \
 	"Phase 2"/src/sobel.cpp \
+	"Phase 2"/src/magnitude.cpp \
+	"Phase 2"/src/direction.cpp \
 	-lgtest -lgtest_main -pthread \
 	-o runTests
 	./runTests
-
 visual:
 	g++ -std=c++17 -I"Phase 2/include" -I"Phase 2/src" visual_pipeline.cpp \
 	"Phase 2"/src/gaussian.cpp \
 	"Phase 2"/src/sobel.cpp \
+	"Phase 2"/src/magnitude.cpp \
+	"Phase 2"/src/direction.cpp \
 	-o visual_pipeline
 	./visual_pipeline
+
