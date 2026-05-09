@@ -26,7 +26,7 @@ int main() {
     int height = 128;
 
     // ── Step 1: Read input image ──────────────
-    vector<uint8_t> input = readImage("input.raw", width, height);
+    vector<uint8_t> input = readImage("./Input_Images/input.raw", width, height);
 
     // ── Step 2: Gaussian Blur ─────────────────
     vector<uint8_t> blurred(width * height);
@@ -36,7 +36,7 @@ int main() {
         width,
         height
     );
-    writeImage("output_gaussian.raw", blurred);
+    writeImage("./Output_Images/output_gaussian.raw", blurred);
     cout << "Gaussian blur done → output_gaussian.raw" << endl;
 
     // ── Step 3: Sobel Gradient ────────────────
@@ -57,8 +57,7 @@ int main() {
         if (mag > 255) mag = 255;
         magnitude[i] = (uint8_t)mag;
     }
-    writeImage("output_edges.raw", magnitude);
+    writeImage("./Output_Images/output_edges.raw", magnitude);
     cout << "Sobel edges done  → output_edges.raw" << endl;
-
     return 0;
 }
