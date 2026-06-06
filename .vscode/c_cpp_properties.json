@@ -1,0 +1,27 @@
+{
+    "configurations": [
+        {
+            "name": "Linux",
+            "includePath": [
+                "${workspaceFolder}/**"
+            ],
+            "defines": [],
+            "compilerPath": "/usr/bin/gcc",
+            "cStandard": "c17",
+            "cppStandard": "gnu++17",
+            "intelliSenseMode": "linux-gcc-x64"
+        },
+        {
+            "name": "RISC-V",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "~/riscv-toolchain/lib/gcc/riscv64-unknown-elf/14.2.0/include"
+            ],
+            "defines": ["__riscv", "__riscv_v"],
+            "compilerPath": "~/riscv-toolchain/bin/riscv64-unknown-elf-g++",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "gcc-arm64"
+        }
+    ],
+    "version": 4
+}

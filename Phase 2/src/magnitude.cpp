@@ -1,4 +1,5 @@
 #include "magnitude.hpp"
+#include <cmath>
 
 namespace canny {
 
@@ -29,5 +30,4 @@ void magnitude_l1(const int16_t* gx, const int16_t* gy,
         mag_out[i] = (uint8_t)((m * 255) / max_mag);
     }
 }
-
 }  // namespace canny
