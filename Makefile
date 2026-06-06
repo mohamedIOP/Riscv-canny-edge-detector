@@ -7,11 +7,17 @@ all: $(TARGET)
 $(TARGET): main.cpp
 	$(CXX) $(CXXFLAGS) main.cpp -o $(TARGET)
 
+# Run at all three VLEN values to verify vector-length-agnostic correctness
 run: $(TARGET)
-	qemu-riscv64 -cpu rv64,v=true,vlen=128 ./$(TARGET) input.raw 256 256 output.raw
+	@echo "=== VLEN=128 ==="
+	qemu-riscv64 -cpu rv64,v=true,vlen=128 ./$(TARGET) input.raw 256 256 output_128.raw
+	@echo "=== VLEN=256 ==="
+	qemu-riscv64 -cpu rv64,v=true,vlen=256 ./$(TARGET) input.raw 256 256 output_256.raw
+	@echo "=== VLEN=512 ==="
+	qemu-riscv64 -cpu rv64,v=true,vlen=512 ./$(TARGET) input.raw 256 256 output_512.raw
 
 clean:
-	rm -f $(TARGET) output.raw
+	rm -f $(TARGET) output_128.raw output_256.raw output_512.raw
 
 test:
 	g++ -std=c++17 \
@@ -33,4 +39,3 @@ visual:
 	"Phase 2"/src/direction.cpp \
 	-o visual_pipeline
 	./visual_pipeline
-

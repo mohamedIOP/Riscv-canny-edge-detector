@@ -14,13 +14,14 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    # 1. Install all system dependencies required for building from source
     - name: Install System Dependencies
       run: |
         sudo apt update
-        sudo apt install -y autoconf automake build-essential bison flex texinfo gperf libtool patchutils bc cmake libglib2.0-dev libpixman-1-dev libslirp-dev ninja-build libmpc-dev libmpfr-dev libgmp-dev zlib1g-dev libexpat-dev
+        sudo apt install -y autoconf automake build-essential bison flex texinfo gperf libtool \
+          patchutils bc cmake libglib2.0-dev libpixman-1-dev libslirp-dev ninja-build \
+          libmpc-dev libmpfr-dev libgmp-dev zlib1g-dev libexpat-dev \
+          libgtest-dev  # <-- ADDED: needed for make test
 
-    # 2. Check if we already built the toolchain in a previous run to save time
     - name: Cache RISC-V Toolchain
       id: cache-riscv
       uses: actions/cache@v4
@@ -28,7 +29,6 @@ jobs:
         path: /home/runner/riscv-toolchain
         key: ${{ runner.os }}-riscv-toolchain-rv64gcv
 
-    # 3. Build the toolchain ONLY if it wasn't found in the cache
     - name: Build RISC-V Toolchain
       if: steps.cache-riscv.outputs.cache-hit != 'true'
       run: |
@@ -37,7 +37,6 @@ jobs:
         ./configure --prefix=/home/runner/riscv-toolchain --with-arch=rv64gcv --with-abi=lp64d
         make -j$(nproc)
 
-    # 4. Check if we already built QEMU in a previous run
     - name: Cache QEMU
       id: cache-qemu
       uses: actions/cache@v4
@@ -45,7 +44,6 @@ jobs:
         path: /home/runner/qemu-install
         key: ${{ runner.os }}-qemu-riscv64
 
-    # 5. Build QEMU ONLY if it wasn't found in the cache
     - name: Build QEMU
       if: steps.cache-qemu.outputs.cache-hit != 'true'
       run: |
@@ -55,18 +53,36 @@ jobs:
         make -j$(nproc)
         make install
 
-    # Create the test file required by the syscalls
     - name: Generate Dummy Input Image
       run: dd if=/dev/urandom of=input.raw bs=1 count=65536
 
-    # 6. Compile the code using the newly built compiler
-    - name: Compile Code
+    # ADDED: Run GoogleTest suite natively — no RISC-V toolchain needed for this
+    - name: Build and Run Host Tests
+      run: |
+        cd /usr/src/googletest
+        sudo cmake .
+        sudo make
+        sudo cp lib/*.a /usr/lib
+        cd $GITHUB_WORKSPACE
+        make test
+
+    - name: Compile RISC-V Binary
       run: |
         export PATH="/home/runner/riscv-toolchain/bin:$PATH"
         make
 
-    # 7. Test the code using the newly built emulator
-    - name: Run QEMU Test
+    # CHANGED: sweep all three VLEN values instead of just 128
+    - name: Run QEMU at VLEN=128
       run: |
         export PATH="/home/runner/riscv-toolchain/bin:/home/runner/qemu-install/bin:$PATH"
-        make run
+        qemu-riscv64 -cpu rv64,v=true,vlen=128 ./canny input.raw 256 256 output_128.raw
+
+    - name: Run QEMU at VLEN=256
+      run: |
+        export PATH="/home/runner/riscv-toolchain/bin:/home/runner/qemu-install/bin:$PATH"
+        qemu-riscv64 -cpu rv64,v=true,vlen=256 ./canny input.raw 256 256 output_256.raw
+
+    - name: Run QEMU at VLEN=512
+      run: |
+        export PATH="/home/runner/riscv-toolchain/bin:/home/runner/qemu-install/bin:$PATH"
+        qemu-riscv64 -cpu rv64,v=true,vlen=512 ./canny input.raw 256 256 output_512.raw
