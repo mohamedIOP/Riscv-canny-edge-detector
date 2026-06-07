@@ -204,4 +204,4 @@ correctness (uniform image invariant, impulse response, edge direction, magnitud
 | `make run` | Run pipeline on QEMU at VLEN 128, 256, 512 |
 | `make test` | Run GoogleTest suite natively |
 | `make visual` | Build native host pipeline binary |
-| `make clean` | Remove all build artifacts |
+| `make clean` | Remove binary, runTests, visual_pipeline, and all output .raw files |
