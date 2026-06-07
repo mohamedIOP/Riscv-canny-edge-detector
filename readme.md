@@ -177,6 +177,8 @@ correctness (uniform image invariant, impulse response, edge direction, magnitud
 ---
 
 ## 📁 Project Structure
+
+```
 .
 ├── main.cpp                  # RISC-V entry point — full pipeline
 ├── visual_pipeline.cpp       # Native host pipeline for visualization
@@ -191,7 +193,7 @@ correctness (uniform image invariant, impulse response, edge direction, magnitud
 │   └── test_pipeline.cpp     # GoogleTest unit tests
 ├── Input_Images/             # Input raw images (not committed)
 └── Output_Images/            # Pipeline outputs (not committed)
-
+```
 ---
 
 ## 🎯 Makefile Targets
