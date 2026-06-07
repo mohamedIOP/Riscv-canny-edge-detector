@@ -22,7 +22,11 @@ run: $(TARGET)
 	qemu-riscv64 -cpu rv64,v=true,vlen=512 ./$(TARGET) Input_Images/input.raw 256 256 Output_Images/output_512.raw
 
 clean:
-	rm -f $(TARGET) "Output_Images/output__128.raw" "Output_Images/output__256.raw" "Output_Images/output__512.raw"
+	rm -f $(TARGET) runTests visual_pipeline
+	rm -f Output_Images/*.raw
+	rm -f output_gaussian.raw output_sobel_gx.raw output_sobel_gy.raw \
+	      output_magnitude_l1.raw output_direction.raw \
+	      output_128.raw output_256.raw output_512.raw
 
 test:
 	g++ -std=c++17 \
