@@ -30,4 +30,26 @@ void magnitude_l1(const int16_t* gx, const int16_t* gy,
         mag_out[i] = (uint8_t)((m * 255) / max_mag);
     }
 }
+void magnitude_l2(const int16_t* gx, const int16_t* gy,
+                  uint8_t* mag_out, size_t width, size_t height) {
+    size_t total = width * height;
+
+    // Pass 1: find maximum magnitude
+    double max_mag = 0.0;
+    for (size_t i = 0; i < total; i++) {
+        double m = sqrt((double)gx[i]*gx[i] + (double)gy[i]*gy[i]);
+        if (m > max_mag) max_mag = m;
+    }
+
+    if (max_mag == 0.0) {
+        for (size_t i = 0; i < total; i++) mag_out[i] = 0;
+        return;
+    }
+
+    // Pass 2: normalize to [0, 255]
+    for (size_t i = 0; i < total; i++) {
+        double m = sqrt((double)gx[i]*gx[i] + (double)gy[i]*gy[i]);
+        mag_out[i] = (uint8_t)((m * 255.0) / max_mag);
+    }
+}
 }  // namespace canny

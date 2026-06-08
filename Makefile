@@ -51,8 +51,14 @@ QEMU = qemu-riscv64
 QEMU_CPU = rv64,v=true
 
 qemu_eq_test:
-	$(CXX) $(CXXFLAGS) -I"Phase 2/include" tests/qemu_equivalence_test.cpp "Phase 2/src/gaussian.cpp" "Phase 2/src/sobel.cpp" "Phase 2/src/magnitude.cpp" "Phase 2/src/direction.cpp" -o qemu_eq_test
-test_qemu: qemu_eq_test
+	$(CXX) $(CXXFLAGS) \
+		-I"Phase 2/include" \
+		tests/qemu_equivalence_test.cpp \
+		"Phase 2"/src/gaussian.cpp \
+		"Phase 2"/src/sobel.cpp \
+		"Phase 2"/src/magnitude.cpp \
+		"Phase 2"/src/direction.cpp \
+		-o qemu_eq_test
 	@echo "--- VLEN=128 ---"
 	$(QEMU) -cpu $(QEMU_CPU),vlen=128 ./qemu_eq_test
 	@echo "--- VLEN=256 ---"

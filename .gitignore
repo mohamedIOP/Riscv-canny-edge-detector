@@ -1,6 +1,8 @@
 # Ignore compiled executables
 canny
-
+runTests
+visual_pipeline
+qemu_eq_test
 # Ignore all object files
 *.o
 
