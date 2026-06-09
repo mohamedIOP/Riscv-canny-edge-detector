@@ -8,6 +8,7 @@
 #include "sobel.hpp"
 #include "magnitude.hpp"
 #include "direction.hpp"
+#include "./src/profiler.hpp"
 
 using namespace std;
 
@@ -64,7 +65,8 @@ uint8_t* load_raw_image(const char* filename, size_t width, size_t height) {
     linux_close(fd);
     return data;
 }
-void save_raw_image(const char* filename, const uint8_t* data, size_t width, size_t height) {
+void save_raw_image(const char* filename, const uint8_t* data,
+                    size_t width, size_t height) {
     long fd = linux_openat(filename, LINUX_O_WRONLY | LINUX_O_CREAT | LINUX_O_TRUNC, 0666);
     if (fd >= 0) {
         linux_write(fd, data, width * height);
@@ -87,36 +89,97 @@ int main(int argc, char* argv[]) {
     const char* output_filename = argv[4];
     size_t total                = width * height;
 
+    // Number of iterations for stable timing
+    // More iterations = more stable average
+    const int ITERATIONS = 100;
+
     printf("--- RISC-V Canny Pipeline Start ---\n");
 
     // Print VLEN
     size_t vl = __riscv_vsetvl_e8m1(width);
     printf("-> Vector Length (vl for e8m1, width=%zu): %zu\n", width, vl);
 
-    // ── Step 1: Load input ────────────────────────────────────────────────
+    // ── Load input ────────────────────────────────────────────────
     uint8_t* input = load_raw_image(input_filename, width, height);
     if (!input) return 1;
     printf("-> Loaded: %s (%zux%zu)\n", input_filename, width, height);
 
-    // ── Step 2: Gaussian Blur ─────────────────────────────────────────────
-    // Reduces noise before edge detection.
-    // Uses a 5x5 kernel with integer coefficients summing to 273.
-    uint8_t* blurred = (uint8_t*)aligned_alloc(64, total);
-    canny::gaussian_blur_5x5(input, blurred, width, height);
+    // ── Allocate all buffers ──────────────────────────────────────
+    uint8_t*  blurred = (uint8_t*)aligned_alloc(64, total);
+    int16_t*  Gx      = (int16_t*)aligned_alloc(64, total * sizeof(int16_t));
+    int16_t*  Gy      = (int16_t*)aligned_alloc(64, total * sizeof(int16_t));
+    uint8_t*  mag_l1  = (uint8_t*)aligned_alloc(64, total);
+    uint8_t*  mag_l2  = (uint8_t*)aligned_alloc(64, total);
+    uint8_t*  dir     = (uint8_t*)aligned_alloc(64, total);
+    uint8_t*  dir_vis = (uint8_t*)aligned_alloc(64, total);
+    uint8_t*  gx_vis  = (uint8_t*)aligned_alloc(64, total);
+    uint8_t*  gy_vis  = (uint8_t*)aligned_alloc(64, total);
+
+    // ── Timing variables ─────────────────────────────────────────
+    uint64_t t_start, t_end;
+    uint64_t acc_gaussian = 0;
+    uint64_t acc_sobel    = 0;
+    uint64_t acc_mag_l1   = 0;
+    uint64_t acc_mag_l2   = 0;
+    uint64_t acc_dir      = 0;
+
+    printf("-> Running %d iterations for stable timing...\n", ITERATIONS);
+
+    // ── Timing loop ───────────────────────────────────────────────
+    for (int iter = 0; iter < ITERATIONS; iter++) {
+
+        // Stage 1: Gaussian Blur
+        t_start = now_ns();
+        canny::gaussian_blur_5x5(input, blurred, width, height);
+        t_end = now_ns();
+        acc_gaussian += (t_end - t_start);
+
+        // Stage 2: Sobel Gradients
+        t_start = now_ns();
+        canny::sobel_gradients(blurred, Gx, Gy, width, height);
+        t_end = now_ns();
+        acc_sobel += (t_end - t_start);
+
+        // Stage 3: Magnitude L1
+        t_start = now_ns();
+        canny::magnitude_l1(Gx, Gy, mag_l1, width, height);
+        t_end = now_ns();
+        acc_mag_l1 += (t_end - t_start);
+
+        // Stage 4: Magnitude L2
+        t_start = now_ns();
+        double max_mag = 0.0;
+        for (size_t i = 0; i < total; i++) {
+            double m = sqrt((double)Gx[i]*Gx[i] + (double)Gy[i]*Gy[i]);
+            if (m > max_mag) max_mag = m;
+        }
+        for (size_t i = 0; i < total; i++) {
+            double m = sqrt((double)Gx[i]*Gx[i] + (double)Gy[i]*Gy[i]);
+            mag_l2[i] = (max_mag > 0) ? (uint8_t)((m * 255.0) / max_mag) : 0;
+        }
+        t_end = now_ns();
+        acc_mag_l2 += (t_end - t_start);
+
+        // Stage 5: Gradient Direction
+        t_start = now_ns();
+        canny::gradient_direction(Gx, Gy, dir, width, height);
+        t_end = now_ns();
+        acc_dir += (t_end - t_start);
+    }
+
+    // ── Print timing table ────────────────────────────────────────
+    StageTiming stages[] = {
+        {"Gaussian 5x5",  0, ns_to_ms(acc_gaussian / ITERATIONS), 0},
+        {"Sobel Gx/Gy",   0, ns_to_ms(acc_sobel    / ITERATIONS), 0},
+        {"Magnitude L1",  0, ns_to_ms(acc_mag_l1   / ITERATIONS), 0},
+        {"Magnitude L2",  0, ns_to_ms(acc_mag_l2   / ITERATIONS), 0},
+        {"Direction",     0, ns_to_ms(acc_dir       / ITERATIONS), 0},
+    };
+    print_timing_table(stages, 5, ITERATIONS, 0);
+
+    // ── Save outputs (last iteration results) ────────────────────
     save_raw_image("Output_Images/output_gaussian.raw", blurred, width, height);
-    printf("-> Gaussian blur done\n");
 
-    // ── Step 3: Sobel Gradients ───────────────────────────────────────────
-    // Detects intensity changes in X and Y directions separately.
-    // Stored as int16_t SoA (separate Gx and Gy arrays) for efficient
-    // vector loading later in the RVV optimization phase.
-    int16_t* Gx = (int16_t*)aligned_alloc(64, total * sizeof(int16_t));
-    int16_t* Gy = (int16_t*)aligned_alloc(64, total * sizeof(int16_t));
-    canny::sobel_gradients(blurred, Gx, Gy, width, height);
-
-    // Convert Gx and Gy to uint8 for visualization (clamp abs value to 255)
-    uint8_t* gx_vis = (uint8_t*)aligned_alloc(64, total);
-    uint8_t* gy_vis = (uint8_t*)aligned_alloc(64, total);
     for (size_t i = 0; i < total; i++) {
         int32_t ax = Gx[i] < 0 ? -Gx[i] : Gx[i];
         int32_t ay = Gy[i] < 0 ? -Gy[i] : Gy[i];
@@ -125,59 +188,17 @@ int main(int argc, char* argv[]) {
     }
     save_raw_image("Output_Images/output_sobel_gx.raw", gx_vis, width, height);
     save_raw_image("Output_Images/output_sobel_gy.raw", gy_vis, width, height);
-    free(gx_vis);
-    free(gy_vis);
-    printf("-> Sobel gradients done\n");
-
-    // ── Step 4: Magnitude L1 ─────────────────────────────────────────────
-    // L1 = |Gx| + |Gy|, normalized to [0,255].
-    // Fast integer-only approximation. Slight overestimate on diagonals.
-    uint8_t* mag_l1 = (uint8_t*)aligned_alloc(64, total);
-    canny::magnitude_l1(Gx, Gy, mag_l1, width, height);
     save_raw_image("Output_Images/output_magnitude_l1.raw", mag_l1, width, height);
-    printf("-> Magnitude L1 done\n");
-
-    // ── Step 5: Magnitude L2 ─────────────────────────────────────────────
-    // L2 = sqrt(Gx² + Gy²), normalized to [0,255].
-    // Mathematically correct but requires floating point.
-    // Two-pass: find max first, then normalize (single-pass not straightforward
-    // because normalization factor depends on the global maximum).
-    uint8_t* mag_l2 = (uint8_t*)aligned_alloc(64, total);
-    double max_mag = 0.0;
-    for (size_t i = 0; i < total; i++) {
-        double m = sqrt((double)Gx[i]*Gx[i] + (double)Gy[i]*Gy[i]);
-        if (m > max_mag) max_mag = m;
-    }
-    for (size_t i = 0; i < total; i++) {
-        double m = sqrt((double)Gx[i]*Gx[i] + (double)Gy[i]*Gy[i]);
-        mag_l2[i] = (max_mag > 0) ? (uint8_t)((m * 255.0) / max_mag) : 0;
-    }
-    save_raw_image(output_filename, mag_l2, width, height);  // main output
-    printf("-> Magnitude L2 done (saved as main output: %s)\n", output_filename);
-
-    // ── Step 6: Gradient Direction ────────────────────────────────────────
-    // Quantizes angle to 4 directions: 0=horizontal, 1=diagonal,
-    // 2=vertical, 3=anti-diagonal.
-    // Uses integer cross-multiplication instead of atan2() — embedded trick.
-    // Values are 0/1/2/3 — multiply by 85 to make visible (0/85/170/255).
-    uint8_t* dir     = (uint8_t*)aligned_alloc(64, total);
-    uint8_t* dir_vis = (uint8_t*)aligned_alloc(64, total);
-    canny::gradient_direction(Gx, Gy, dir, width, height);
-    for (size_t i = 0; i < total; i++) {
-        dir_vis[i] = dir[i] * 85;  // scale 0-3 → 0/85/170/255 for visibility
-    }
+    save_raw_image(output_filename, mag_l2, width, height);
+    for (size_t i = 0; i < total; i++) dir_vis[i] = dir[i] * 85;
     save_raw_image("Output_Images/output_direction.raw", dir_vis, width, height);
-    printf("-> Gradient direction done\n");
 
-    // ── Cleanup ───────────────────────────────────────────────────────────
-    free(input);
-    free(blurred);
-    free(Gx);
-    free(Gy);
-    free(mag_l1);
-    free(mag_l2);
-    free(dir);
-    free(dir_vis);
+    // ── Cleanup ───────────────────────────────────────────────────
+    free(input); free(blurred);
+    free(Gx); free(Gy);
+    free(mag_l1); free(mag_l2);
+    free(dir); free(dir_vis);
+    free(gx_vis); free(gy_vis);
 
     printf("--- RISC-V Canny Pipeline End ---\n");
     return 0;

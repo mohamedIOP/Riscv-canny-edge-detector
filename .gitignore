@@ -3,6 +3,11 @@ canny
 runTests
 visual_pipeline
 qemu_eq_test
+canny_O0
+canny_O2
+canny_O3
+canny_Ofast
+canny_Os
 # Ignore all object files
 *.o
 

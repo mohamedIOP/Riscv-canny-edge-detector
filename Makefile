@@ -20,9 +20,71 @@ run: $(TARGET)
 	qemu-riscv64 -cpu rv64,v=true,vlen=256 ./$(TARGET) Input_Images/input.raw 256 256 Output_Images/output_256.raw
 	@echo "=== VLEN=512 ==="
 	qemu-riscv64 -cpu rv64,v=true,vlen=512 ./$(TARGET) Input_Images/input.raw 256 256 Output_Images/output_512.raw
+# ── Compiler flag sweep ──────────────────────────────────────
+sweep:
+	@echo "=== Building at all optimization levels ==="
+	@echo "--- O0 ---"
+	$(CXX) -static -march=rv64gcv -mabi=lp64d -O0 -std=c++17 \
+		-I"Phase 2/include" main.cpp \
+		"Phase 2"/src/gaussian.cpp \
+		"Phase 2"/src/sobel.cpp \
+		"Phase 2"/src/magnitude.cpp \
+		"Phase 2"/src/direction.cpp \
+		-o canny_O0
+	@echo "--- O2 ---"
+	$(CXX) -static -march=rv64gcv -mabi=lp64d -O2 -std=c++17 \
+		-I"Phase 2/include" main.cpp \
+		"Phase 2"/src/gaussian.cpp \
+		"Phase 2"/src/sobel.cpp \
+		"Phase 2"/src/magnitude.cpp \
+		"Phase 2"/src/direction.cpp \
+		-o canny_O2
+	@echo "--- O3 ---"
+	$(CXX) -static -march=rv64gcv -mabi=lp64d -O3 -std=c++17 \
+		-I"Phase 2/include" main.cpp \
+		"Phase 2"/src/gaussian.cpp \
+		"Phase 2"/src/sobel.cpp \
+		"Phase 2"/src/magnitude.cpp \
+		"Phase 2"/src/direction.cpp \
+		-o canny_O3
+	@echo "--- Os ---"
+	$(CXX) -static -march=rv64gcv -mabi=lp64d -Os -std=c++17 \
+		-I"Phase 2/include" main.cpp \
+		"Phase 2"/src/gaussian.cpp \
+		"Phase 2"/src/sobel.cpp \
+		"Phase 2"/src/magnitude.cpp \
+		"Phase 2"/src/direction.cpp \
+		-o canny_Os
+	@echo "--- Ofast ---"
+	$(CXX) -static -march=rv64gcv -mabi=lp64d -Ofast -std=c++17 \
+		-I"Phase 2/include" main.cpp \
+		"Phase 2"/src/gaussian.cpp \
+		"Phase 2"/src/sobel.cpp \
+		"Phase 2"/src/magnitude.cpp \
+		"Phase 2"/src/direction.cpp \
+		-o canny_Ofast
+	@echo "=== Binary sizes ==="
+	ls -la canny_O0 canny_O2 canny_O3 canny_Os canny_Ofast
 
+run_sweep: sweep
+	@echo "=== Timing at O0 ==="
+	$(QEMU) -cpu $(QEMU_CPU),vlen=256 ./canny_O0 \
+		Input_Images/input.raw 256 256 Output_Images/output_O0.raw
+	@echo "=== Timing at O2 ==="
+	$(QEMU) -cpu $(QEMU_CPU),vlen=256 ./canny_O2 \
+		Input_Images/input.raw 256 256 Output_Images/output_O2.raw
+	@echo "=== Timing at O3 ==="
+	$(QEMU) -cpu $(QEMU_CPU),vlen=256 ./canny_O3 \
+		Input_Images/input.raw 256 256 Output_Images/output_O3.raw
+	@echo "=== Timing at Os ==="
+	$(QEMU) -cpu $(QEMU_CPU),vlen=256 ./canny_Os \
+		Input_Images/input.raw 256 256 Output_Images/output_Os.raw
+	@echo "=== Timing at Ofast ==="
+	$(QEMU) -cpu $(QEMU_CPU),vlen=256 ./canny_Ofast \
+		Input_Images/input.raw 256 256 Output_Images/output_Ofast.raw
 clean:
 	rm -f $(TARGET) runTests visual_pipeline qemu_eq_test
+	rm -f canny_O0 canny_O2 canny_O3 canny_Os canny_Ofast
 	rm -f Output_Images/*.raw
 	rm -f output_gaussian.raw output_sobel_gx.raw output_sobel_gy.raw \
 	      output_magnitude_l1.raw output_direction.raw \
