@@ -57,16 +57,39 @@ Image: 256×256 grayscale. Iterations: 100. VLEN=256 for flag sweep.
 
 ---
 
-## Auto-Vectorization Analysis
-*(to be filled after running -fopt-info-vec-all)*
+## Auto-Vectorization Analysis (-O3, -fopt-info-vec-all)
 
-| Stage        | Auto-vectorized? | Reason if not |
-|--------------|-----------------|---------------|
-| Gaussian 5×5 | TBD             |               |
-| Sobel Gx/Gy  | TBD             |               |
-| Magnitude L1 | TBD             |               |
-| Magnitude L2 | TBD             |               |
-| Direction    | TBD             |               |
+Vector instructions in binary: **129 vset instructions** (via objdump -d | grep -c "vset")
+
+| Stage | Auto-vectorized? | Reason |
+|---|---|---|
+| Gaussian 5×5 | ❌ No | Boundary check (if ix≥0 && ix<width) inside inner loop = unsupported control flow |
+| Sobel Gx/Gy | ❌ No | Same boundary check problem — compiler tried all vector modes, failed all |
+| Magnitude L1 | ✅ Yes (2 loops) | Both max-finding and normalize passes vectorized with variable length vectors |
+| Magnitude L2 | ❌ No | Floating point sqrt — unsupported data-type for auto-vectorization |
+| Direction | ⚠️ Partial | Outer loop vectorized, inner if/else angle quantization split out as scalar |
+| Gx/Gy visualization | ✅ Yes (2 loops) | Simple abs+clamp loop — fully vectorized |
+
+### Key Insight
+The **boundary check** (`if (ix >= 0 && ix < width)`) inside the Gaussian and Sobel
+inner loops is what prevents auto-vectorization. The compiler cannot vectorize loops
+with conditional control flow that depends on loop index bounds.
+
+This is the fundamental motivation for writing RVV intrinsics manually:
+- Remove the boundary check from the inner loop by pre-padding the image with zeros
+- Use RVV masking instructions to handle the tail case explicitly
+- This allows processing multiple pixels per instruction instead of one at a time
+
+### What the compiler DID vectorize for free
+Magnitude L1 was fully auto-vectorized — both passes use variable length RVV vectors.
+This explains why L1 is relatively fast at -O3 despite being a two-pass algorithm.
+The direction outer loop was also partially vectorized.
+
+### Objdump verification
+```bash
+riscv64-unknown-elf-objdump -d canny_vec_report | grep -c "vset"
+# Result: 129 vset instructions
+```
 
 ---
 

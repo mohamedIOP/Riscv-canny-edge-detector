@@ -1,0 +1,829 @@
+main.cpp:23:19: missed: failed: base not addressable.
+main.cpp:24:19: missed: failed: base not addressable.
+main.cpp:25:19: missed: failed: base not addressable.
+main.cpp:26:19: missed: failed: base not addressable.
+main.cpp:27:19: missed: failed: base not addressable.
+main.cpp:28:5: missed: statement clobbers memory: __asm__ __volatile__("ecall" : "=r" a0 : "r" a1, "r" a2, "r" a3, "r" a7, "0" a0 : "memory");
+main.cpp:29:12: missed: failed: base not addressable.
+main.cpp:29:12: note: ***** Analysis failed with vector mode VOID
+main.cpp:32:19: missed: failed: base not addressable.
+main.cpp:33:19: missed: failed: base not addressable.
+main.cpp:34:19: missed: failed: base not addressable.
+main.cpp:35:19: missed: failed: base not addressable.
+main.cpp:36:5: missed: statement clobbers memory: __asm__ __volatile__("ecall" : "=r" a0 : "r" a1, "r" a2, "r" a7, "0" a0 : "memory");
+main.cpp:37:12: missed: failed: base not addressable.
+main.cpp:37:12: note: ***** Analysis failed with vector mode VOID
+main.cpp:40:19: missed: failed: base not addressable.
+main.cpp:41:19: missed: failed: base not addressable.
+main.cpp:42:19: missed: failed: base not addressable.
+main.cpp:43:19: missed: failed: base not addressable.
+main.cpp:44:5: missed: statement clobbers memory: __asm__ __volatile__("ecall" : "=r" a0 : "r" a1, "r" a2, "r" a7, "0" a0 : "memory");
+main.cpp:45:12: missed: failed: base not addressable.
+main.cpp:45:12: note: ***** Analysis failed with vector mode VOID
+main.cpp:48:19: missed: failed: base not addressable.
+main.cpp:49:19: missed: failed: base not addressable.
+main.cpp:50:5: missed: statement clobbers memory: __asm__ __volatile__("ecall" : "=r" a0 : "r" a7, "0" a0 : "memory");
+main.cpp:51:12: missed: failed: base not addressable.
+main.cpp:51:12: note: ***** Analysis failed with vector mode VOID
+main.cpp:23:19: missed: failed: base not addressable.
+main.cpp:24:19: missed: failed: base not addressable.
+main.cpp:25:19: missed: failed: base not addressable.
+main.cpp:26:19: missed: failed: base not addressable.
+main.cpp:27:19: missed: failed: base not addressable.
+main.cpp:28:5: missed: statement clobbers memory: __asm__ __volatile__("ecall" : "=r" a0 : "r" a1, "r" a2, "r" a3, "r" a7, "0" a0 : "memory");
+main.cpp:29:12: missed: failed: base not addressable.
+main.cpp:62:44: missed: statement clobbers memory: data_9 = aligned_alloc (64, size_7);
+main.cpp:32:19: missed: failed: base not addressable.
+main.cpp:33:19: missed: failed: base not addressable.
+main.cpp:34:19: missed: failed: base not addressable.
+main.cpp:35:19: missed: failed: base not addressable.
+main.cpp:36:5: missed: statement clobbers memory: __asm__ __volatile__("ecall" : "=r" a0 : "r" a1, "r" a2, "r" a7, "0" a0 : "memory");
+main.cpp:48:19: missed: failed: base not addressable.
+main.cpp:49:19: missed: failed: base not addressable.
+main.cpp:50:5: missed: statement clobbers memory: __asm__ __volatile__("ecall" : "=r" a0 : "r" a7, "0" a0 : "memory");
+main.cpp:48:19: missed: failed: base not addressable.
+main.cpp:49:19: missed: failed: base not addressable.
+main.cpp:50:5: missed: statement clobbers memory: __asm__ __volatile__("ecall" : "=r" a0 : "r" a7, "0" a0 : "memory");
+main.cpp:58:15: missed: statement clobbers memory: printf ("ERROR: Failed to open %s\n", filename_4(D));
+main.cpp:58:15: note: ***** Analysis failed with vector mode VOID
+main.cpp:23:19: missed: failed: base not addressable.
+main.cpp:24:19: missed: failed: base not addressable.
+main.cpp:25:19: missed: failed: base not addressable.
+main.cpp:26:19: missed: failed: base not addressable.
+main.cpp:27:19: missed: failed: base not addressable.
+main.cpp:28:5: missed: statement clobbers memory: __asm__ __volatile__("ecall" : "=r" a0 : "r" a1, "r" a2, "r" a3, "r" a7, "0" a0 : "memory");
+main.cpp:29:12: missed: failed: base not addressable.
+main.cpp:76:15: missed: statement clobbers memory: printf ("ERROR: Failed to save %s\n", filename_3(D));
+main.cpp:40:19: missed: failed: base not addressable.
+main.cpp:41:19: missed: failed: base not addressable.
+main.cpp:42:19: missed: failed: base not addressable.
+main.cpp:43:19: missed: failed: base not addressable.
+main.cpp:44:5: missed: statement clobbers memory: __asm__ __volatile__("ecall" : "=r" a0 : "r" a1, "r" a2, "r" a7, "0" a0 : "memory");
+main.cpp:48:19: missed: failed: base not addressable.
+main.cpp:49:19: missed: failed: base not addressable.
+main.cpp:50:5: missed: statement clobbers memory: __asm__ __volatile__("ecall" : "=r" a0 : "r" a7, "0" a0 : "memory");
+main.cpp:74:15: missed: statement clobbers memory: printf ("-> Saved: %s\n", filename_3(D));
+main.cpp:78:1: note: ***** Analysis failed with vector mode VOID
+main.cpp:193:26: optimized: loop vectorized using variable length vectors
+main.cpp:183:26: optimized: loop vectorized using variable length vectors
+./src/profiler.hpp:66:23: missed: couldn't vectorize loop
+./src/profiler.hpp:67:15: missed: statement clobbers memory: printf ("%-20s %10.4f %7.1f%%\n", _329, _330, _331);
+./src/profiler.hpp:57:23: missed: couldn't vectorize loop
+./src/profiler.hpp:58:23: missed: not vectorized: no vectype for stmt: _409->pct = 0.0;
+ scalar_type: double
+./src/profiler.hpp:57:23: missed: couldn't vectorize loop
+./src/profiler.hpp:58:50: missed: not vectorized: no vectype for stmt: _317 = _465->avg_ms;
+ scalar_type: double
+./src/profiler.hpp:54:23: missed: couldn't vectorize loop
+./src/profiler.hpp:55:28: missed: not vectorized: no vectype for stmt: _309 = _308->avg_ms;
+ scalar_type: double
+main.cpp:129:29: missed: couldn't vectorize loop
+main.cpp:129:29: missed: not vectorized: loop nest containing two or more consecutive inner loops cannot be vectorized
+main.cpp:156:30: missed: couldn't vectorize loop
+main.cpp:156:30: missed: not vectorized: unsupported data-type
+main.cpp:152:30: missed: couldn't vectorize loop
+main.cpp:80:5: missed: not vectorized: unsupported use in stmt.
+main.cpp:80:5: note: vectorized 2 loops in function.
+main.cpp:87:39: missed: statement clobbers memory: _3 = atoi (_2);
+main.cpp:88:39: missed: statement clobbers memory: _5 = atoi (_4);
+main.cpp:96:11: missed: statement clobbers memory: __builtin_puts (&"--- RISC-V Canny Pipeline Start ---"[0]);
+main.cpp:100:11: missed: statement clobbers memory: printf ("-> Vector Length (vl for e8m1, width=%zu): %zu\n", width_89, vl_95);
+main.cpp:103:36: missed: statement clobbers memory: _98 = load_raw_image (input_filename_87, width_89, height_91);
+main.cpp:105:11: missed: statement clobbers memory: printf ("-> Loaded: %s (%zux%zu)\n", input_filename_87, width_89, height_91);
+main.cpp:108:48: missed: statement clobbers memory: blurred_101 = aligned_alloc (64, total_93);
+main.cpp:109:48: missed: statement clobbers memory: Gx_103 = aligned_alloc (64, _6);
+main.cpp:110:48: missed: statement clobbers memory: Gy_105 = aligned_alloc (64, _6);
+main.cpp:111:48: missed: statement clobbers memory: mag_l1_107 = aligned_alloc (64, total_93);
+main.cpp:112:48: missed: statement clobbers memory: mag_l2_109 = aligned_alloc (64, total_93);
+main.cpp:113:48: missed: statement clobbers memory: dir_111 = aligned_alloc (64, total_93);
+main.cpp:114:48: missed: statement clobbers memory: dir_vis_113 = aligned_alloc (64, total_93);
+main.cpp:115:48: missed: statement clobbers memory: gx_vis_115 = aligned_alloc (64, total_93);
+main.cpp:116:48: missed: statement clobbers memory: gy_vis_117 = aligned_alloc (64, total_93);
+main.cpp:126:11: missed: statement clobbers memory: printf ("-> Running %d iterations for stable timing...\n", 100);
+./src/profiler.hpp:24:19: missed: failed: base not addressable.
+./src/profiler.hpp:25:19: missed: failed: base not addressable.
+./src/profiler.hpp:26:19: missed: failed: base not addressable.
+./src/profiler.hpp:27:5: missed: statement clobbers memory: __asm__ __volatile__("ecall" : "=r" a0 : "r" a1, "r" a7, "0" a0 : "memory");
+main.cpp:133:33: missed: statement clobbers memory: canny::gaussian_blur_5x5 (_98, blurred_101, width_89, height_91);
+./src/profiler.hpp:24:19: missed: failed: base not addressable.
+./src/profiler.hpp:25:19: missed: failed: base not addressable.
+./src/profiler.hpp:26:19: missed: failed: base not addressable.
+./src/profiler.hpp:27:5: missed: statement clobbers memory: __asm__ __volatile__("ecall" : "=r" a0 : "r" a1, "r" a7, "0" a0 : "memory");
+./src/profiler.hpp:24:19: missed: failed: base not addressable.
+./src/profiler.hpp:25:19: missed: failed: base not addressable.
+./src/profiler.hpp:26:19: missed: failed: base not addressable.
+./src/profiler.hpp:27:5: missed: statement clobbers memory: __asm__ __volatile__("ecall" : "=r" a0 : "r" a1, "r" a7, "0" a0 : "memory");
+main.cpp:139:31: missed: statement clobbers memory: canny::sobel_gradients (blurred_101, Gx_103, Gy_105, width_89, height_91);
+./src/profiler.hpp:24:19: missed: failed: base not addressable.
+./src/profiler.hpp:25:19: missed: failed: base not addressable.
+./src/profiler.hpp:26:19: missed: failed: base not addressable.
+./src/profiler.hpp:27:5: missed: statement clobbers memory: __asm__ __volatile__("ecall" : "=r" a0 : "r" a1, "r" a7, "0" a0 : "memory");
+./src/profiler.hpp:24:19: missed: failed: base not addressable.
+./src/profiler.hpp:25:19: missed: failed: base not addressable.
+./src/profiler.hpp:26:19: missed: failed: base not addressable.
+./src/profiler.hpp:27:5: missed: statement clobbers memory: __asm__ __volatile__("ecall" : "=r" a0 : "r" a1, "r" a7, "0" a0 : "memory");
+main.cpp:145:28: missed: statement clobbers memory: canny::magnitude_l1 (Gx_103, Gy_105, mag_l1_107, width_89, height_91);
+./src/profiler.hpp:24:19: missed: failed: base not addressable.
+./src/profiler.hpp:25:19: missed: failed: base not addressable.
+./src/profiler.hpp:26:19: missed: failed: base not addressable.
+./src/profiler.hpp:27:5: missed: statement clobbers memory: __asm__ __volatile__("ecall" : "=r" a0 : "r" a1, "r" a7, "0" a0 : "memory");
+./src/profiler.hpp:24:19: missed: failed: base not addressable.
+./src/profiler.hpp:25:19: missed: failed: base not addressable.
+./src/profiler.hpp:26:19: missed: failed: base not addressable.
+./src/profiler.hpp:27:5: missed: statement clobbers memory: __asm__ __volatile__("ecall" : "=r" a0 : "r" a1, "r" a7, "0" a0 : "memory");
+main.cpp:158:23: missed: statement clobbers memory: __builtin_memset (mag_l2_109, 0, total_93);
+./src/profiler.hpp:24:19: missed: failed: base not addressable.
+./src/profiler.hpp:25:19: missed: failed: base not addressable.
+./src/profiler.hpp:26:19: missed: failed: base not addressable.
+./src/profiler.hpp:27:5: missed: statement clobbers memory: __asm__ __volatile__("ecall" : "=r" a0 : "r" a1, "r" a7, "0" a0 : "memory");
+./src/profiler.hpp:24:19: missed: failed: base not addressable.
+./src/profiler.hpp:25:19: missed: failed: base not addressable.
+./src/profiler.hpp:26:19: missed: failed: base not addressable.
+./src/profiler.hpp:27:5: missed: statement clobbers memory: __asm__ __volatile__("ecall" : "=r" a0 : "r" a1, "r" a7, "0" a0 : "memory");
+main.cpp:165:34: missed: statement clobbers memory: canny::gradient_direction (Gx_103, Gy_105, dir_111, width_89, height_91);
+./src/profiler.hpp:24:19: missed: failed: base not addressable.
+./src/profiler.hpp:25:19: missed: failed: base not addressable.
+./src/profiler.hpp:26:19: missed: failed: base not addressable.
+./src/profiler.hpp:27:5: missed: statement clobbers memory: __asm__ __volatile__("ecall" : "=r" a0 : "r" a1, "r" a7, "0" a0 : "memory");
+./src/profiler.hpp:60:11: missed: statement clobbers memory: __builtin_puts (&"\n=== Pipeline Timing Report ==="[0]);
+./src/profiler.hpp:61:11: missed: statement clobbers memory: printf ("Iterations : %d\n", 100);
+./src/profiler.hpp:62:11: missed: statement clobbers memory: printf ("Binary size: %zu KB\n", 0);
+./src/profiler.hpp:63:11: missed: statement clobbers memory: __builtin_puts (&"----------------------------------------------"[0]);
+./src/profiler.hpp:64:11: missed: statement clobbers memory: printf ("%-20s %10s %8s\n", "Stage", "Avg (ms)", "% Time");
+./src/profiler.hpp:65:11: missed: statement clobbers memory: __builtin_puts (&"----------------------------------------------"[0]);
+./src/profiler.hpp:67:15: missed: statement clobbers memory: printf ("%-20s %10.4f %7.1f%%\n", _329, _330, _331);
+./src/profiler.hpp:72:11: missed: statement clobbers memory: __builtin_puts (&"----------------------------------------------"[0]);
+./src/profiler.hpp:73:11: missed: statement clobbers memory: printf ("%-20s %10.4f %7.1f%%\n", "TOTAL", total_311, 1.0e+2);
+./src/profiler.hpp:74:11: missed: statement clobbers memory: __builtin_puts (&"==============================================\n"[0]);
+main.cpp:181:19: missed: statement clobbers memory: save_raw_image ("Output_Images/output_gaussian.raw", blurred_101, width_89, height_91);
+main.cpp:189:19: missed: statement clobbers memory: save_raw_image ("Output_Images/output_sobel_gx.raw", gx_vis_115, width_89, height_91);
+main.cpp:190:19: missed: statement clobbers memory: save_raw_image ("Output_Images/output_sobel_gy.raw", gy_vis_117, width_89, height_91);
+main.cpp:191:19: missed: statement clobbers memory: save_raw_image ("Output_Images/output_magnitude_l1.raw", mag_l1_107, width_89, height_91);
+main.cpp:192:19: missed: statement clobbers memory: save_raw_image (output_filename_92, mag_l2_109, width_89, height_91);
+main.cpp:184:47: missed: statement clobbers memory: vect__50.60_231 = .MASK_LEN_LOAD (vectp_Gx.58_196, 16B, { -1, ... }, _210(D), _474, 0);
+main.cpp:185:47: missed: statement clobbers memory: vect__53.68_320 = .MASK_LEN_LOAD (vectp_Gy.66_449, 16B, { -1, ... }, _453(D), _474, 0);
+main.cpp:186:19: missed: statement clobbers memory: .MASK_LEN_STORE (vectp_gx_vis.64_452, 8B, { -1, ... }, _474, 0, vect_patt_364.63_448);
+main.cpp:187:19: missed: statement clobbers memory: .MASK_LEN_STORE (vectp_gy_vis.72_469, 8B, { -1, ... }, _474, 0, vect_patt_361.71_467);
+main.cpp:189:19: missed: statement clobbers memory: save_raw_image ("Output_Images/output_sobel_gx.raw", gx_vis_115, width_89, height_91);
+main.cpp:190:19: missed: statement clobbers memory: save_raw_image ("Output_Images/output_sobel_gy.raw", gy_vis_117, width_89, height_91);
+main.cpp:191:19: missed: statement clobbers memory: save_raw_image ("Output_Images/output_magnitude_l1.raw", mag_l1_107, width_89, height_91);
+main.cpp:192:19: missed: statement clobbers memory: save_raw_image (output_filename_92, mag_l2_109, width_89, height_91);
+main.cpp:193:58: missed: statement clobbers memory: vect__62.53_424 = .MASK_LEN_LOAD (vectp_dir.51_443, 8B, { -1, ... }, _425(D), _373, 0);
+main.cpp:193:51: missed: statement clobbers memory: .MASK_LEN_STORE (vectp_dir_vis.55_430, 8B, { -1, ... }, _373, 0, vect__64.54_432);
+main.cpp:194:19: missed: statement clobbers memory: save_raw_image ("Output_Images/output_direction.raw", dir_vis_113, width_89, height_91);
+main.cpp:197:9: missed: statement clobbers memory: free (_98);
+main.cpp:197:22: missed: statement clobbers memory: free (blurred_101);
+main.cpp:198:9: missed: statement clobbers memory: free (Gx_103);
+main.cpp:198:19: missed: statement clobbers memory: free (Gy_105);
+main.cpp:199:9: missed: statement clobbers memory: free (mag_l1_107);
+main.cpp:199:23: missed: statement clobbers memory: free (mag_l2_109);
+main.cpp:200:9: missed: statement clobbers memory: free (dir_111);
+main.cpp:200:20: missed: statement clobbers memory: free (dir_vis_113);
+main.cpp:201:9: missed: statement clobbers memory: free (gx_vis_115);
+main.cpp:201:23: missed: statement clobbers memory: free (gy_vis_117);
+main.cpp:203:11: missed: statement clobbers memory: __builtin_puts (&"--- RISC-V Canny Pipeline End ---"[0]);
+main.cpp:82:15: missed: statement clobbers memory: printf ("Usage: %s <input_file> <width> <height> <output_file>\n", _1);
+main.cpp:80:5: note: ***** Analysis failed with vector mode RVVM1DI
+main.cpp:80:5: note: ***** Skipping vector mode RVVM1QI, which would repeat the analysis for RVVM1DI
+Phase 2/src/../include/convolution.hpp:24:23: missed: couldn't vectorize loop
+Phase 2/src/../include/convolution.hpp:24:23: missed: not vectorized: loop nest containing two or more consecutive inner loops cannot be vectorized
+Phase 2/src/../include/convolution.hpp:25:27: missed: couldn't vectorize loop
+Phase 2/src/../include/convolution.hpp:25:27: missed: not vectorized: loop nest containing two or more consecutive inner loops cannot be vectorized
+Phase 2/src/../include/convolution.hpp:28:39: missed: couldn't vectorize loop
+Phase 2/src/../include/convolution.hpp:28:39: missed: not vectorized: unsupported control flow in loop.
+Phase 2/src/../include/convolution.hpp:28:39: missed: couldn't vectorize loop
+Phase 2/src/../include/convolution.hpp:28:39: missed: not vectorized: unsupported control flow in loop.
+Phase 2/src/../include/convolution.hpp:28:39: missed: couldn't vectorize loop
+Phase 2/src/../include/convolution.hpp:28:39: missed: not vectorized: unsupported control flow in loop.
+Phase 2/src/../include/convolution.hpp:28:39: missed: couldn't vectorize loop
+Phase 2/src/../include/convolution.hpp:28:39: missed: not vectorized: unsupported control flow in loop.
+Phase 2/src/gaussian.cpp:14:6: note: vectorized 0 loops in function.
+Phase 2/src/../include/convolution.hpp:45:30: note: ***** Analysis failed with vector mode RVVM1QI
+Phase 2/src/../include/convolution.hpp:45:30: note: ***** The result for vector mode RVVM1QI would be the same
+Phase 2/src/../include/convolution.hpp:45:30: note: ***** Re-trying analysis with vector mode RVVMF2QI
+Phase 2/src/../include/convolution.hpp:45:30: note: ***** Analysis failed with vector mode RVVMF2QI
+Phase 2/src/../include/convolution.hpp:45:30: note: ***** Re-trying analysis with vector mode RVVMF4QI
+Phase 2/src/../include/convolution.hpp:45:30: note: ***** Analysis failed with vector mode RVVMF4QI
+Phase 2/src/../include/convolution.hpp:45:30: note: ***** Re-trying analysis with vector mode RVVMF8QI
+Phase 2/src/../include/convolution.hpp:45:30: note: ***** Analysis failed with vector mode RVVMF8QI
+Phase 2/src/../include/convolution.hpp:45:30: note: ***** Re-trying analysis with vector mode V16QI
+Phase 2/src/../include/convolution.hpp:38:25: note: ***** Analysis succeeded with vector mode V16QI
+Phase 2/src/../include/convolution.hpp:38:25: note: SLPing BB part
+Phase 2/src/../include/convolution.hpp:38:25: note: Costing subgraph: 
+Phase 2/src/../include/convolution.hpp:38:25: note: node 0x12cc0d48 (max_nunits=2, refcnt=1) vector(2) int
+Phase 2/src/../include/convolution.hpp:38:25: note: op template: _83 = _74 * _106;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 0 _24 = _23 * _37;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 1 _83 = _74 * _106;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	children 0x12cbf758 0x12cc0688
+Phase 2/src/../include/convolution.hpp:38:25: note: node 0x12cbf758 (max_nunits=2, refcnt=1) vector(2) int
+Phase 2/src/../include/convolution.hpp:38:25: note: op template: _74 = (int) _99;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 0 _23 = (int) _42;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 1 _74 = (int) _99;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	children 0x12cbffc8
+Phase 2/src/../include/convolution.hpp:38:25: note: node 0x12cbffc8 (max_nunits=2, refcnt=1) const vector(2) short int
+Phase 2/src/../include/convolution.hpp:38:25: note: op template: _99 = *_103;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 0 _42 = *_41;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 1 _99 = *_103;
+Phase 2/src/../include/convolution.hpp:38:25: note: node 0x12cc0688 (max_nunits=2, refcnt=1) vector(2) int
+Phase 2/src/../include/convolution.hpp:38:25: note: op template: _106 = (int) pixel_127;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 0 _37 = (int) pixel_98;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 1 _106 = (int) pixel_127;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	children 0x12cbe438
+Phase 2/src/../include/convolution.hpp:38:25: note: node 0x12cbe438 (max_nunits=2, refcnt=1) const vector(2) unsigned char
+Phase 2/src/../include/convolution.hpp:38:25: note: op template: pixel_127 = *_126;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 0 pixel_98 = *_97;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 1 pixel_127 = *_126;
+Phase 2/src/../include/convolution.hpp:38:25: note: Cost model analysis: 
+Phase 2/src/../include/convolution.hpp:38:25: note: Cost model analysis for part in loop 3:
+  Vector cost: 13
+  Scalar cost: 12
+Phase 2/src/../include/convolution.hpp:38:25: missed: not vectorized: vectorization is not profitable.
+Phase 2/src/../include/convolution.hpp:38:25: note: Costing subgraph: 
+Phase 2/src/../include/convolution.hpp:38:25: note: node 0x12cc0b98 (max_nunits=2, refcnt=1) vector(2) int
+Phase 2/src/../include/convolution.hpp:38:25: note: op template: _428 = _427 * _422;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 0 _414 = _413 * _408;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 1 _428 = _427 * _422;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	children 0x12cbe678 0x12cc0f88
+Phase 2/src/../include/convolution.hpp:38:25: note: node 0x12cbe678 (max_nunits=2, refcnt=1) vector(2) int
+Phase 2/src/../include/convolution.hpp:38:25: note: op template: _427 = (int) _426;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 0 _413 = (int) _412;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 1 _427 = (int) _426;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	children 0x12cbe9d8
+Phase 2/src/../include/convolution.hpp:38:25: note: node 0x12cbe9d8 (max_nunits=2, refcnt=1) const vector(2) short int
+Phase 2/src/../include/convolution.hpp:38:25: note: op template: _426 = *_425;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 0 _412 = *_411;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 1 _426 = *_425;
+Phase 2/src/../include/convolution.hpp:38:25: note: node 0x12cc0f88 (max_nunits=2, refcnt=1) vector(2) int
+Phase 2/src/../include/convolution.hpp:38:25: note: op template: _422 = (int) pixel_420;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 0 _408 = (int) pixel_406;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 1 _422 = (int) pixel_420;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	children 0x12cc27b8
+Phase 2/src/../include/convolution.hpp:38:25: note: node (external) 0x12cc27b8 (max_nunits=1, refcnt=2) vector(2) unsigned char
+Phase 2/src/../include/convolution.hpp:38:25: note: 	{ pixel_406, pixel_420 }
+Phase 2/src/../include/convolution.hpp:38:25: note: Cost model analysis: 
+Phase 2/src/../include/convolution.hpp:38:25: note: Cost model analysis for part in loop 8:
+  Vector cost: 17
+  Scalar cost: 10
+Phase 2/src/../include/convolution.hpp:38:25: missed: not vectorized: vectorization is not profitable.
+Phase 2/src/../include/convolution.hpp:38:25: note: Costing subgraph: 
+Phase 2/src/../include/convolution.hpp:38:25: note: node 0x12cbdd78 (max_nunits=2, refcnt=1) vector(2) int
+Phase 2/src/../include/convolution.hpp:38:25: note: op template: _265 = _266 * _271;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 0 _265 = _266 * _271;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 1 _247 = _248 * _253;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	children 0x12cbeee8 0x12cbfab8
+Phase 2/src/../include/convolution.hpp:38:25: note: node 0x12cbeee8 (max_nunits=2, refcnt=1) vector(2) int
+Phase 2/src/../include/convolution.hpp:38:25: note: op template: _266 = (int) _267;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 0 _266 = (int) _267;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 1 _248 = (int) _249;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	children 0x12cbf128
+Phase 2/src/../include/convolution.hpp:38:25: note: node 0x12cbf128 (max_nunits=2, refcnt=1) const vector(2) short int
+Phase 2/src/../include/convolution.hpp:38:25: note: op template: _267 = *_268;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 0 _267 = *_268;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 1 _249 = *_250;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	load permutation { 1 0 }
+Phase 2/src/../include/convolution.hpp:38:25: note: node 0x12cbfab8 (max_nunits=2, refcnt=1) vector(2) int
+Phase 2/src/../include/convolution.hpp:38:25: note: op template: _271 = (int) pixel_273;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 0 _271 = (int) pixel_273;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 1 _253 = (int) pixel_255;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	children 0x12cbf998
+Phase 2/src/../include/convolution.hpp:38:25: note: node (external) 0x12cbf998 (max_nunits=1, refcnt=1) vector(2) unsigned char
+Phase 2/src/../include/convolution.hpp:38:25: note: 	{ pixel_273, pixel_255 }
+Phase 2/src/../include/convolution.hpp:38:25: note: Cost model analysis: 
+Phase 2/src/../include/convolution.hpp:38:25: note: Cost model analysis for part in loop 5:
+  Vector cost: 18
+  Scalar cost: 10
+Phase 2/src/../include/convolution.hpp:38:25: missed: not vectorized: vectorization is not profitable.
+Phase 2/src/../include/convolution.hpp:38:25: note: ***** Re-trying analysis with vector mode V8QI
+Phase 2/src/../include/convolution.hpp:38:25: note: ***** Analysis succeeded with vector mode V8QI
+Phase 2/src/../include/convolution.hpp:38:25: note: SLPing BB part
+Phase 2/src/../include/convolution.hpp:38:25: note: Costing subgraph: 
+Phase 2/src/../include/convolution.hpp:38:25: note: node 0x12cc0b98 (max_nunits=2, refcnt=1) vector(2) int
+Phase 2/src/../include/convolution.hpp:38:25: note: op template: _83 = _74 * _106;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 0 _24 = _23 * _37;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 1 _83 = _74 * _106;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	children 0x12cc0f88 0x12cbe9d8
+Phase 2/src/../include/convolution.hpp:38:25: note: node 0x12cc0f88 (max_nunits=2, refcnt=1) vector(2) int
+Phase 2/src/../include/convolution.hpp:38:25: note: op template: _74 = (int) _99;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 0 _23 = (int) _42;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 1 _74 = (int) _99;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	children 0x12cbe678
+Phase 2/src/../include/convolution.hpp:38:25: note: node 0x12cbe678 (max_nunits=2, refcnt=1) const vector(2) short int
+Phase 2/src/../include/convolution.hpp:38:25: note: op template: _99 = *_103;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 0 _42 = *_41;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 1 _99 = *_103;
+Phase 2/src/../include/convolution.hpp:38:25: note: node 0x12cbe9d8 (max_nunits=2, refcnt=1) vector(2) int
+Phase 2/src/../include/convolution.hpp:38:25: note: op template: _106 = (int) pixel_127;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 0 _37 = (int) pixel_98;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 1 _106 = (int) pixel_127;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	children 0x12cc0d48
+Phase 2/src/../include/convolution.hpp:38:25: note: node 0x12cc0d48 (max_nunits=2, refcnt=1) const vector(2) unsigned char
+Phase 2/src/../include/convolution.hpp:38:25: note: op template: pixel_127 = *_126;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 0 pixel_98 = *_97;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 1 pixel_127 = *_126;
+Phase 2/src/../include/convolution.hpp:38:25: note: Cost model analysis: 
+Phase 2/src/../include/convolution.hpp:38:25: note: Cost model analysis for part in loop 3:
+  Vector cost: 13
+  Scalar cost: 12
+Phase 2/src/../include/convolution.hpp:38:25: missed: not vectorized: vectorization is not profitable.
+Phase 2/src/../include/convolution.hpp:38:25: note: Costing subgraph: 
+Phase 2/src/../include/convolution.hpp:38:25: note: node 0x12cc28d8 (max_nunits=2, refcnt=1) vector(2) int
+Phase 2/src/../include/convolution.hpp:38:25: note: op template: _428 = _427 * _422;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 0 _414 = _413 * _408;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 1 _428 = _427 * _422;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	children 0x12cc3268 0x12cc29f8
+Phase 2/src/../include/convolution.hpp:38:25: note: node 0x12cc3268 (max_nunits=2, refcnt=1) vector(2) int
+Phase 2/src/../include/convolution.hpp:38:25: note: op template: _427 = (int) _426;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 0 _413 = (int) _412;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 1 _427 = (int) _426;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	children 0x12cbf248
+Phase 2/src/../include/convolution.hpp:38:25: note: node 0x12cbf248 (max_nunits=2, refcnt=1) const vector(2) short int
+Phase 2/src/../include/convolution.hpp:38:25: note: op template: _426 = *_425;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 0 _412 = *_411;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 1 _426 = *_425;
+Phase 2/src/../include/convolution.hpp:38:25: note: node 0x12cc29f8 (max_nunits=2, refcnt=1) vector(2) int
+Phase 2/src/../include/convolution.hpp:38:25: note: op template: _422 = (int) pixel_420;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 0 _408 = (int) pixel_406;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 1 _422 = (int) pixel_420;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	children 0x12cc1e28
+Phase 2/src/../include/convolution.hpp:38:25: note: node (external) 0x12cc1e28 (max_nunits=1, refcnt=2) vector(2) unsigned char
+Phase 2/src/../include/convolution.hpp:38:25: note: 	{ pixel_406, pixel_420 }
+Phase 2/src/../include/convolution.hpp:38:25: note: Cost model analysis: 
+Phase 2/src/../include/convolution.hpp:38:25: note: Cost model analysis for part in loop 8:
+  Vector cost: 17
+  Scalar cost: 10
+Phase 2/src/../include/convolution.hpp:38:25: missed: not vectorized: vectorization is not profitable.
+Phase 2/src/../include/convolution.hpp:38:25: note: Costing subgraph: 
+Phase 2/src/../include/convolution.hpp:38:25: note: node 0x12cbe558 (max_nunits=2, refcnt=1) vector(2) int
+Phase 2/src/../include/convolution.hpp:38:25: note: op template: _265 = _266 * _271;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 0 _265 = _266 * _271;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 1 _247 = _248 * _253;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	children 0x12cbed38 0x12cbfea8
+Phase 2/src/../include/convolution.hpp:38:25: note: node 0x12cbed38 (max_nunits=2, refcnt=1) vector(2) int
+Phase 2/src/../include/convolution.hpp:38:25: note: op template: _266 = (int) _267;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 0 _266 = (int) _267;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 1 _248 = (int) _249;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	children 0x12cc2608
+Phase 2/src/../include/convolution.hpp:38:25: note: node 0x12cc2608 (max_nunits=2, refcnt=1) const vector(2) short int
+Phase 2/src/../include/convolution.hpp:38:25: note: op template: _267 = *_268;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 0 _267 = *_268;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 1 _249 = *_250;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	load permutation { 1 0 }
+Phase 2/src/../include/convolution.hpp:38:25: note: node 0x12cbfea8 (max_nunits=2, refcnt=1) vector(2) int
+Phase 2/src/../include/convolution.hpp:38:25: note: op template: _271 = (int) pixel_273;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 0 _271 = (int) pixel_273;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 1 _253 = (int) pixel_255;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	children 0x12cc0cb8
+Phase 2/src/../include/convolution.hpp:38:25: note: node (external) 0x12cc0cb8 (max_nunits=1, refcnt=1) vector(2) unsigned char
+Phase 2/src/../include/convolution.hpp:38:25: note: 	{ pixel_273, pixel_255 }
+Phase 2/src/../include/convolution.hpp:38:25: note: Cost model analysis: 
+Phase 2/src/../include/convolution.hpp:38:25: note: Cost model analysis for part in loop 5:
+  Vector cost: 18
+  Scalar cost: 10
+Phase 2/src/../include/convolution.hpp:38:25: missed: not vectorized: vectorization is not profitable.
+Phase 2/src/../include/convolution.hpp:38:25: note: ***** Re-trying analysis with vector mode V4QI
+Phase 2/src/../include/convolution.hpp:38:25: note: ***** Analysis succeeded with vector mode V4QI
+Phase 2/src/../include/convolution.hpp:38:25: note: SLPing BB part
+Phase 2/src/../include/convolution.hpp:38:25: note: Costing subgraph: 
+Phase 2/src/../include/convolution.hpp:38:25: note: node 0x12cc28d8 (max_nunits=2, refcnt=1) vector(2) int
+Phase 2/src/../include/convolution.hpp:38:25: note: op template: _83 = _74 * _106;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 0 _24 = _23 * _37;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 1 _83 = _74 * _106;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	children 0x12cc29f8 0x12cbf248
+Phase 2/src/../include/convolution.hpp:38:25: note: node 0x12cc29f8 (max_nunits=2, refcnt=1) vector(2) int
+Phase 2/src/../include/convolution.hpp:38:25: note: op template: _74 = (int) _99;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 0 _23 = (int) _42;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 1 _74 = (int) _99;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	children 0x12cc3268
+Phase 2/src/../include/convolution.hpp:38:25: note: node 0x12cc3268 (max_nunits=2, refcnt=1) const vector(2) short int
+Phase 2/src/../include/convolution.hpp:38:25: note: op template: _99 = *_103;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 0 _42 = *_41;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 1 _99 = *_103;
+Phase 2/src/../include/convolution.hpp:38:25: note: node 0x12cbf248 (max_nunits=2, refcnt=1) vector(2) int
+Phase 2/src/../include/convolution.hpp:38:25: note: op template: _106 = (int) pixel_127;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 0 _37 = (int) pixel_98;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 1 _106 = (int) pixel_127;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	children 0x12cc0b98
+Phase 2/src/../include/convolution.hpp:38:25: note: node 0x12cc0b98 (max_nunits=2, refcnt=1) const vector(2) unsigned char
+Phase 2/src/../include/convolution.hpp:38:25: note: op template: pixel_127 = *_126;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 0 pixel_98 = *_97;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 1 pixel_127 = *_126;
+Phase 2/src/../include/convolution.hpp:38:25: note: Cost model analysis: 
+Phase 2/src/../include/convolution.hpp:38:25: note: Cost model analysis for part in loop 3:
+  Vector cost: 13
+  Scalar cost: 12
+Phase 2/src/../include/convolution.hpp:38:25: missed: not vectorized: vectorization is not profitable.
+Phase 2/src/../include/convolution.hpp:38:25: note: Costing subgraph: 
+Phase 2/src/../include/convolution.hpp:38:25: note: node 0x12cbe828 (max_nunits=2, refcnt=1) vector(2) int
+Phase 2/src/../include/convolution.hpp:38:25: note: op template: _428 = _427 * _422;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 0 _414 = _413 * _408;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 1 _428 = _427 * _422;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	children 0x12cc1498 0x12cbeb88
+Phase 2/src/../include/convolution.hpp:38:25: note: node 0x12cc1498 (max_nunits=2, refcnt=1) vector(2) int
+Phase 2/src/../include/convolution.hpp:38:25: note: op template: _427 = (int) _426;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 0 _413 = (int) _412;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 1 _427 = (int) _426;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	children 0x12cc20f8
+Phase 2/src/../include/convolution.hpp:38:25: note: node 0x12cc20f8 (max_nunits=2, refcnt=1) const vector(2) short int
+Phase 2/src/../include/convolution.hpp:38:25: note: op template: _426 = *_425;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 0 _412 = *_411;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 1 _426 = *_425;
+Phase 2/src/../include/convolution.hpp:38:25: note: node 0x12cbeb88 (max_nunits=2, refcnt=1) vector(2) int
+Phase 2/src/../include/convolution.hpp:38:25: note: op template: _422 = (int) pixel_420;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 0 _408 = (int) pixel_406;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 1 _422 = (int) pixel_420;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	children 0x12cc1138
+Phase 2/src/../include/convolution.hpp:38:25: note: node (external) 0x12cc1138 (max_nunits=1, refcnt=2) vector(2) unsigned char
+Phase 2/src/../include/convolution.hpp:38:25: note: 	{ pixel_406, pixel_420 }
+Phase 2/src/../include/convolution.hpp:38:25: note: Cost model analysis: 
+Phase 2/src/../include/convolution.hpp:38:25: note: Cost model analysis for part in loop 8:
+  Vector cost: 17
+  Scalar cost: 10
+Phase 2/src/../include/convolution.hpp:38:25: missed: not vectorized: vectorization is not profitable.
+Phase 2/src/../include/convolution.hpp:38:25: note: Costing subgraph: 
+Phase 2/src/../include/convolution.hpp:38:25: note: node 0x12cc0ef8 (max_nunits=2, refcnt=1) vector(2) int
+Phase 2/src/../include/convolution.hpp:38:25: note: op template: _265 = _266 * _271;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 0 _265 = _266 * _271;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 1 _247 = _248 * _253;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	children 0x12cc1648 0x12cbfe18
+Phase 2/src/../include/convolution.hpp:38:25: note: node 0x12cc1648 (max_nunits=2, refcnt=1) vector(2) int
+Phase 2/src/../include/convolution.hpp:38:25: note: op template: _266 = (int) _267;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 0 _266 = (int) _267;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 1 _248 = (int) _249;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	children 0x12cbf488
+Phase 2/src/../include/convolution.hpp:38:25: note: node 0x12cbf488 (max_nunits=2, refcnt=1) const vector(2) short int
+Phase 2/src/../include/convolution.hpp:38:25: note: op template: _267 = *_268;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 0 _267 = *_268;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 1 _249 = *_250;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	load permutation { 1 0 }
+Phase 2/src/../include/convolution.hpp:38:25: note: node 0x12cbfe18 (max_nunits=2, refcnt=1) vector(2) int
+Phase 2/src/../include/convolution.hpp:38:25: note: op template: _271 = (int) pixel_273;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 0 _271 = (int) pixel_273;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 1 _253 = (int) pixel_255;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	children 0x12cbe4c8
+Phase 2/src/../include/convolution.hpp:38:25: note: node (external) 0x12cbe4c8 (max_nunits=1, refcnt=1) vector(2) unsigned char
+Phase 2/src/../include/convolution.hpp:38:25: note: 	{ pixel_273, pixel_255 }
+Phase 2/src/../include/convolution.hpp:38:25: note: Cost model analysis: 
+Phase 2/src/../include/convolution.hpp:38:25: note: Cost model analysis for part in loop 5:
+  Vector cost: 18
+  Scalar cost: 10
+Phase 2/src/../include/convolution.hpp:38:25: missed: not vectorized: vectorization is not profitable.
+Phase 2/src/../include/convolution.hpp:38:25: note: ***** Re-trying analysis with vector mode V2QI
+Phase 2/src/../include/convolution.hpp:38:25: note: ***** Analysis succeeded with vector mode V2QI
+Phase 2/src/../include/convolution.hpp:38:25: note: SLPing BB part
+Phase 2/src/../include/convolution.hpp:38:25: note: Costing subgraph: 
+Phase 2/src/../include/convolution.hpp:38:25: note: node 0x12cbe828 (max_nunits=2, refcnt=1) vector(2) int
+Phase 2/src/../include/convolution.hpp:38:25: note: op template: _83 = _74 * _106;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 0 _24 = _23 * _37;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 1 _83 = _74 * _106;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	children 0x12cbeb88 0x12cc20f8
+Phase 2/src/../include/convolution.hpp:38:25: note: node 0x12cbeb88 (max_nunits=2, refcnt=1) vector(2) int
+Phase 2/src/../include/convolution.hpp:38:25: note: op template: _74 = (int) _99;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 0 _23 = (int) _42;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 1 _74 = (int) _99;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	children 0x12cc1498
+Phase 2/src/../include/convolution.hpp:38:25: note: node 0x12cc1498 (max_nunits=2, refcnt=1) const vector(2) short int
+Phase 2/src/../include/convolution.hpp:38:25: note: op template: _99 = *_103;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 0 _42 = *_41;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 1 _99 = *_103;
+Phase 2/src/../include/convolution.hpp:38:25: note: node 0x12cc20f8 (max_nunits=2, refcnt=1) vector(2) int
+Phase 2/src/../include/convolution.hpp:38:25: note: op template: _106 = (int) pixel_127;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 0 _37 = (int) pixel_98;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 1 _106 = (int) pixel_127;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	children 0x12cc28d8
+Phase 2/src/../include/convolution.hpp:38:25: note: node 0x12cc28d8 (max_nunits=2, refcnt=1) const vector(2) unsigned char
+Phase 2/src/../include/convolution.hpp:38:25: note: op template: pixel_127 = *_126;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 0 pixel_98 = *_97;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 1 pixel_127 = *_126;
+Phase 2/src/../include/convolution.hpp:38:25: note: Cost model analysis: 
+Phase 2/src/../include/convolution.hpp:38:25: note: Cost model analysis for part in loop 3:
+  Vector cost: 13
+  Scalar cost: 12
+Phase 2/src/../include/convolution.hpp:38:25: missed: not vectorized: vectorization is not profitable.
+Phase 2/src/../include/convolution.hpp:38:25: note: Costing subgraph: 
+Phase 2/src/../include/convolution.hpp:38:25: note: node 0x12cbeee8 (max_nunits=2, refcnt=1) vector(2) int
+Phase 2/src/../include/convolution.hpp:38:25: note: op template: _428 = _427 * _422;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 0 _414 = _413 * _408;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 1 _428 = _427 * _422;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	children 0x12cbfc68 0x12cc0688
+Phase 2/src/../include/convolution.hpp:38:25: note: node 0x12cbfc68 (max_nunits=2, refcnt=1) vector(2) int
+Phase 2/src/../include/convolution.hpp:38:25: note: op template: _427 = (int) _426;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 0 _413 = (int) _412;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 1 _427 = (int) _426;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	children 0x12cbe5e8
+Phase 2/src/../include/convolution.hpp:38:25: note: node 0x12cbe5e8 (max_nunits=2, refcnt=1) const vector(2) short int
+Phase 2/src/../include/convolution.hpp:38:25: note: op template: _426 = *_425;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 0 _412 = *_411;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 1 _426 = *_425;
+Phase 2/src/../include/convolution.hpp:38:25: note: node 0x12cc0688 (max_nunits=2, refcnt=1) vector(2) int
+Phase 2/src/../include/convolution.hpp:38:25: note: op template: _422 = (int) pixel_420;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 0 _408 = (int) pixel_406;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 1 _422 = (int) pixel_420;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	children 0x12cbf638
+Phase 2/src/../include/convolution.hpp:38:25: note: node (external) 0x12cbf638 (max_nunits=1, refcnt=2) vector(2) unsigned char
+Phase 2/src/../include/convolution.hpp:38:25: note: 	{ pixel_406, pixel_420 }
+Phase 2/src/../include/convolution.hpp:38:25: note: Cost model analysis: 
+Phase 2/src/../include/convolution.hpp:38:25: note: Cost model analysis for part in loop 8:
+  Vector cost: 17
+  Scalar cost: 10
+Phase 2/src/../include/convolution.hpp:38:25: missed: not vectorized: vectorization is not profitable.
+Phase 2/src/../include/convolution.hpp:38:25: note: Costing subgraph: 
+Phase 2/src/../include/convolution.hpp:38:25: note: node 0x12cbdce8 (max_nunits=2, refcnt=1) vector(2) int
+Phase 2/src/../include/convolution.hpp:38:25: note: op template: _265 = _266 * _271;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 0 _265 = _266 * _271;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 1 _247 = _248 * _253;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	children 0x12cc2968 0x12cc1b58
+Phase 2/src/../include/convolution.hpp:38:25: note: node 0x12cc2968 (max_nunits=2, refcnt=1) vector(2) int
+Phase 2/src/../include/convolution.hpp:38:25: note: op template: _266 = (int) _267;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 0 _266 = (int) _267;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 1 _248 = (int) _249;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	children 0x12cbde98
+Phase 2/src/../include/convolution.hpp:38:25: note: node 0x12cbde98 (max_nunits=2, refcnt=1) const vector(2) short int
+Phase 2/src/../include/convolution.hpp:38:25: note: op template: _267 = *_268;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 0 _267 = *_268;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 1 _249 = *_250;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	load permutation { 1 0 }
+Phase 2/src/../include/convolution.hpp:38:25: note: node 0x12cc1b58 (max_nunits=2, refcnt=1) vector(2) int
+Phase 2/src/../include/convolution.hpp:38:25: note: op template: _271 = (int) pixel_273;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 0 _271 = (int) pixel_273;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 1 _253 = (int) pixel_255;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	children 0x12cc1378
+Phase 2/src/../include/convolution.hpp:38:25: note: node (external) 0x12cc1378 (max_nunits=1, refcnt=1) vector(2) unsigned char
+Phase 2/src/../include/convolution.hpp:38:25: note: 	{ pixel_273, pixel_255 }
+Phase 2/src/../include/convolution.hpp:38:25: note: Cost model analysis: 
+Phase 2/src/../include/convolution.hpp:38:25: note: Cost model analysis for part in loop 5:
+  Vector cost: 18
+  Scalar cost: 10
+Phase 2/src/../include/convolution.hpp:38:25: missed: not vectorized: vectorization is not profitable.
+Phase 2/src/../include/convolution.hpp:38:25: note: ***** Re-trying analysis with vector mode V1QI
+Phase 2/src/../include/convolution.hpp:38:25: note: ***** Analysis succeeded with vector mode V1QI
+Phase 2/src/../include/convolution.hpp:38:25: note: SLPing BB part
+Phase 2/src/../include/convolution.hpp:38:25: note: Costing subgraph: 
+Phase 2/src/../include/convolution.hpp:38:25: note: node 0x12cbeee8 (max_nunits=1, refcnt=1) vector(1) int
+Phase 2/src/../include/convolution.hpp:38:25: note: op template: _83 = _74 * _106;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 0 _83 = _74 * _106;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 1 _24 = _23 * _37;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	children 0x12cc0688 0x12cbe5e8
+Phase 2/src/../include/convolution.hpp:38:25: note: node 0x12cc0688 (max_nunits=1, refcnt=1) vector(1) int
+Phase 2/src/../include/convolution.hpp:38:25: note: op template: _74 = (int) _99;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 0 _74 = (int) _99;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 1 _23 = (int) _42;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	children 0x12cbfc68
+Phase 2/src/../include/convolution.hpp:38:25: note: node 0x12cbfc68 (max_nunits=1, refcnt=1) const vector(1) short int
+Phase 2/src/../include/convolution.hpp:38:25: note: op template: _99 = *_103;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 0 _99 = *_103;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 1 _42 = *_41;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	load permutation { 1 0 }
+Phase 2/src/../include/convolution.hpp:38:25: note: node 0x12cbe5e8 (max_nunits=1, refcnt=1) vector(1) int
+Phase 2/src/../include/convolution.hpp:38:25: note: op template: _106 = (int) pixel_127;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 0 _106 = (int) pixel_127;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 1 _37 = (int) pixel_98;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	children 0x12cbe828
+Phase 2/src/../include/convolution.hpp:38:25: note: node 0x12cbe828 (max_nunits=1, refcnt=1) const vector(1) unsigned char
+Phase 2/src/../include/convolution.hpp:38:25: note: op template: pixel_127 = *_126;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 0 pixel_127 = *_126;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 1 pixel_98 = *_97;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	load permutation { 1 0 }
+Phase 2/src/../include/convolution.hpp:38:25: note: Cost model analysis: 
+Phase 2/src/../include/convolution.hpp:38:25: note: Cost model analysis for part in loop 3:
+  Vector cost: 18
+  Scalar cost: 12
+Phase 2/src/../include/convolution.hpp:38:25: missed: not vectorized: vectorization is not profitable.
+Phase 2/src/../include/convolution.hpp:38:25: note: Costing subgraph: 
+Phase 2/src/../include/convolution.hpp:38:25: note: node 0x12cc2de8 (max_nunits=1, refcnt=1) vector(1) int
+Phase 2/src/../include/convolution.hpp:38:25: note: op template: _428 = _427 * _422;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 0 _428 = _427 * _422;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 1 _414 = _413 * _408;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	children 0x12cbed38 0x12cc04d8
+Phase 2/src/../include/convolution.hpp:38:25: note: node 0x12cbed38 (max_nunits=1, refcnt=1) vector(1) int
+Phase 2/src/../include/convolution.hpp:38:25: note: op template: _427 = (int) _426;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 0 _427 = (int) _426;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 1 _413 = (int) _412;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	children 0x12cc1918
+Phase 2/src/../include/convolution.hpp:38:25: note: node 0x12cc1918 (max_nunits=1, refcnt=1) const vector(1) short int
+Phase 2/src/../include/convolution.hpp:38:25: note: op template: _426 = *_425;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 0 _426 = *_425;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 1 _412 = *_411;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	load permutation { 1 0 }
+Phase 2/src/../include/convolution.hpp:38:25: note: node 0x12cc04d8 (max_nunits=1, refcnt=1) vector(1) int
+Phase 2/src/../include/convolution.hpp:38:25: note: op template: _422 = (int) pixel_420;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 0 _422 = (int) pixel_420;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 1 _408 = (int) pixel_406;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	children 0x12cc23c8
+Phase 2/src/../include/convolution.hpp:38:25: note: node (external) 0x12cc23c8 (max_nunits=1, refcnt=1) vector(1) unsigned char
+Phase 2/src/../include/convolution.hpp:38:25: note: 	{ pixel_420, pixel_406 }
+Phase 2/src/../include/convolution.hpp:38:25: note: Cost model analysis: 
+Phase 2/src/../include/convolution.hpp:38:25: note: Cost model analysis for part in loop 8:
+  Vector cost: 20
+  Scalar cost: 10
+Phase 2/src/../include/convolution.hpp:38:25: missed: not vectorized: vectorization is not profitable.
+Phase 2/src/../include/convolution.hpp:38:25: note: Costing subgraph: 
+Phase 2/src/../include/convolution.hpp:38:25: note: node 0x12cc1018 (max_nunits=1, refcnt=1) vector(1) int
+Phase 2/src/../include/convolution.hpp:38:25: note: op template: _265 = _266 * _271;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 0 _265 = _266 * _271;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 1 _247 = _248 * _253;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	children 0x12cc08c8 0x12cbf5a8
+Phase 2/src/../include/convolution.hpp:38:25: note: node 0x12cc08c8 (max_nunits=1, refcnt=1) vector(1) int
+Phase 2/src/../include/convolution.hpp:38:25: note: op template: _266 = (int) _267;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 0 _266 = (int) _267;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 1 _248 = (int) _249;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	children 0x12cbf998
+Phase 2/src/../include/convolution.hpp:38:25: note: node 0x12cbf998 (max_nunits=1, refcnt=1) const vector(1) short int
+Phase 2/src/../include/convolution.hpp:38:25: note: op template: _267 = *_268;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 0 _267 = *_268;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 1 _249 = *_250;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	load permutation { 1 0 }
+Phase 2/src/../include/convolution.hpp:38:25: note: node 0x12cbf5a8 (max_nunits=1, refcnt=1) vector(1) int
+Phase 2/src/../include/convolution.hpp:38:25: note: op template: _271 = (int) pixel_273;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 0 _271 = (int) pixel_273;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	stmt 1 _253 = (int) pixel_255;
+Phase 2/src/../include/convolution.hpp:38:25: note: 	children 0x12cc30b8
+Phase 2/src/../include/convolution.hpp:38:25: note: node (external) 0x12cc30b8 (max_nunits=1, refcnt=1) vector(1) unsigned char
+Phase 2/src/../include/convolution.hpp:38:25: note: 	{ pixel_273, pixel_255 }
+Phase 2/src/../include/convolution.hpp:38:25: note: Cost model analysis: 
+Phase 2/src/../include/convolution.hpp:38:25: note: Cost model analysis for part in loop 5:
+  Vector cost: 20
+  Scalar cost: 10
+Phase 2/src/../include/convolution.hpp:38:25: missed: not vectorized: vectorization is not profitable.
+Phase 2/src/sobel.cpp:22:26: missed: couldn't vectorize loop
+Phase 2/src/sobel.cpp:22:26: missed: not vectorized: unsupported control flow in loop.
+Phase 2/src/sobel.cpp:23:30: missed: couldn't vectorize loop
+Phase 2/src/sobel.cpp:23:30: missed: not vectorized: unsupported control flow in loop.
+Phase 2/src/sobel.cpp:27:39: missed: couldn't vectorize loop
+Phase 2/src/sobel.cpp:27:39: missed: not vectorized: unsupported control flow in loop.
+Phase 2/src/sobel.cpp:17:6: note: vectorized 0 loops in function.
+Phase 2/src/sobel.cpp:44:30: note: ***** Analysis failed with vector mode RVVM1QI
+Phase 2/src/sobel.cpp:44:30: note: ***** The result for vector mode RVVM1QI would be the same
+Phase 2/src/sobel.cpp:44:30: note: ***** Re-trying analysis with vector mode RVVMF2QI
+Phase 2/src/sobel.cpp:44:30: note: ***** Analysis failed with vector mode RVVMF2QI
+Phase 2/src/sobel.cpp:44:30: note: ***** Re-trying analysis with vector mode RVVMF4QI
+Phase 2/src/sobel.cpp:44:30: note: ***** Analysis failed with vector mode RVVMF4QI
+Phase 2/src/sobel.cpp:44:30: note: ***** Re-trying analysis with vector mode RVVMF8QI
+Phase 2/src/sobel.cpp:44:30: note: ***** Analysis failed with vector mode RVVMF8QI
+Phase 2/src/sobel.cpp:44:30: note: ***** Re-trying analysis with vector mode V16QI
+Phase 2/src/sobel.cpp:44:30: note: ***** Analysis failed with vector mode V16QI
+Phase 2/src/sobel.cpp:44:30: note: ***** Re-trying analysis with vector mode V8QI
+Phase 2/src/sobel.cpp:44:30: note: ***** Analysis failed with vector mode V8QI
+Phase 2/src/sobel.cpp:44:30: note: ***** Re-trying analysis with vector mode V4QI
+Phase 2/src/sobel.cpp:44:30: note: ***** Analysis failed with vector mode V4QI
+Phase 2/src/sobel.cpp:44:30: note: ***** Re-trying analysis with vector mode V2QI
+Phase 2/src/sobel.cpp:44:30: note: ***** Analysis failed with vector mode V2QI
+Phase 2/src/sobel.cpp:44:30: note: ***** Re-trying analysis with vector mode V1QI
+Phase 2/src/sobel.cpp:44:30: note: ***** Analysis failed with vector mode V1QI
+Phase 2/src/magnitude.cpp:28:26: optimized: loop vectorized using variable length vectors
+Phase 2/src/magnitude.cpp:28:26: optimized:  loop versioned for vectorization because of possible aliasing
+Phase 2/src/magnitude.cpp:16:26: optimized: loop vectorized using variable length vectors
+Phase 2/src/magnitude.cpp:10:6: note: vectorized 2 loops in function.
+Phase 2/src/magnitude.cpp:17:31: missed: statement clobbers memory: vect__3.28_109 = .MASK_LEN_LOAD (vectp_gx.26_106, 16B, { -1, ... }, _108(D), _126, 0);
+Phase 2/src/magnitude.cpp:17:46: missed: statement clobbers memory: vect__6.33_116 = .MASK_LEN_LOAD (vectp_gy.31_113, 16B, { -1, ... }, _115(D), _126, 0);
+Phase 2/src/magnitude.cpp:29:31: missed: statement clobbers memory: vect__10.11_53 = .MASK_LEN_LOAD (vectp_gx.9_61, 16B, { -1, ... }, _59(D), _103, 0);
+Phase 2/src/magnitude.cpp:29:46: missed: statement clobbers memory: vect__12.16_22 = .MASK_LEN_LOAD (vectp_gy.14_48, 16B, { -1, ... }, _46(D), _103, 0);
+Phase 2/src/magnitude.cpp:30:20: missed: statement clobbers memory: .MASK_LEN_STORE (vectp_mag_out.23_98, 8B, { -1, ... }, _103, 0, vect__16.22_96);
+Phase 2/src/magnitude.cpp:23:55: missed: statement clobbers memory: __builtin_memset (mag_out_35(D), 0, total_26);
+Phase 2/src/magnitude.cpp:29:47: note: ***** Analysis failed with vector mode RVVM1HI
+Phase 2/src/magnitude.cpp:29:47: note: ***** The result for vector mode RVVM1QI would be the same
+Phase 2/src/magnitude.cpp:29:47: note: ***** Re-trying analysis with vector mode RVVMF2QI
+Phase 2/src/magnitude.cpp:29:47: note: ***** Analysis failed with vector mode RVVMF2QI
+Phase 2/src/magnitude.cpp:29:47: note: ***** Re-trying analysis with vector mode RVVMF4QI
+Phase 2/src/magnitude.cpp:29:47: note: ***** Analysis failed with vector mode RVVMF4QI
+Phase 2/src/magnitude.cpp:29:47: note: ***** Re-trying analysis with vector mode RVVMF8QI
+Phase 2/src/magnitude.cpp:29:47: note: ***** Analysis failed with vector mode RVVMF8QI
+Phase 2/src/magnitude.cpp:29:47: note: ***** Re-trying analysis with vector mode V16QI
+Phase 2/src/magnitude.cpp:29:47: note: ***** Analysis succeeded with vector mode V16QI
+Phase 2/src/magnitude.cpp:29:47: note: SLPing BB part
+Phase 2/src/magnitude.cpp:29:47: note: Costing subgraph: 
+Phase 2/src/magnitude.cpp:29:47: note: node 0x101109a8 (max_nunits=2, refcnt=1) vector(2) int
+Phase 2/src/magnitude.cpp:29:47: note: op template: _76 = (int) _77;
+Phase 2/src/magnitude.cpp:29:47: note: 	stmt 0 _76 = (int) _77;
+Phase 2/src/magnitude.cpp:29:47: note: 	stmt 1 _72 = (int) _73;
+Phase 2/src/magnitude.cpp:29:47: note: 	children 0x10110ac8
+Phase 2/src/magnitude.cpp:29:47: note: node 0x10110ac8 (max_nunits=2, refcnt=1) vector(2) unsigned short
+Phase 2/src/magnitude.cpp:29:47: note: op template: _77 = ABSU_EXPR <_78>;
+Phase 2/src/magnitude.cpp:29:47: note: 	stmt 0 _77 = ABSU_EXPR <_78>;
+Phase 2/src/magnitude.cpp:29:47: note: 	stmt 1 _73 = ABSU_EXPR <_74>;
+Phase 2/src/magnitude.cpp:29:47: note: 	children 0x10110c78
+Phase 2/src/magnitude.cpp:29:47: note: node (external) 0x10110c78 (max_nunits=1, refcnt=1) vector(2) short int
+Phase 2/src/magnitude.cpp:29:47: note: 	{ _78, _74 }
+Phase 2/src/magnitude.cpp:29:47: note: Cost model analysis: 
+Phase 2/src/magnitude.cpp:29:47: note: Cost model analysis for part in loop 4:
+  Vector cost: 13
+  Scalar cost: 5
+Phase 2/src/magnitude.cpp:29:47: missed: not vectorized: vectorization is not profitable.
+Phase 2/src/magnitude.cpp:29:47: note: ***** Re-trying analysis with vector mode V8QI
+Phase 2/src/magnitude.cpp:29:47: note: ***** Analysis succeeded with vector mode V8QI
+Phase 2/src/magnitude.cpp:29:47: note: SLPing BB part
+Phase 2/src/magnitude.cpp:29:47: note: Costing subgraph: 
+Phase 2/src/magnitude.cpp:29:47: note: node 0x10110378 (max_nunits=2, refcnt=1) vector(2) int
+Phase 2/src/magnitude.cpp:29:47: note: op template: _76 = (int) _77;
+Phase 2/src/magnitude.cpp:29:47: note: 	stmt 0 _76 = (int) _77;
+Phase 2/src/magnitude.cpp:29:47: note: 	stmt 1 _72 = (int) _73;
+Phase 2/src/magnitude.cpp:29:47: note: 	children 0x10110498
+Phase 2/src/magnitude.cpp:29:47: note: node 0x10110498 (max_nunits=2, refcnt=1) vector(2) unsigned short
+Phase 2/src/magnitude.cpp:29:47: note: op template: _77 = ABSU_EXPR <_78>;
+Phase 2/src/magnitude.cpp:29:47: note: 	stmt 0 _77 = ABSU_EXPR <_78>;
+Phase 2/src/magnitude.cpp:29:47: note: 	stmt 1 _73 = ABSU_EXPR <_74>;
+Phase 2/src/magnitude.cpp:29:47: note: 	children 0x10110918
+Phase 2/src/magnitude.cpp:29:47: note: node (external) 0x10110918 (max_nunits=1, refcnt=1) vector(2) short int
+Phase 2/src/magnitude.cpp:29:47: note: 	{ _78, _74 }
+Phase 2/src/magnitude.cpp:29:47: note: Cost model analysis: 
+Phase 2/src/magnitude.cpp:29:47: note: Cost model analysis for part in loop 4:
+  Vector cost: 13
+  Scalar cost: 5
+Phase 2/src/magnitude.cpp:29:47: missed: not vectorized: vectorization is not profitable.
+Phase 2/src/magnitude.cpp:29:47: note: ***** Re-trying analysis with vector mode V4QI
+Phase 2/src/magnitude.cpp:29:47: note: ***** Analysis succeeded with vector mode V4QI
+Phase 2/src/magnitude.cpp:29:47: note: SLPing BB part
+Phase 2/src/magnitude.cpp:29:47: note: Costing subgraph: 
+Phase 2/src/magnitude.cpp:29:47: note: node 0x10110768 (max_nunits=2, refcnt=1) vector(2) int
+Phase 2/src/magnitude.cpp:29:47: note: op template: _76 = (int) _77;
+Phase 2/src/magnitude.cpp:29:47: note: 	stmt 0 _76 = (int) _77;
+Phase 2/src/magnitude.cpp:29:47: note: 	stmt 1 _72 = (int) _73;
+Phase 2/src/magnitude.cpp:29:47: note: 	children 0x101109a8
+Phase 2/src/magnitude.cpp:29:47: note: node 0x101109a8 (max_nunits=2, refcnt=1) vector(2) unsigned short
+Phase 2/src/magnitude.cpp:29:47: note: op template: _77 = ABSU_EXPR <_78>;
+Phase 2/src/magnitude.cpp:29:47: note: 	stmt 0 _77 = ABSU_EXPR <_78>;
+Phase 2/src/magnitude.cpp:29:47: note: 	stmt 1 _73 = ABSU_EXPR <_74>;
+Phase 2/src/magnitude.cpp:29:47: note: 	children 0x101107f8
+Phase 2/src/magnitude.cpp:29:47: note: node (external) 0x101107f8 (max_nunits=1, refcnt=1) vector(2) short int
+Phase 2/src/magnitude.cpp:29:47: note: 	{ _78, _74 }
+Phase 2/src/magnitude.cpp:29:47: note: Cost model analysis: 
+Phase 2/src/magnitude.cpp:29:47: note: Cost model analysis for part in loop 4:
+  Vector cost: 13
+  Scalar cost: 5
+Phase 2/src/magnitude.cpp:29:47: missed: not vectorized: vectorization is not profitable.
+Phase 2/src/magnitude.cpp:29:47: note: ***** Re-trying analysis with vector mode V2QI
+Phase 2/src/magnitude.cpp:29:47: note: ***** Analysis succeeded with vector mode V2QI
+Phase 2/src/magnitude.cpp:29:47: note: SLPing BB part
+Phase 2/src/magnitude.cpp:29:47: note: Costing subgraph: 
+Phase 2/src/magnitude.cpp:29:47: note: node 0x10110498 (max_nunits=2, refcnt=1) vector(2) int
+Phase 2/src/magnitude.cpp:29:47: note: op template: _76 = (int) _77;
+Phase 2/src/magnitude.cpp:29:47: note: 	stmt 0 _76 = (int) _77;
+Phase 2/src/magnitude.cpp:29:47: note: 	stmt 1 _72 = (int) _73;
+Phase 2/src/magnitude.cpp:29:47: note: 	children 0x10110888
+Phase 2/src/magnitude.cpp:29:47: note: node 0x10110888 (max_nunits=2, refcnt=1) vector(2) unsigned short
+Phase 2/src/magnitude.cpp:29:47: note: op template: _77 = ABSU_EXPR <_78>;
+Phase 2/src/magnitude.cpp:29:47: note: 	stmt 0 _77 = ABSU_EXPR <_78>;
+Phase 2/src/magnitude.cpp:29:47: note: 	stmt 1 _73 = ABSU_EXPR <_74>;
+Phase 2/src/magnitude.cpp:29:47: note: 	children 0x10110408
+Phase 2/src/magnitude.cpp:29:47: note: node (external) 0x10110408 (max_nunits=1, refcnt=1) vector(2) short int
+Phase 2/src/magnitude.cpp:29:47: note: 	{ _78, _74 }
+Phase 2/src/magnitude.cpp:29:47: note: Cost model analysis: 
+Phase 2/src/magnitude.cpp:29:47: note: Cost model analysis for part in loop 4:
+  Vector cost: 13
+  Scalar cost: 5
+Phase 2/src/magnitude.cpp:29:47: missed: not vectorized: vectorization is not profitable.
+Phase 2/src/magnitude.cpp:29:47: note: ***** Re-trying analysis with vector mode V1QI
+Phase 2/src/magnitude.cpp:29:47: note: ***** Analysis succeeded with vector mode V1QI
+Phase 2/src/magnitude.cpp:29:47: note: SLPing BB part
+Phase 2/src/magnitude.cpp:29:47: note: Costing subgraph: 
+Phase 2/src/magnitude.cpp:29:47: note: node 0x10110768 (max_nunits=1, refcnt=1) vector(1) int
+Phase 2/src/magnitude.cpp:29:47: note: op template: _76 = (int) _77;
+Phase 2/src/magnitude.cpp:29:47: note: 	stmt 0 _76 = (int) _77;
+Phase 2/src/magnitude.cpp:29:47: note: 	stmt 1 _72 = (int) _73;
+Phase 2/src/magnitude.cpp:29:47: note: 	children 0x10110be8
+Phase 2/src/magnitude.cpp:29:47: note: node 0x10110be8 (max_nunits=1, refcnt=1) vector(1) unsigned short
+Phase 2/src/magnitude.cpp:29:47: note: op template: _77 = ABSU_EXPR <_78>;
+Phase 2/src/magnitude.cpp:29:47: note: 	stmt 0 _77 = ABSU_EXPR <_78>;
+Phase 2/src/magnitude.cpp:29:47: note: 	stmt 1 _73 = ABSU_EXPR <_74>;
+Phase 2/src/magnitude.cpp:29:47: note: 	children 0x10110378
+Phase 2/src/magnitude.cpp:29:47: note: node (external) 0x10110378 (max_nunits=1, refcnt=1) vector(1) short int
+Phase 2/src/magnitude.cpp:29:47: note: 	{ _78, _74 }
+Phase 2/src/magnitude.cpp:29:47: note: Cost model analysis: 
+Phase 2/src/magnitude.cpp:29:47: note: Cost model analysis for part in loop 4:
+  Vector cost: 13
+  Scalar cost: 5
+Phase 2/src/magnitude.cpp:29:47: missed: not vectorized: vectorization is not profitable.
+Phase 2/src/magnitude.cpp:50:26: missed: couldn't vectorize loop
+Phase 2/src/magnitude.cpp:50:26: missed: not vectorized: unsupported data-type
+Phase 2/src/magnitude.cpp:39:26: missed: couldn't vectorize loop
+Phase 2/src/magnitude.cpp:33:6: missed: not vectorized: unsupported use in stmt.
+Phase 2/src/magnitude.cpp:33:6: note: vectorized 0 loops in function.
+Phase 2/src/magnitude.cpp:45:55: missed: statement clobbers memory: __builtin_memset (mag_out_44(D), 0, total_38);
+Phase 2/src/magnitude.cpp:45:55: note: ***** Analysis failed with vector mode RVVM1HI
+Phase 2/src/magnitude.cpp:45:55: note: ***** Skipping vector mode RVVM1QI, which would repeat the analysis for RVVM1HI
+Phase 2/src/direction.cpp:13:26: optimized: loop vectorized using variable length vectors
+Phase 2/src/direction.cpp:13:26: optimized:  loop versioned for vectorization because of possible aliasing
+Phase 2/src/direction.cpp:9:6: note: vectorized 1 loops in function.
+Phase 2/src/direction.cpp:9:6: missed: splitting region at dont-vectorize loop 2 entry at bb15
+Phase 2/src/direction.cpp:14:25: missed: statement clobbers memory: vect__3.15_124 = .MASK_LEN_LOAD (vectp_gx.13_121, 16B, { -1, ... }, _123(D), _147, 0);
+Phase 2/src/direction.cpp:15:25: missed: statement clobbers memory: vect__5.9_116 = .MASK_LEN_LOAD (vectp_gy.7_113, 16B, { -1, ... }, _115(D), _147, 0);
+Phase 2/src/direction.cpp:25:24: missed: statement clobbers memory: .MASK_LEN_STORE (vectp_dir_out.32_142, 8B, { -1, ... }, _147, 0, vect__37.31_140);
+Phase 2/src/direction.cpp:9:6: note: ***** Analysis failed with vector mode RVVM1DI
+Phase 2/src/direction.cpp:9:6: note: ***** The result for vector mode RVVM1QI would be the same
+Phase 2/src/direction.cpp:9:6: note: ***** The result for vector mode RVVMF2QI would be the same
+Phase 2/src/direction.cpp:9:6: note: ***** The result for vector mode RVVMF4QI would be the same
+Phase 2/src/direction.cpp:9:6: note: ***** The result for vector mode RVVMF8QI would be the same
+Phase 2/src/direction.cpp:9:6: note: ***** Re-trying analysis with vector mode V16QI
+Phase 2/src/direction.cpp:9:6: note: ***** Analysis failed with vector mode V16QI
+Phase 2/src/direction.cpp:9:6: note: ***** Re-trying analysis with vector mode V8QI
+Phase 2/src/direction.cpp:9:6: note: ***** Analysis failed with vector mode V8QI
+Phase 2/src/direction.cpp:9:6: note: ***** Re-trying analysis with vector mode V4QI
+Phase 2/src/direction.cpp:9:6: note: ***** Analysis failed with vector mode V4QI
+Phase 2/src/direction.cpp:9:6: note: ***** Re-trying analysis with vector mode V2QI
+Phase 2/src/direction.cpp:9:6: note: ***** Analysis failed with vector mode V2QI
+Phase 2/src/direction.cpp:9:6: note: ***** Re-trying analysis with vector mode V1QI
+Phase 2/src/direction.cpp:9:6: note: ***** Analysis failed with vector mode V1QI
+Phase 2/src/direction.cpp:9:6: missed: splitting region at dominance boundary bb11
+Phase 2/src/direction.cpp:9:6: note: ***** Analysis failed with vector mode VOID
+Phase 2/src/direction.cpp:9:6: missed: splitting region at dominance boundary bb3
+Phase 2/src/direction.cpp:9:6: note: ***** Analysis failed with vector mode VOID
+Phase 2/src/direction.cpp:39:1: note: ***** Analysis failed with vector mode VOID
