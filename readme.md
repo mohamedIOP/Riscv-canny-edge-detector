@@ -180,21 +180,33 @@ correctness (uniform image invariant, impulse response, edge direction, magnitud
 
 ```
 .
-├── main.cpp                  # RISC-V entry point — full pipeline
-├── visual_pipeline.cpp       # Native host pipeline for visualization
-├── Makefile                  # Dual-target: RISC-V + host
-├── generate_image.py         # Generates 256×256 synthetic test image
-├── convert_image.py          # Converts any photo to raw grayscale
-├── view_image.py             # Visualizes raw output files
+├── main.cpp                      # RISC-V entry point — full pipeline + profiling
+├── visual_pipeline.cpp           # Native host pipeline for visualization
+├── Makefile                      # Dual-target: RISC-V + host, compiler sweep
+├── generate_image.py             # Generates 256×256 synthetic test image
+├── convert_image.py              # Converts any photo to raw grayscale
+├── view_image.py                 # Visualizes raw output files
+├── src/
+│   ├── pipeline.cpp              # Generic 2D convolution template
+│   ├── pipeline.hpp              # Convolution template interface
+│   └── profiler.hpp              # Per-stage timing harness (clock_gettime)
 ├── Phase 2/
-│   ├── include/              # Header files (gaussian, sobel, magnitude, direction)
-│   └── src/                  # Scalar C++ implementations
+│   ├── include/                  # Headers: gaussian, sobel, magnitude, direction, convolution
+│   └── src/                     # Scalar C++ implementations
 ├── tests/
-│   └── test_pipeline.cpp     # GoogleTest unit tests
-├── Input_Images/             # Input raw images (not committed)
-└── Output_Images/            # Pipeline outputs (not committed)
+│   ├── test_pipeline.cpp         # GoogleTest unit tests (host-side)
+│   └── qemu_equivalence_test.cpp # QEMU-side equivalence tests at VLEN 128/256/512
+├── docs/
+│   └── optimization_results.md  # Profiling data, flag sweep, RVV results
+├── Input_Images/                 # Input raw images (not committed)
+└── Output_Images/                # Pipeline outputs (not committed)
 ```
 ---
+## 📊 Optimization Results
+
+Profiling data, compiler flag sweep timings, and binary sizes are documented in
+`docs/optimization_results.md`. This file will be updated as RVV intrinsic
+implementations are completed.
 
 ## 🎯 Makefile Targets
 
@@ -203,6 +215,8 @@ correctness (uniform image invariant, impulse response, edge direction, magnitud
 | `make` | Build RISC-V binary |
 | `make run` | Run pipeline on QEMU at VLEN 128, 256, 512 |
 | `make test` | Run GoogleTest suite natively |
-| `make visual` | Build native host pipeline binary |
-| `make clean` | Remove binary, runTests, visual_pipeline, and all output .raw files |
 | `make test_qemu` | Run QEMU equivalence tests at VLEN 128, 256, 512 |
+| `make visual` | Build native host pipeline binary |
+| `make sweep` | Build binaries at -O0, -O2, -O3, -Os, -Ofast and print sizes |
+| `make run_sweep` | Run timing measurements at all optimization levels |
+| `make clean` | Remove binary, runTests, visual_pipeline, and all output .raw files |
