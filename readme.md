@@ -115,8 +115,9 @@ make
 ```bash
 make run
 ```
-This runs the complete Canny pipeline at **VLEN=128, 256, and 512** and saves
-all stage outputs to `Output_Images/`:
+This runs the complete Canny pipeline at **VLEN=128, 256, and 512**, prints a
+**per-stage timing report** (100 iterations for stability), and saves all stage
+outputs to `Output_Images/`.
 
 | Output file | Contents |
 |---|---|
@@ -175,7 +176,25 @@ GoogleTest runs natively on the host. All pipeline stages are tested for
 correctness (uniform image invariant, impulse response, edge direction, magnitude).
 
 ---
+## ⏱️ Profiling and Optimization
 
+Run the compiler flag sweep to measure performance at each optimization level:
+```bash
+make sweep      # builds binaries at -O0, -O2, -O3, -Os, -Ofast
+make run_sweep  # runs each binary and prints per-stage timing
+```
+
+Results are saved in `docs/optimization_results.md`.
+
+To reproduce the auto-vectorization analysis:
+```bash
+riscv64-unknown-elf-g++ -static -march=rv64gcv -mabi=lp64d -O3 -std=c++17 \
+    -I"Phase 2/include" -fopt-info-vec-all \
+    main.cpp "Phase 2"/src/*.cpp -o canny_vec_report 2>&1 | tee vec_report.txt
+
+riscv64-unknown-elf-objdump -d canny_vec_report | grep -c "vset"
+```
+---
 ## 📁 Project Structure
 
 ```
@@ -197,7 +216,8 @@ correctness (uniform image invariant, impulse response, edge direction, magnitud
 │   ├── test_pipeline.cpp         # GoogleTest unit tests (host-side)
 │   └── qemu_equivalence_test.cpp # QEMU-side equivalence tests at VLEN 128/256/512
 ├── docs/
-│   └── optimization_results.md  # Profiling data, flag sweep, RVV results
+│   └── optimization_results.md  # Profiling data, flag sweep, auto-vec, RVV results
+├── vec_report.txt                # Raw auto-vectorization compiler output
 ├── Input_Images/                 # Input raw images (not committed)
 └── Output_Images/                # Pipeline outputs (not committed)
 ```
@@ -212,11 +232,12 @@ implementations are completed.
 
 | Command | Description |
 |---|---|
-| `make` | Build RISC-V binary |
-| `make run` | Run pipeline on QEMU at VLEN 128, 256, 512 |
+| `make` | Build RISC-V binary at -O2 (fastest per our profiling sweep) |
+| `make run` | Run full pipeline on QEMU at VLEN 128, 256, 512 with per-stage timing |
 | `make test` | Run GoogleTest suite natively |
 | `make test_qemu` | Run QEMU equivalence tests at VLEN 128, 256, 512 |
 | `make visual` | Build native host pipeline binary |
 | `make sweep` | Build binaries at -O0, -O2, -O3, -Os, -Ofast and print sizes |
 | `make run_sweep` | Run timing measurements at all optimization levels |
-| `make clean` | Remove binary, runTests, visual_pipeline, and all output .raw files |
+| `make qemu_eq_test` | Build QEMU equivalence test binary |
+| `make clean` | Remove all binaries and output .raw files |

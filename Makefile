@@ -1,6 +1,6 @@
 CXX = riscv64-unknown-elf-g++
 TARGET = canny
-CXXFLAGS = -static -march=rv64gcv -mabi=lp64d -O3 -std=c++17 -I"Phase 2/include"
+CXXFLAGS = -static -march=rv64gcv -mabi=lp64d -O2 -std=c++17 -I"Phase 2/include"
 
 all: $(TARGET)
 
