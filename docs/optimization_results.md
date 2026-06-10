@@ -93,6 +93,41 @@ riscv64-unknown-elf-objdump -d canny_vec_report | grep -c "vset"
 
 ---
 
+## QEMU Configuration Experiments (Student A)
+
+### Vector Extension Toggle
+
+| Configuration | Total Time | Result |
+|---|---|---|
+| v=false (no vector) | N/A | 💥 Illegal instruction — binary requires RVV |
+| v=true, vlen=128 | 16.27 ms | ✅ vl=16 elements per operation |
+| v=true, vlen=256 | 24.59 ms | ✅ vl=32 elements per operation |
+| v=true, vlen=512 | 23.35 ms | ✅ vl=64 elements per operation |
+
+### Per-Stage Breakdown
+
+| Stage | VLEN=128 | VLEN=256 | VLEN=512 |
+|---|---|---|---|
+| Gaussian 5×5 | 6.40 ms | 6.37 ms | 6.39 ms |
+| Sobel Gx/Gy | 3.60 ms | 3.62 ms | 3.66 ms |
+| Magnitude L1 | 1.74 ms | 3.27 ms | 1.86 ms |
+| Magnitude L2 | 4.19 ms | 10.99 ms | 11.09 ms |
+| Direction | 0.34 ms | 0.34 ms | 0.35 ms |
+| **TOTAL** | **16.27 ms** | **24.59 ms** | **23.35 ms** |
+
+### Key Observations
+- **v=false crashes** — the binary already uses RVV instructions from
+  auto-vectorization at -O3. It cannot run without the V extension.
+- **VLEN=128 is fastest** at 16.27ms for the scalar pipeline. Wider VLEN
+  does not help because Gaussian and Sobel were not auto-vectorized —
+  only Magnitude L1 and Direction benefit from wider vectors.
+- **Gaussian and Sobel are flat** across all VLEN values (6.4ms and 3.6ms)
+  confirming they are purely scalar — no vector instructions used.
+- **This justifies manual RVV intrinsics** — once Gaussian is vectorized
+  with RVV, wider VLEN should show clear speedup.
+
+---
+
 ## RVV Intrinsic Results
 *(to be filled after Student C implements RVV)*
 
