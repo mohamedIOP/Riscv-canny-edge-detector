@@ -13,3 +13,7 @@ canny_Os
 
 # Ignore ALL raw image binaries (input.raw, output.raw, etc.)
 *.raw
+Reference_Images/
+Output_Images/*.raw
+visual_pipeline
+Input_Images/*.raw
