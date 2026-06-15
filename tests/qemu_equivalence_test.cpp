@@ -461,6 +461,52 @@ static void test_full_pipeline_equivalence() {
 // common VLEN (16, 32, 64). The strip-mining remainder
 // (the "tail") must be handled correctly.
 // ============================================================
+// ============================================================
+// Test 14: Scalar vs RVV Gaussian — equivalence
+// ============================================================
+// WHY THIS TEST MATTERS:
+// This is the core RVV correctness test. It runs the scalar
+// Gaussian and the RVV Gaussian on the SAME input image and
+// compares the interior pixels (the RVV version only processes
+// interior pixels — borders are untouched/zero).
+// Allow ±1 tolerance for rounding differences between the
+// scalar integer division and the RVV fixed-point division.
+// ============================================================
+static void test_gaussian_scalar_vs_rvv() {
+    printf("\n[RVV] Gaussian scalar vs RVV equivalence\n");
+
+    // Non-power-of-two dimensions force the strip-mining tail case
+    const size_t W = 100, H = 75;
+    const size_t N = W * H;
+    const int radius = 2;
+
+    uint8_t* in        = (uint8_t*)aligned_alloc(64, N);
+    uint8_t* out_scalar = (uint8_t*)aligned_alloc(64, N);
+    uint8_t* out_rvv    = (uint8_t*)aligned_alloc(64, N);
+
+    memset(out_scalar, 0, N);
+    memset(out_rvv, 0, N);
+
+    fill_random(in, N, 123);
+
+    canny::gaussian_blur_5x5(in, out_scalar, W, H);
+    canny::gaussian_blur_5x5_rvv(in, out_rvv, W, H);
+
+    // Compare interior pixels only (RVV version skips the border)
+    int mismatches = 0;
+    for (size_t y = radius; y < H - radius; y++) {
+        for (size_t x = radius; x < W - radius; x++) {
+            size_t idx = y * W + x;
+            int diff = (int)out_scalar[idx] - (int)out_rvv[idx];
+            if (diff < 0) diff = -diff;
+            if (diff > 1) mismatches++;
+        }
+    }
+
+    ASSERT_EQ(mismatches, 0, "gaussian_scalar_vs_rvv_interior");
+
+    free(in); free(out_scalar); free(out_rvv);
+}
 static void test_tail_case_sizes() {
     printf("\n[Tail] Non-multiple-of-VLEN image sizes\n");
 
@@ -523,6 +569,7 @@ int main() {
     test_direction_diagonal();
     test_full_pipeline_equivalence();
     test_tail_case_sizes();
+    test_gaussian_scalar_vs_rvv();
 
     printf("\n===========================================\n");
     printf("  Results: %d passed, %d failed\n", g_passed, g_failed);
