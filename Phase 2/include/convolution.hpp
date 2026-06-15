@@ -5,9 +5,9 @@
 namespace canny {
 
 // Generic 2D convolution template
-// PixelT  = نوع الـ pixel  (uint8_t للصور)
-// AccumT  = نوع الـ accumulator (int32_t عشان متتجاوزش)
-// KernelT = نوع الـ kernel weights (int16_t)
+// PixelT  = Pixel type (uint8_t for images)
+// AccumT  = Accumulator type (int32_t to prevent overflow)
+// KernelT = Kernel weights type (int16_t)
 
 template<typename PixelT, typename AccumT, typename KernelT>
 void convolve(

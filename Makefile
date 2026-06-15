@@ -22,7 +22,7 @@ run: $(TARGET)
 	qemu-riscv64 -cpu rv64,v=true,vlen=512 ./$(TARGET) Input_Images/input.raw 256 256 Output_Images/output_512.raw
 
 clean:
-	rm -f $(TARGET) runTests visual_pipeline
+	rm -f $(TARGET) runTests visual_pipeline qemu_eq_test
 	rm -f Output_Images/*.raw
 	rm -f output_gaussian.raw output_sobel_gx.raw output_sobel_gy.raw \
 	      output_magnitude_l1.raw output_direction.raw \
