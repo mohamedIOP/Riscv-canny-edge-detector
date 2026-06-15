@@ -506,6 +506,35 @@ static void test_gaussian_scalar_vs_rvv() {
     ASSERT_EQ(mismatches, 0, "gaussian_scalar_vs_rvv_interior");
 
     free(in); free(out_scalar); free(out_rvv);
+
+}
+// ============================================================
+// Test 15: Scalar vs RVV Magnitude L1 — equivalence
+// ============================================================
+static void test_magnitude_scalar_vs_rvv() {
+    printf("\n[RVV] Magnitude L1 scalar vs RVV equivalence\n");
+
+    const size_t W = 100, H = 75;
+    const size_t N = W * H;
+
+    int16_t* gx = (int16_t*)aligned_alloc(64, N * sizeof(int16_t));
+    int16_t* gy = (int16_t*)aligned_alloc(64, N * sizeof(int16_t));
+    uint8_t* mag_scalar = (uint8_t*)aligned_alloc(64, N);
+    uint8_t* mag_rvv    = (uint8_t*)aligned_alloc(64, N);
+
+    // generate pseudo-random gradients in range [-300, 300]
+    for (size_t i = 0; i < N; i++) {
+        gx[i] = (int16_t)((int)(i * 37 % 601) - 300);
+        gy[i] = (int16_t)((int)(i * 53 % 601) - 300);
+    }
+
+    canny::magnitude_l1(gx, gy, mag_scalar, W, H);
+    canny::magnitude_l1_rvv(gx, gy, mag_rvv, W, H);
+
+    int mismatches = compare_buffers_u8(mag_scalar, mag_rvv, N, 1);
+    ASSERT_EQ(mismatches, 0, "magnitude_scalar_vs_rvv");
+
+    free(gx); free(gy); free(mag_scalar); free(mag_rvv);
 }
 static void test_tail_case_sizes() {
     printf("\n[Tail] Non-multiple-of-VLEN image sizes\n");
@@ -570,6 +599,7 @@ int main() {
     test_full_pipeline_equivalence();
     test_tail_case_sizes();
     test_gaussian_scalar_vs_rvv();
+    test_magnitude_scalar_vs_rvv();
 
     printf("\n===========================================\n");
     printf("  Results: %d passed, %d failed\n", g_passed, g_failed);
