@@ -2,68 +2,76 @@
 
 ## Overview
 
-This experiment compares two LMUL configurations for the RVV Gaussian 5x5
-convolution kernel:
+This experiment compares three LMUL configurations for the RVV Gaussian 5x5
+convolution kernel, varying the LMUL used for the pixel load (and therefore
+the widened intermediates and final accumulator, since the widening chain
+uint8 -> int16 -> int32 doubles LMUL at each step):
 
-- **LMUL=2**: pixels loaded as `vuint8mf2_t`, widened through `vuint16m1_t` /
-  `vint16m1_t`, accumulated in `vint32m2_t`.
-- **LMUL=4**: pixels loaded as `vuint8m1_t`, widened through `vuint16m2_t` /
-  `vint16m2_t`, accumulated in `vint32m4_t`.
+| Configuration | Pixel load | Widened (int16) | Accumulator (int32) |
+|----------------|------------|------------------|----------------------|
+| LMUL=1         | `vuint8mf4_t`  | `vint16mf2_t` | `vint32m1_t` |
+| LMUL=2         | `vuint8mf2_t`  | `vint16m1_t`  | `vint32m2_t` |
+| LMUL=4         | `vuint8m1_t`   | `vint16m2_t`  | `vint32m4_t` |
 
-The widening chain doubles LMUL at each step (8-bit -> 16-bit -> 32-bit), so
-choosing a larger base LMUL for the pixel load processes more elements per
-`vsetvl` iteration, at the cost of using more physical vector registers per
-logical variable.
+A larger base LMUL processes more elements per vsetvl iteration, at the
+cost of using more physical vector registers per logical variable.
 
 ## Methodology
 
 - Image size: 256x256, interior pixels only (5x5 kernel, radius=2).
-- Timing via `clock()` (bare-metal Newlib does not support
-  `clock_gettime`/`CLOCK_MONOTONIC`).
+- Timing via clock() (bare-metal Newlib does not support
+  clock_gettime/CLOCK_MONOTONIC).
 - 100 iterations per configuration for stable measurement.
 - QEMU user-mode is not cycle-accurate, so absolute timings are not
-  meaningful — only relative comparisons (LMUL=2 vs LMUL=4, across VLEN)
-  are valid, since they reflect actual instruction count differences.
+  meaningful — only relative comparisons (across LMUL, across VLEN) are
+  valid, since they reflect actual instruction count differences.
 
 ## Results
 
-| VLEN | LMUL=2 (sec/iter) | LMUL=4 (sec/iter) | Speedup (LMUL=4 vs LMUL=2) |
-|------|-------------------|-------------------|----------------------------|
-| 128  | 0.034142          | 0.021756          | ~36% faster                |
-| 256  | 0.021181          | 0.015424          | ~27% faster                |
-| 512  | 0.015746          | 0.013631          | ~13% faster                |
+| VLEN | LMUL=1 (sec/iter) | LMUL=2 (sec/iter) | LMUL=4 (sec/iter) |
+|------|-------------------|-------------------|-------------------|
+| 128  | 0.063127          | 0.033771          | 0.020792          |
+| 256  | 0.035032          | 0.021063          | 0.015420          |
+| 512  | 0.021328          | 0.015266          | 0.013641          |
+
+### Relative speedup vs LMUL=1
+
+| VLEN | LMUL=2 vs LMUL=1 | LMUL=4 vs LMUL=1 |
+|------|------------------|------------------|
+| 128  | ~1.87x faster    | ~3.04x faster    |
+| 256  | ~1.66x faster    | ~2.27x faster    |
+| 512  | ~1.40x faster    | ~1.56x faster    |
 
 ## Discussion
 
-**LMUL=4 is faster at every VLEN tested.** The Gaussian kernel uses very few
-distinct vector variables (pixel load, widened intermediates, accumulator,
-result) — well within the register budget even at LMUL=4 (8 logical
-registers available). No register spilling was observed, so the larger LMUL
-simply means fewer `vsetvl` iterations and less per-iteration loop overhead
-(pointer arithmetic, branch, vl computation) for the same total amount of
-work.
+**Higher LMUL is faster at every VLEN tested, with no sign of regression.**
+The Gaussian kernel uses very few distinct vector variables per kernel-loop
+iteration (pixel load, two widening stages, multiply term, accumulator) —
+even at LMUL=4 this stays well within the available register budget (8
+logical registers at LMUL=4, vs 32 at LMUL=1). No register spilling was
+observed at any tested configuration.
 
-**The speedup shrinks as VLEN grows.** At VLEN=128, LMUL=4 processes roughly
-twice the elements per iteration compared to LMUL=2, which significantly
-reduces loop overhead relative to useful work. At VLEN=512, each `vsetvl`
-call already processes a large chunk of the row, so the *relative* overhead
-of extra iterations at LMUL=2 is smaller to begin with — there is less
-overhead left to eliminate by going to LMUL=4.
+**The speedup from higher LMUL shrinks as VLEN grows.** At VLEN=128, going
+from LMUL=1 to LMUL=4 processes roughly 4x the elements per vsetvl
+iteration, which eliminates most of the per-iteration loop overhead.
+At VLEN=512, each vsetvl call already processes a large chunk of the row
+even at LMUL=1, so there is less relative overhead left — the gains compress
+from ~3.0x down to ~1.6x.
 
-**Why we did not test LMUL=1 or LMUL=8:**
-- LMUL=1 for the pixel load would require an LMUL=2 accumulator after the
-  uint8->int32 widening chain (matching our original "LMUL=2" config — this
-  is actually the baseline, not a separate lower point).
-- LMUL=8 for the int32 accumulator is the architectural maximum and was not
-  tested due to time constraints, but is expected to show diminishing or
-  negative returns once the 8 kernel-loop temporaries (pixel load, two
-  widening stages, multiply term, accumulator) begin to compete for the 4
-  logical registers available at LMUL=8 — likely causing spills.
+**LMUL=1 is dramatically slower at small VLEN.** At VLEN=128, LMUL=1
+processes very few elements per iteration. The fixed per-iteration overhead
+dominates the useful work, explaining why LMUL=1 is ~3x slower than LMUL=4.
+
+**Why we did not test LMUL=8:**
+With 5 distinct vector variables alive simultaneously in the inner kernel
+loop, LMUL=8 would very likely cause register spilling (only 4 logical
+registers available), which would negate the speedup trend. Not tested due
+to time constraints but is a natural follow-up.
 
 ## Conclusion
 
-For this kernel's register usage profile, **LMUL=4 is the sweet spot** among
-the configurations tested. It consistently outperforms LMUL=2 across all
-VLEN values without triggering register pressure issues, and the gain is
-most pronounced on smaller VLEN hardware where loop overhead is a larger
-fraction of total work.
+**LMUL=4 is the sweet spot** among the configurations tested. It consistently
+outperforms both LMUL=1 and LMUL=2 across all VLEN values without triggering
+register pressure issues. The benefit is most pronounced on smaller-VLEN
+hardware (3x speedup over LMUL=1 at VLEN=128) — exactly the kind of embedded
+target this project is designed for.
