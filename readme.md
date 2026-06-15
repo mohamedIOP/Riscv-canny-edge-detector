@@ -157,6 +157,28 @@ python3 view_image.py Output_Images/output_gaussian.raw 256 256
 
 ---
 
+## ✅ Correctness Verification (OpenCV Reference)
+
+`reference_opencv.py` is an independent reference implementation of every scalar
+stage using OpenCV / NumPy. It re-derives Gaussian, Sobel, L1/L2 magnitude, and
+direction from the same input and compares them against the pipeline's `.raw`
+outputs, printing a per-stage PASS/FAIL table (max / mean / exact% / within-tol%).
+
+```bash
+pip3 install opencv-python-headless numpy --break-system-packages
+# after `make run` has populated Output_Images/:
+python3 reference_opencv.py Input_Images/input.raw 256 256
+```
+
+It uses two references on purpose: a **faithful** one (the project's exact
+integer `/273` Gaussian kernel + `cv2.Sobel`, zero-padded) which must match the
+pipeline to within ±1 LSB and is the PASS/FAIL gate, and an **informational**
+`cv2.GaussianBlur(sigma=1.0)` library reference (different float kernel, reported
+but never fails the build). Reference images and amplified difference heatmaps
+are written to `Reference_Images/`. The script returns a non-zero exit code on
+mismatch, so it can be dropped straight into CI. Options: `--tol`, `--outdir`,
+`--refdir`, `--l2`, `--no-save`, `--no-diff`, `--quiet`.
+
 ## 🖼️ Visual Pipeline (Native Host)
 
 Run the pipeline natively on your PC (no QEMU needed) for fast visual debugging:
