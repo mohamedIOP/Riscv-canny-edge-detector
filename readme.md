@@ -115,8 +115,9 @@ make
 ```bash
 make run
 ```
-This runs the complete Canny pipeline at **VLEN=128, 256, and 512** and saves
-all stage outputs to `Output_Images/`:
+This runs the complete Canny pipeline at **VLEN=128, 256, and 512**, prints a
+**per-stage timing report** (100 iterations for stability), and saves all stage
+outputs to `Output_Images/`.
 
 | Output file | Contents |
 |---|---|
@@ -156,6 +157,28 @@ python3 view_image.py Output_Images/output_gaussian.raw 256 256
 
 ---
 
+## ✅ Correctness Verification (OpenCV Reference)
+
+`reference_opencv.py` is an independent reference implementation of every scalar
+stage using OpenCV / NumPy. It re-derives Gaussian, Sobel, L1/L2 magnitude, and
+direction from the same input and compares them against the pipeline's `.raw`
+outputs, printing a per-stage PASS/FAIL table (max / mean / exact% / within-tol%).
+
+```bash
+pip3 install opencv-python-headless numpy --break-system-packages
+# after `make run` has populated Output_Images/:
+python3 reference_opencv.py Input_Images/input.raw 256 256
+```
+
+It uses two references on purpose: a **faithful** one (the project's exact
+integer `/273` Gaussian kernel + `cv2.Sobel`, zero-padded) which must match the
+pipeline to within ±1 LSB and is the PASS/FAIL gate, and an **informational**
+`cv2.GaussianBlur(sigma=1.0)` library reference (different float kernel, reported
+but never fails the build). Reference images and amplified difference heatmaps
+are written to `Reference_Images/`. The script returns a non-zero exit code on
+mismatch, so it can be dropped straight into CI. Options: `--tol`, `--outdir`,
+`--refdir`, `--l2`, `--no-save`, `--no-diff`, `--quiet`.
+
 ## 🖼️ Visual Pipeline (Native Host)
 
 Run the pipeline natively on your PC (no QEMU needed) for fast visual debugging:
@@ -175,33 +198,68 @@ GoogleTest runs natively on the host. All pipeline stages are tested for
 correctness (uniform image invariant, impulse response, edge direction, magnitude).
 
 ---
+## ⏱️ Profiling and Optimization
 
+Run the compiler flag sweep to measure performance at each optimization level:
+```bash
+make sweep      # builds binaries at -O0, -O2, -O3, -Os, -Ofast
+make run_sweep  # runs each binary and prints per-stage timing
+```
+
+Results are saved in `docs/optimization_results.md`.
+
+To reproduce the auto-vectorization analysis:
+```bash
+riscv64-unknown-elf-g++ -static -march=rv64gcv -mabi=lp64d -O3 -std=c++17 \
+    -I"Phase 2/include" -fopt-info-vec-all \
+    main.cpp "Phase 2"/src/*.cpp -o canny_vec_report 2>&1 | tee vec_report.txt
+
+riscv64-unknown-elf-objdump -d canny_vec_report | grep -c "vset"
+```
+---
 ## 📁 Project Structure
 
 ```
 .
-├── main.cpp                  # RISC-V entry point — full pipeline
-├── visual_pipeline.cpp       # Native host pipeline for visualization
-├── Makefile                  # Dual-target: RISC-V + host
-├── generate_image.py         # Generates 256×256 synthetic test image
-├── convert_image.py          # Converts any photo to raw grayscale
-├── view_image.py             # Visualizes raw output files
+├── main.cpp                      # RISC-V entry point — full pipeline + profiling
+├── visual_pipeline.cpp           # Native host pipeline for visualization
+├── Makefile                      # Dual-target: RISC-V + host, compiler sweep
+├── generate_image.py             # Generates 256×256 synthetic test image
+├── convert_image.py              # Converts any photo to raw grayscale
+├── view_image.py                 # Visualizes raw output files
+├── src/
+│   ├── pipeline.cpp              # Generic 2D convolution template
+│   ├── pipeline.hpp              # Convolution template interface
+│   └── profiler.hpp              # Per-stage timing harness (clock_gettime)
 ├── Phase 2/
-│   ├── include/              # Header files (gaussian, sobel, magnitude, direction)
-│   └── src/                  # Scalar C++ implementations
+│   ├── include/                  # Headers: gaussian, sobel, magnitude, direction, convolution
+│   └── src/                     # Scalar C++ implementations
 ├── tests/
-│   └── test_pipeline.cpp     # GoogleTest unit tests
-├── Input_Images/             # Input raw images (not committed)
-└── Output_Images/            # Pipeline outputs (not committed)
+│   ├── test_pipeline.cpp         # GoogleTest unit tests (host-side)
+│   └── qemu_equivalence_test.cpp # QEMU-side equivalence tests at VLEN 128/256/512
+├── docs/
+│   └── optimization_results.md  # Profiling data, flag sweep, auto-vec, RVV results
+├── vec_report.txt                # Raw auto-vectorization compiler output
+├── Input_Images/                 # Input raw images (not committed)
+└── Output_Images/                # Pipeline outputs (not committed)
 ```
 ---
+## 📊 Optimization Results
+
+Profiling data, compiler flag sweep timings, and binary sizes are documented in
+`docs/optimization_results.md`. This file will be updated as RVV intrinsic
+implementations are completed.
 
 ## 🎯 Makefile Targets
 
 | Command | Description |
 |---|---|
-| `make` | Build RISC-V binary |
-| `make run` | Run pipeline on QEMU at VLEN 128, 256, 512 |
+| `make` | Build RISC-V binary at -O2 (fastest per our profiling sweep) |
+| `make run` | Run full pipeline on QEMU at VLEN 128, 256, 512 with per-stage timing |
 | `make test` | Run GoogleTest suite natively |
+| `make test_qemu` | Run QEMU equivalence tests at VLEN 128, 256, 512 |
 | `make visual` | Build native host pipeline binary |
-| `make clean` | Remove binary, runTests, visual_pipeline, and all output .raw files |
+| `make sweep` | Build binaries at -O0, -O2, -O3, -Os, -Ofast and print sizes |
+| `make run_sweep` | Run timing measurements at all optimization levels |
+| `make qemu_eq_test` | Build QEMU equivalence test binary |
+| `make clean` | Remove all binaries and output .raw files |
