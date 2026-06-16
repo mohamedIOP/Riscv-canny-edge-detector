@@ -136,3 +136,27 @@ separable:
 	"Phase 2/src/separable_experiment.cpp" \
 	"Phase 2/src/gaussian.cpp" \
 	-o /tmp/separable_exp && /tmp/separable_exp
+
+prepad_experiment:
+	g++ -std=c++17 -O3 -ftree-vectorize -fopt-info-vec-all \
+	-I"Phase 2/include" \
+	"Phase 2/src/prepad_experiment.cpp" \
+	"Phase 2/src/gaussian.cpp" \
+	-o /tmp/prepad_exp 2>prepad_vec_report.txt
+	/tmp/prepad_exp
+	@echo "--- Vectorized loops ---"
+	@grep "optimized: loop vectorized" prepad_vec_report.txt || echo "(none)"
+
+separable_autovec:
+	g++ -std=c++17 -O3 -ftree-vectorize -fopt-info-vec-all \
+	-I"Phase 2/include" \
+	"Phase 2/src/separable_autovec_analysis.cpp" \
+	"Phase 2/src/gaussian.cpp" \
+	-o /tmp/sep_av 2>separable_vec_report.txt
+	/tmp/sep_av
+	@echo "--- Vectorized loops ---"
+	@grep "optimized: loop vectorized" separable_vec_report.txt || echo "(none)"
+
+autovec_investigation: prepad_experiment separable_autovec
+	@echo "=== Investigation complete ==="
+	@echo "See prepad_vec_report.txt and separable_vec_report.txt"	
