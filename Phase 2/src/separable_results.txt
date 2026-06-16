@@ -1,0 +1,9 @@
+Separable Filter Experiment Results
+Image: 256x256, Iterations: 100, Flag: -O3
+
+2D 5x5      : 0.8056 ms/iter
+Separable   : 0.1383 ms/iter
+Speedup     : 5.83x
+
+Max pixel diff : 3
+Pixels > 2 diff: 36 / 65536

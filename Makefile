@@ -12,7 +12,6 @@ $(TARGET): main.cpp
 		"Phase 2"/src/direction.cpp \
 		-o $(TARGET)
 
-# Run at all three VLEN values to verify vector-length-agnostic correctness
 run: $(TARGET)
 	@echo "=== VLEN=128 ==="
 	qemu-riscv64 -cpu rv64,v=true,vlen=128 ./$(TARGET) Input_Images/input.raw 256 256 Output_Images/output_128.raw
@@ -20,7 +19,7 @@ run: $(TARGET)
 	qemu-riscv64 -cpu rv64,v=true,vlen=256 ./$(TARGET) Input_Images/input.raw 256 256 Output_Images/output_256.raw
 	@echo "=== VLEN=512 ==="
 	qemu-riscv64 -cpu rv64,v=true,vlen=512 ./$(TARGET) Input_Images/input.raw 256 256 Output_Images/output_512.raw
-# ── Compiler flag sweep ──────────────────────────────────────
+
 sweep:
 	@echo "=== Building at all optimization levels ==="
 	@echo "--- O0 ---"
@@ -82,6 +81,7 @@ run_sweep: sweep
 	@echo "=== Timing at Ofast ==="
 	$(QEMU) -cpu $(QEMU_CPU),vlen=256 ./canny_Ofast \
 		Input_Images/input.raw 256 256 Output_Images/output_Ofast.raw
+
 clean:
 	rm -f $(TARGET) runTests visual_pipeline qemu_eq_test
 	rm -f canny_O0 canny_O2 canny_O3 canny_Os canny_Ofast
@@ -102,6 +102,7 @@ test:
 	-lgtest -lgtest_main -pthread \
 	-o runTests
 	./runTests
+
 visual:
 	g++ -std=c++17 -I"Phase 2/include" -I"Phase 2/src" visual_pipeline.cpp \
 	"Phase 2"/src/gaussian.cpp \
@@ -109,6 +110,7 @@ visual:
 	"Phase 2"/src/magnitude.cpp \
 	"Phase 2"/src/direction.cpp \
 	-o visual_pipeline
+
 QEMU = qemu-riscv64
 QEMU_CPU = rv64,v=true
 
@@ -127,3 +129,10 @@ qemu_eq_test:
 	$(QEMU) -cpu $(QEMU_CPU),vlen=256 ./qemu_eq_test
 	@echo "--- VLEN=512 ---"
 	$(QEMU) -cpu $(QEMU_CPU),vlen=512 ./qemu_eq_test
+
+separable:
+	g++ -std=c++17 -O3 \
+	-I"Phase 2/include" \
+	"Phase 2/src/separable_experiment.cpp" \
+	"Phase 2/src/gaussian.cpp" \
+	-o /tmp/separable_exp && /tmp/separable_exp
