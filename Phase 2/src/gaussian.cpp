@@ -1,4 +1,7 @@
 #include "../include/gaussian.hpp"
+#ifdef __riscv
+#include <riscv_vector.h>
+#endif
 #include "../include/convolution.hpp"
 #include <cstdlib>
 
@@ -72,5 +75,44 @@ void gaussian_blur_5x5_separable(const uint8_t* in, uint8_t* out,
 
     free(temp);
 }
+#ifdef __riscv
+// RVV (vectorized) Gaussian blur — interior pixels only.
+void gaussian_blur_5x5_rvv(const uint8_t* in, uint8_t* out,
+                            size_t width, size_t height) {
+    const int radius = 2;
+    const int16_t normalizer = 273;
 
+    for (size_t y = radius; y < height - radius; y++) {
+        for (size_t x = radius; x < width - radius; ) {
+            size_t remaining = (width - radius) - x;
+            size_t vl = __riscv_vsetvl_e16m1(remaining);
+
+            vint32m2_t sum = __riscv_vmv_v_x_i32m2(0, vl);
+
+            for (int ky = -radius; ky <= radius; ky++) {
+                for (int kx = -radius; kx <= radius; kx++) {
+                    int16_t coeff = GAUSSIAN_5X5[(ky + radius) * 5 + (kx + radius)];
+                    size_t offset = (y + ky) * width + (x + kx);
+
+                    vuint8mf2_t pixels_u8 = __riscv_vle8_v_u8mf2(&in[offset], vl);
+                    vuint16m1_t pixels_u16 = __riscv_vwcvtu_x_x_v_u16m1(pixels_u8, vl);
+                    vint16m1_t pixels_i16 = __riscv_vreinterpret_v_u16m1_i16m1(pixels_u16);
+                    vint32m2_t pixels_i32 = __riscv_vwcvt_x_x_v_i32m2(pixels_i16, vl);
+                    vint32m2_t term = __riscv_vmul_vx_i32m2(pixels_i32, (int32_t)coeff, vl);
+
+                    sum = __riscv_vadd_vv_i32m2(sum, term, vl);
+                }
+            }
+
+            vint32m2_t result32 = __riscv_vdiv_vx_i32m2(sum, normalizer, vl);
+            vint16m1_t result16 = __riscv_vnclip_wx_i16m1(result32, 0, __RISCV_VXRM_RNU, vl);
+            vuint8mf2_t out_u8 = __riscv_vnclipu_wx_u8mf2(
+                __riscv_vreinterpret_v_i16m1_u16m1(result16), 0, __RISCV_VXRM_RNU, vl);
+
+            __riscv_vse8_v_u8mf2(&out[y * width + x], out_u8, vl);
+            x += vl;
+        }
+    }
+}
+#endif
 } // namespace canny

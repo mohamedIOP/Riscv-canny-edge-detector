@@ -160,3 +160,5 @@ separable_autovec:
 autovec_investigation: prepad_experiment separable_autovec
 	@echo "=== Investigation complete ==="
 	@echo "See prepad_vec_report.txt and separable_vec_report.txt"	
+
+test_qemu: qemu_eq_test

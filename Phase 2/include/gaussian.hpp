@@ -20,6 +20,13 @@ void gaussian_blur_5x5(const uint8_t* in, uint8_t* out,
 void gaussian_blur_5x5_separable(const uint8_t* in, uint8_t* out,
                                   size_t width, size_t height);
 
+// RVV (vectorized) version. Processes interior pixels only —
+// the caller must copy/zero the 2-pixel border separately if needed.
+#ifdef __riscv
+void gaussian_blur_5x5_rvv(const uint8_t* in, uint8_t* out,
+                           size_t width, size_t height);
+#endif
+
 }  // namespace canny
 
 #endif
