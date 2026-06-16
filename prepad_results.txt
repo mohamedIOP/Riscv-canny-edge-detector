@@ -1,0 +1,21 @@
+g++ -std=c++17 -O3 -ftree-vectorize -fopt-info-vec-all \
+-I"Phase 2/include" \
+"Phase 2/src/prepad_experiment.cpp" \
+"Phase 2/src/gaussian.cpp" \
+-o /tmp/prepad_exp 2>prepad_vec_report.txt
+/tmp/prepad_exp
+=== Pre-Padding Auto-Vectorization Experiment ===
+Image: 256x256 | Iterations: 100
+
+Standard Gaussian (with boundary check) : 0.7577 ms/iter
+Pre-padded Gaussian (no boundary check) : 0.0840 ms/iter
+Speedup                                 : 9.02x
+
+Pixel mismatches (tol=0): 0
+PASS: pixel-identical to reference
+
+Memory overhead: 2064 bytes
+--- Vectorized loops ---
+Phase 2/src/prepad_experiment.cpp:80:26: optimized: loop vectorized using 16 byte vectors
+Phase 2/src/prepad_experiment.cpp:65:27: optimized: loop vectorized using 16 byte vectors
+Phase 2/src/prepad_experiment.cpp:95:26: optimized: loop vectorized using 16 byte vectors

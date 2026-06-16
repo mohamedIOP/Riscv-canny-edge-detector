@@ -1,0 +1,71 @@
+Phase 2/src/prepad_experiment.cpp:44:18: missed: statement clobbers memory: clock_gettime (1, &ts);
+Phase 2/src/prepad_experiment.cpp:45:46: note: ***** Analysis failed with vector mode V2DI
+Phase 2/src/prepad_experiment.cpp:45:46: note: ***** Skipping vector mode V16QI, which would repeat the analysis for V2DI
+Phase 2/src/prepad_experiment.cpp:80:26: optimized: loop vectorized using 16 byte vectors
+Phase 2/src/prepad_experiment.cpp:108:23: missed: couldn't vectorize loop
+Phase 2/src/prepad_experiment.cpp:108:23: missed: not vectorized: multiple nested loops.
+Phase 2/src/prepad_experiment.cpp:64:23: missed: couldn't vectorize loop
+Phase 2/src/prepad_experiment.cpp:73:28: missed: not vectorized: complicated access pattern.
+Phase 2/src/prepad_experiment.cpp:65:27: optimized: loop vectorized using 16 byte vectors
+Phase 2/src/prepad_experiment.cpp:102:23: missed: couldn't vectorize loop
+Phase 2/src/prepad_experiment.cpp:103:33: missed: statement clobbers memory: canny::gaussian_blur_5x5 (input_20, out_ref_22, 256, 256);
+Phase 2/src/prepad_experiment.cpp:53:23: missed: couldn't vectorize loop
+/usr/include/x86_64-linux-gnu/bits/string_fortified.h:29:33: missed: statement clobbers memory: __builtin_memcpy (_85, _80, 256);
+Phase 2/src/prepad_experiment.cpp:95:26: optimized: loop vectorized using 16 byte vectors
+Phase 2/src/prepad_experiment.cpp:88:5: note: vectorized 3 loops in function.
+Phase 2/src/prepad_experiment.cpp:91:50: missed: statement clobbers memory: input_20 = aligned_alloc (64, 65536);
+Phase 2/src/prepad_experiment.cpp:92:50: missed: statement clobbers memory: out_ref_22 = aligned_alloc (64, 65536);
+Phase 2/src/prepad_experiment.cpp:93:50: missed: statement clobbers memory: out_prepad_24 = aligned_alloc (64, 65536);
+Phase 2/src/prepad_experiment.cpp:51:43: missed: statement clobbers memory: pad_74 = aligned_alloc (64, 67600);
+/usr/include/x86_64-linux-gnu/bits/string_fortified.h:59:33: missed: statement clobbers memory: __builtin_memset (pad_74, 0, 67600);
+/usr/include/x86_64-linux-gnu/bits/string_fortified.h:29:33: missed: statement clobbers memory: __builtin_memcpy (_85, _80, 256);
+Phase 2/src/prepad_experiment.cpp:101:26: missed: statement clobbers memory: start_28 = now_ms ();
+Phase 2/src/prepad_experiment.cpp:103:33: missed: statement clobbers memory: canny::gaussian_blur_5x5 (input_20, out_ref_22, 256, 256);
+Phase 2/src/prepad_experiment.cpp:104:30: missed: statement clobbers memory: _5 = now_ms ();
+Phase 2/src/prepad_experiment.cpp:107:19: missed: statement clobbers memory: start_32 = now_ms ();
+Phase 2/src/prepad_experiment.cpp:110:33: missed: statement clobbers memory: _7 = now_ms ();
+/usr/include/x86_64-linux-gnu/bits/stdio2.h:86:23: missed: statement clobbers memory: __printf_chk (2, "=== Pre-Padding Auto-Vectorization Experiment ===\n");
+/usr/include/x86_64-linux-gnu/bits/stdio2.h:86:23: missed: statement clobbers memory: __printf_chk (2, "Image: %dx%d | Iterations: %d\n\n", 256, 256, 100);
+/usr/include/x86_64-linux-gnu/bits/stdio2.h:86:23: missed: statement clobbers memory: __printf_chk (2, "Standard Gaussian (with boundary check) : %.4f ms/iter\n", time_ref_30);
+/usr/include/x86_64-linux-gnu/bits/stdio2.h:86:23: missed: statement clobbers memory: __printf_chk (2, "Pre-padded Gaussian (no boundary check) : %.4f ms/iter\n", time_prepad_35);
+/usr/include/x86_64-linux-gnu/bits/stdio2.h:86:23: missed: statement clobbers memory: __printf_chk (2, "Speedup                                 : %.2fx\n\n", _9);
+/usr/include/x86_64-linux-gnu/bits/stdio2.h:86:23: missed: statement clobbers memory: __printf_chk (2, "Pixel mismatches (tol=0): %d\n", stmp__1118.45_1023);
+/usr/include/x86_64-linux-gnu/bits/stdio2.h:86:23: missed: statement clobbers memory: __printf_chk (2, "%s\n", iftmp.0_14);
+/usr/include/x86_64-linux-gnu/bits/stdio2.h:86:23: missed: statement clobbers memory: __printf_chk (2, "\nMemory overhead: %zu bytes\n", 2064);
+Phase 2/src/prepad_experiment.cpp:123:9: missed: statement clobbers memory: free (input_20);
+Phase 2/src/prepad_experiment.cpp:123:22: missed: statement clobbers memory: free (out_ref_22);
+Phase 2/src/prepad_experiment.cpp:123:37: missed: statement clobbers memory: free (out_prepad_24);
+Phase 2/src/prepad_experiment.cpp:123:55: missed: statement clobbers memory: free (pad_74);
+Phase 2/src/prepad_experiment.cpp:124:36: note: ***** Analysis failed with vector mode VOID
+Phase 2/src/../include/convolution.hpp:24:23: missed: couldn't vectorize loop
+Phase 2/src/../include/convolution.hpp:24:23: missed: not vectorized: loop nest containing two or more consecutive inner loops cannot be vectorized
+Phase 2/src/../include/convolution.hpp:25:27: missed: couldn't vectorize loop
+Phase 2/src/../include/convolution.hpp:25:27: missed: not vectorized: control flow in loop.
+Phase 2/src/gaussian.cpp:16:6: note: vectorized 0 loops in function.
+Phase 2/src/../include/convolution.hpp:34:58: note: ***** Analysis failed with vector mode V16QI
+Phase 2/src/../include/convolution.hpp:34:58: note: ***** The result for vector mode V16QI would be the same
+Phase 2/src/../include/convolution.hpp:34:58: note: ***** Re-trying analysis with vector mode V8QI
+Phase 2/src/../include/convolution.hpp:34:58: note: ***** Analysis failed with vector mode V8QI
+Phase 2/src/../include/convolution.hpp:34:58: note: ***** Re-trying analysis with vector mode V4QI
+Phase 2/src/../include/convolution.hpp:34:58: note: ***** Analysis failed with vector mode V4QI
+Phase 2/src/gaussian.cpp:56:23: missed: couldn't vectorize loop
+Phase 2/src/gaussian.cpp:56:23: missed: not vectorized: loop nest containing two or more consecutive inner loops cannot be vectorized
+Phase 2/src/gaussian.cpp:57:27: missed: couldn't vectorize loop
+Phase 2/src/gaussian.cpp:57:27: missed: not vectorized: control flow in loop.
+Phase 2/src/gaussian.cpp:57:27: missed: couldn't vectorize loop
+Phase 2/src/gaussian.cpp:57:27: missed: not vectorized: control flow in loop.
+Phase 2/src/gaussian.cpp:57:27: missed: couldn't vectorize loop
+Phase 2/src/gaussian.cpp:57:27: missed: not vectorized: control flow in loop.
+Phase 2/src/gaussian.cpp:57:27: missed: couldn't vectorize loop
+Phase 2/src/gaussian.cpp:57:27: missed: not vectorized: control flow in loop.
+Phase 2/src/gaussian.cpp:38:23: missed: couldn't vectorize loop
+Phase 2/src/gaussian.cpp:38:23: missed: not vectorized: loop nest containing two or more consecutive inner loops cannot be vectorized
+Phase 2/src/gaussian.cpp:39:27: missed: couldn't vectorize loop
+Phase 2/src/gaussian.cpp:39:27: missed: not vectorized: control flow in loop.
+Phase 2/src/gaussian.cpp:39:27: missed: couldn't vectorize loop
+Phase 2/src/gaussian.cpp:39:27: missed: not vectorized: control flow in loop.
+Phase 2/src/gaussian.cpp:30:6: note: vectorized 0 loops in function.
+Phase 2/src/gaussian.cpp:35:44: missed: statement clobbers memory: temp_58 = aligned_alloc (64, _1);
+Phase 2/src/gaussian.cpp:73:9: missed: statement clobbers memory: free (temp_58);
+Phase 2/src/gaussian.cpp:74:1: note: ***** Analysis failed with vector mode V16QI
+Phase 2/src/gaussian.cpp:74:1: note: ***** Skipping vector mode V16QI, which would repeat the analysis for V16QI

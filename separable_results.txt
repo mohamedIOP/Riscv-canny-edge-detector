@@ -1,0 +1,31 @@
+g++ -std=c++17 -O3 -ftree-vectorize -fopt-info-vec-all \
+-I"Phase 2/include" \
+"Phase 2/src/separable_autovec_analysis.cpp" \
+"Phase 2/src/gaussian.cpp" \
+-o /tmp/sep_av 2>separable_vec_report.txt
+/tmp/sep_av
+=== Separable Auto-Vectorization Analysis ===
+Image: 256x256 | Iterations: 100
+
+| Version                              | ms/iter | Speedup | Mismatches |
+|--------------------------------------|---------|---------|------------|
+| A: 2D 5x5 (2 blockers)              |  0.5298 |  1.00x  |          0 |
+| B: Separable + boundary check        |  0.1759 |  3.01x  |         10 |
+| C: Separable + no check (interior)  |  0.0611 |  8.67x  |         10 |
+
+Conclusion:
+  Separable alone (B): fixes nested-loops blocker, boundary check still blocks
+  Both fixes (C)     : fully unblocks auto-vectorization
+  Check separable_vec_report.txt for 'optimized: loop vectorized'
+--- Vectorized loops ---
+Phase 2/src/separable_autovec_analysis.cpp:149:26: optimized: loop vectorized using 16 byte vectors
+Phase 2/src/separable_autovec_analysis.cpp:149:26: optimized: loop vectorized using 16 byte vectors
+Phase 2/src/separable_autovec_analysis.cpp:149:26: optimized: loop vectorized using 16 byte vectors
+Phase 2/src/separable_autovec_analysis.cpp:95:27: optimized: loop vectorized using 16 byte vectors
+Phase 2/src/separable_autovec_analysis.cpp:95:27: optimized: loop vectorized using 16 byte vectors
+Phase 2/src/separable_autovec_analysis.cpp:126:27: optimized: loop vectorized using 16 byte vectors
+Phase 2/src/separable_autovec_analysis.cpp:126:27: optimized: loop vectorized using 8 byte vectors
+Phase 2/src/separable_autovec_analysis.cpp:95:27: optimized: loop vectorized using 16 byte vectors
+Phase 2/src/separable_autovec_analysis.cpp:95:27: optimized: loop vectorized using 16 byte vectors
+Phase 2/src/separable_autovec_analysis.cpp:165:26: optimized: loop vectorized using 16 byte vectors
+/usr/include/x86_64-linux-gnu/bits/stdio2.h:86:23: missed: statement clobbers memory: __printf_chk (2, "  Check separable_vec_report.txt for \'optimized: loop vectorized\'\n");
