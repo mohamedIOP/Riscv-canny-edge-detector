@@ -14,6 +14,12 @@ void magnitude_l1(const int16_t* gx, const int16_t* gy,
 void magnitude_l2(const int16_t* gx, const int16_t* gy,
                   uint8_t* mag_out, size_t width, size_t height);
 
+// RVV (vectorized) version of magnitude_l1.
+#ifdef __riscv
+void magnitude_l1_rvv(const int16_t* gx, const int16_t* gy,
+                      uint8_t* mag_out, size_t width, size_t height);
+#endif
+
 }  // namespace canny
 
 #endif
