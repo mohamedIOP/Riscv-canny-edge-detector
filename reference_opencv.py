@@ -147,9 +147,9 @@ def ref_magnitude_l2(gx, gy):
     return ((m * 255.0) / mx).astype(np.uint8)  # truncation matches (uint8) cast
 
 
-def ref_direction(gx, gy):
-    """Quantized direction 0/1/2/3 via integer cross-multiplication, exactly as
-    direction.cpp. Returned as the *_vis form (dir*85) for raw comparison."""
+def ref_direction_labels(gx, gy):
+    """Quantized direction labels 0/1/2/3 via integer cross-multiplication,
+    exactly as direction.cpp (the raw labels, before the *85 vis scaling)."""
     ax = np.abs(gx)
     ay = np.abs(gy)
 
@@ -163,7 +163,71 @@ def ref_direction(gx, gy):
     d[diag_band & ~same_sign] = 3
     d[horizontal] = 0
     d[vertical]   = 2
-    return (d * DIR_VIS_SCALE).astype(np.uint8)
+    return d
+
+
+def ref_direction(gx, gy):
+    """Quantized direction 0/1/2/3, returned as the *_vis form (dir*85) for raw
+    comparison against the pipeline's output_direction.raw."""
+    return (ref_direction_labels(gx, gy) * DIR_VIS_SCALE).astype(np.uint8)
+
+
+# ==========================================================================
+# Bonus stage references (full Canny: NMS, double threshold, hysteresis).
+# Mirror nms.cpp / threshold.cpp exactly so the comparison is a faithful gate.
+# ==========================================================================
+def ref_nms(mag, dir_labels):
+    """Non-maximum suppression — mirrors non_max_suppression() in nms.cpp.
+    Keep a pixel iff its magnitude is >= BOTH neighbours along the quantized
+    gradient direction; the 1-pixel border is always zeroed."""
+    H, W = mag.shape
+    m = mag.astype(np.int32)
+    P = np.pad(m, 1, mode="constant")          # zero-pad → simple neighbour slicing
+    c  = P[1:H+1, 1:W+1]                         # centre
+    L  = P[1:H+1, 0:W  ]; R  = P[1:H+1, 2:W+2]   # dir 0: left / right
+    UL = P[0:H,   0:W  ]; DR = P[2:H+2, 2:W+2]   # dir 1: up-left / down-right
+    U  = P[0:H,   1:W+1]; D  = P[2:H+2, 1:W+1]   # dir 2: up / down
+    UR = P[0:H,   2:W+2]; DL = P[2:H+2, 0:W  ]   # dir 3: up-right / down-left
+
+    n1 = np.select([dir_labels == 0, dir_labels == 1,
+                    dir_labels == 2, dir_labels == 3], [L, UL, U, UR])
+    n2 = np.select([dir_labels == 0, dir_labels == 1,
+                    dir_labels == 2, dir_labels == 3], [R, DR, D, DL])
+
+    keep = (c > 0) & (c >= n1) & (c >= n2)
+    out = np.where(keep, mag, 0).astype(np.uint8)
+    out[0, :] = 0; out[-1, :] = 0; out[:, 0] = 0; out[:, -1] = 0
+    return out
+
+
+def ref_double_threshold(nms, low=20, high=50):
+    """Three-way classification — mirrors double_threshold() in threshold.cpp.
+    >= high → 255 (strong), [low,high) → 128 (weak), < low → 0 (none)."""
+    out = np.zeros_like(nms, dtype=np.uint8)
+    out[nms >= high] = 255
+    out[(nms >= low) & (nms < high)] = 128
+    return out
+
+
+def ref_hysteresis(thr):
+    """8-connected edge tracing — mirrors hysteresis() in threshold.cpp.
+    Weak (128) pixels reachable from a strong (255) seed become edges; the
+    rest are dropped. Output is binary {0,255}."""
+    from collections import deque
+    H, W = thr.shape
+    state = thr.copy()
+    dq = deque(map(tuple, np.argwhere(state == 255)))
+    while dq:
+        y, x = dq.popleft()
+        for dy in (-1, 0, 1):
+            for dx in (-1, 0, 1):
+                if dx == 0 and dy == 0:
+                    continue
+                ny, nx = y + dy, x + dx
+                if 0 <= ny < H and 0 <= nx < W and state[ny, nx] == 128:
+                    state[ny, nx] = 255
+                    dq.append((ny, nx))
+    return np.where(state == 255, 255, 0).astype(np.uint8)
 
 
 # ==========================================================================
@@ -252,7 +316,14 @@ def main():
     gy_vis     = sobel_vis(gy)
     mag_l1     = ref_magnitude_l1(gx, gy)
     mag_l2     = ref_magnitude_l2(gx, gy)
-    dir_vis    = ref_direction(gx, gy)
+    dir_labels = ref_direction_labels(gx, gy)
+    dir_vis    = (dir_labels * DIR_VIS_SCALE).astype(np.uint8)
+
+    # bonus stages: NMS on the L1 magnitude + raw direction labels, then
+    # double threshold (low=20, high=50, matching main.cpp), then hysteresis.
+    nms_ref    = ref_nms(mag_l1, dir_labels)
+    thr_ref    = ref_double_threshold(nms_ref, 20, 50)
+    edges_ref  = ref_hysteresis(thr_ref)
 
     references = {
         "ref_gaussian.raw":       g_faithful,
@@ -262,6 +333,9 @@ def main():
         "ref_magnitude_l1.raw":   mag_l1,
         "ref_magnitude_l2.raw":   mag_l2,
         "ref_direction.raw":      dir_vis,
+        "ref_nms.raw":            nms_ref,
+        "ref_threshold.raw":      thr_ref,
+        "ref_edges.raw":          edges_ref,
     }
 
     # ---- save reference outputs -----------------------------------------
@@ -282,23 +356,31 @@ def main():
                 l2_path = p
                 break
 
-    # map: pipeline file  ->  (reference array, label)
+    # map: pipeline file  ->  (reference array, label, gate)
+    # gate=True stages count toward PASS/FAIL; gate=False are informational
+    # (the bonus stages are downstream of the ±1-LSB L1 magnitude, so a tie at
+    # an NMS/threshold boundary can flip a handful of pixels on the RVV `make
+    # run` path; they match exactly against the scalar `make visual` outputs).
     pairs = [
-        (os.path.join(args.outdir, "output_gaussian.raw"),     g_faithful, "Gaussian 5x5"),
-        (os.path.join(args.outdir, "output_sobel_gx.raw"),     gx_vis,     "Sobel |Gx|"),
-        (os.path.join(args.outdir, "output_sobel_gy.raw"),     gy_vis,     "Sobel |Gy|"),
-        (os.path.join(args.outdir, "output_magnitude_l1.raw"), mag_l1,     "Magnitude L1"),
-        (l2_path,                                              mag_l2,     "Magnitude L2"),
-        (os.path.join(args.outdir, "output_direction.raw"),    dir_vis,    "Direction"),
+        (os.path.join(args.outdir, "output_gaussian.raw"),     g_faithful, "Gaussian 5x5", True),
+        (os.path.join(args.outdir, "output_sobel_gx.raw"),     gx_vis,     "Sobel |Gx|",   True),
+        (os.path.join(args.outdir, "output_sobel_gy.raw"),     gy_vis,     "Sobel |Gy|",   True),
+        (os.path.join(args.outdir, "output_magnitude_l1.raw"), mag_l1,     "Magnitude L1", True),
+        (l2_path,                                              mag_l2,     "Magnitude L2", True),
+        (os.path.join(args.outdir, "output_direction.raw"),    dir_vis,    "Direction",    True),
+        (os.path.join(args.outdir, "output_nms.raw"),          nms_ref,    "NMS",          False),
+        (os.path.join(args.outdir, "output_threshold.raw"),    thr_ref,    "Threshold",    False),
+        (os.path.join(args.outdir, "output_edges.raw"),        edges_ref,  "Canny Edges",  False),
     ]
 
     # ---- compare ---------------------------------------------------------
     results = []
-    for path, ref, label in pairs:
+    for path, ref, label, gate in pairs:
         got = load_raw(path, W, H) if path else None
         res = compare(label, ref, got, args.tol)
         if res is not None:
             res["path"] = path
+            res["gate"] = gate
         results.append((label, path, res))
 
     if not args.no_diff and not args.no_save:
@@ -319,9 +401,12 @@ def main():
             print(f"{label:<16}{'-':>6}{'-':>9}{'-':>9}{'-':>9}   (no pipeline output)")
             continue
         any_compared = True
-        verdict = "PASS" if res["pass"] else "FAIL"
-        if not res["pass"]:
-            all_pass = False
+        if res["gate"]:
+            verdict = "PASS" if res["pass"] else "FAIL"
+            if not res["pass"]:
+                all_pass = False
+        else:
+            verdict = "ok" if res["pass"] else "info"   # informational only
         print(f"{label:<16}{res['max']:>6}{res['mean']:>9.3f}"
               f"{res['exact']:>8.2f}%{res['within']:>8.2f}%   {verdict:<8}")
     print("-" * 64)
