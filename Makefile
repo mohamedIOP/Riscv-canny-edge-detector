@@ -69,23 +69,23 @@ clean:
 	rm -f canny_O0 canny_O2 canny_O3 canny_Os canny_Ofast
 	rm -f Output_Images/*.raw
 	rm -f output_gaussian.raw output_sobel_gx.raw output_sobel_gy.raw \
-	      output_magnitude_l1.raw output_direction.raw \
-	      output_nms.raw output_threshold.raw output_edges.raw \
-	      output_128.raw output_256.raw output_512.raw
+		output_magnitude_l1.raw output_direction.raw \
+		output_nms.raw output_threshold.raw output_edges.raw \
+		output_128.raw output_256.raw output_512.raw
 
 test:
 	g++ -std=c++17 \
-	-I"Phase 2/include" \
-	tests/test_pipeline.cpp \
-	src/pipeline.cpp $(SRCS) \
-	-lgtest -lgtest_main -pthread \
-	-o runTests
+		-I"Phase 2/include" \
+		tests/test_pipeline.cpp \
+		src/pipeline.cpp $(SRCS) \
+		-lgtest -lgtest_main -pthread \
+		-o runTests
 	./runTests
 
 visual:
 	g++ -std=c++17 -I"Phase 2/include" -I"Phase 2/src" visual_pipeline.cpp \
-	$(SRCS) \
-	-o visual_pipeline
+		$(SRCS) \
+		-o visual_pipeline
 
 qemu_eq_test:
 	$(CXX) $(CXXFLAGS) \
@@ -103,27 +103,27 @@ test_qemu: qemu_eq_test
 
 separable:
 	g++ -std=c++17 -O3 \
-	-I"Phase 2/include" \
-	"Phase 2/src/separable_experiment.cpp" \
-	"Phase 2/src/gaussian.cpp" \
-	-o /tmp/separable_exp && /tmp/separable_exp
+		-I"Phase 2/include" \
+		"Phase 2/src/separable_experiment.cpp" \
+		"Phase 2/src/gaussian.cpp" \
+		-o /tmp/separable_exp && /tmp/separable_exp
 
 prepad_experiment:
 	g++ -std=c++17 -O3 -ftree-vectorize -fopt-info-vec-all \
-	-I"Phase 2/include" \
-	"Phase 2/src/prepad_experiment.cpp" \
-	"Phase 2/src/gaussian.cpp" \
-	-o /tmp/prepad_exp 2>prepad_vec_report.txt
+		-I"Phase 2/include" \
+		"Phase 2/src/prepad_experiment.cpp" \
+		"Phase 2/src/gaussian.cpp" \
+		-o /tmp/prepad_exp 2>prepad_vec_report.txt
 	/tmp/prepad_exp
 	@echo "--- Vectorized loops ---"
 	@grep "optimized: loop vectorized" prepad_vec_report.txt || echo "(none)"
 
 separable_autovec:
 	g++ -std=c++17 -O3 -ftree-vectorize -fopt-info-vec-all \
-	-I"Phase 2/include" \
-	"Phase 2/src/separable_autovec_analysis.cpp" \
-	"Phase 2/src/gaussian.cpp" \
-	-o /tmp/sep_av 2>separable_vec_report.txt
+		-I"Phase 2/include" \
+		"Phase 2/src/separable_autovec_analysis.cpp" \
+		"Phase 2/src/gaussian.cpp" \
+		-o /tmp/sep_av 2>separable_vec_report.txt
 	/tmp/sep_av
 	@echo "--- Vectorized loops ---"
 	@grep "optimized: loop vectorized" separable_vec_report.txt || echo "(none)"
@@ -132,3 +132,17 @@ autovec_investigation: prepad_experiment separable_autovec
 	@echo "=== Investigation complete ==="
 	@echo "See prepad_vec_report.txt and separable_vec_report.txt"
 
+lmul_experiment:
+	@echo "=== Building LMUL experiment binary ==="
+	$(CXX) -static -march=rv64gcv -mabi=lp64d -O2 -std=c++17 \
+		-I"Phase 2/include" \
+		"rvv_practice/lmul_test.cpp" \
+		"Phase 2/src/gaussian.cpp" \
+		-o lmul_test
+	@echo "=== Running LMUL sweep at VLEN=128 ==="
+	$(QEMU) -cpu $(QEMU_CPU),vlen=128 ./lmul_test
+	@echo "=== Running LMUL sweep at VLEN=256 ==="
+	$(QEMU) -cpu $(QEMU_CPU),vlen=256 ./lmul_test
+	@echo "=== Running LMUL sweep at VLEN=512 ==="
+	$(QEMU) -cpu $(QEMU_CPU),vlen=512 ./lmul_test
+	@echo "=== Results saved to LMUL_RESULTS.md ==="

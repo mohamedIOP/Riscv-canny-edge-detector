@@ -11,6 +11,7 @@ canny_O3
 canny_Ofast
 canny_Os
 canny_vec_report
+lmul_test
 # Ignore all object files
 *.o
 

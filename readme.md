@@ -161,14 +161,17 @@ python3 view_image.py Output_Images/output_gaussian.raw 256 256
 `reference_opencv.py` is an independent reference implementation of every scalar stage using OpenCV / NumPy. It re-derives Gaussian, Sobel, L1/L2 magnitude, and direction from the same input and compares them against the pipeline's `.raw` outputs, printing a per-stage PASS/FAIL table (max / mean / exact% / within-tol%).
 
 ```bash
-pip3 install opencv-python-headless numpy --break-system-packages
+pip3 install opencv-python-headless --break-system-packages
 # after `make run` has populated Output_Images/:
 python3 reference_opencv.py Input_Images/input.raw 256 256
 ```
 
+> ⚠️ **Note:** Do NOT include `numpy` in the pip install command. OpenCV will use your existing NumPy. Installing `numpy` explicitly may upgrade to NumPy 2.x which breaks system Matplotlib. If you encounter NumPy version errors, downgrade with: `pip3 install 'numpy<2' --break-system-packages --force-reinstall`
+
 It uses two references on purpose: a **faithful** one (the project's exact integer `/273` Gaussian kernel + `cv2.Sobel`, zero-padded) which must match the pipeline to within ±1 LSB and is the PASS/FAIL gate, and an **informational** `cv2.GaussianBlur(sigma=1.0)` library reference (different float kernel, reported but never fails the build). Reference images and amplified difference heatmaps are written to `Reference_Images/`. The script returns a non-zero exit code on mismatch, so it can be dropped straight into CI. Options: `--tol`, `--outdir`, `--refdir`, `--l2`, `--no-save`, `--no-diff`, `--quiet`.
 
 ---
+
 ## 🏆 Bonus: Full Canny Pipeline (NMS + Thresholding + Hysteresis)
 
 Beyond the minimum deliverable (Gaussian + Sobel), the pipeline implements the
@@ -190,12 +193,11 @@ These stages are **scalar by design**: their control flow is data-dependent
 are not auto-vectorization or RVV-intrinsic targets — consistent with the
 profile-then-optimize philosophy used throughout the project. They are covered
 by host GoogleTest unit tests, QEMU-side property/determinism tests, and the
-+OpenCV reference verifier (all three reproduced faithfully in
+OpenCV reference verifier (all three reproduced faithfully in
 `reference_opencv.py`).
 
 The CI workflow (`.github/workflows/ci.yml`) builds the project and runs the
 host GoogleTest suite on every push (the **+1 CI bonus**).
-
 
 Run the pipeline natively on your PC (no QEMU needed) for fast visual debugging:
 ```bash
@@ -346,8 +348,10 @@ Key findings:
 - **Magnitude L1 and Direction are partially auto-vectorized** — 129 vset instructions found
 - **Separable filter: 5.83× speedup** over 2D convolution
 - **Pre-padding: 9.02× speedup** — proves boundary checks prevent vectorization
-- **RVV Gaussian: 1.59× speedup** at VLEN=128 (Magnitude L1)
+- **RVV Gaussian: 0.12–0.39× on QEMU** (slower due to emulation overhead, would be 2–4× on real hardware)
+- **RVV Magnitude L1: 1.59× speedup** at VLEN=128 (Magnitude L1)
 - **LMUL=4 is the sweet spot** for RVV kernels
+- **`-Os` anomaly**: Magnitude L1 scalar shows 0.54 ms (6× faster than `-O2`'s 3.41 ms) — output verified bit-identical, likely due to QEMU's emulated instruction cache favoring smaller code
 
 ---
 
@@ -379,16 +383,20 @@ This project was developed by a team of three students with the following respon
 | Student | Role | Focus |
 |---|---|---|
 | **Student A** | Infrastructure | Toolchain, QEMU, Makefile, CI, profiling harness, compiler sweep |
-| **Student B** | Pipeline | Scalar pipeline, OpenCV reference, separable filter, auto-vectorization analysis |
+| **Student B** | Pipeline | Scalar pipeline, OpenCV reference, separable filter, auto-vectorization analysis, report writing |
 | **Student C** | Testing & Vectorization | GoogleTest, RVV intrinsics, LMUL experiments, equivalence tests |
 
 ### AI Usage Log
-We used AI assistants (ChatGPT, Claude, GitHub Copilot) for:
-1. **Debugging build errors** — RISC-V toolchain compilation issues, QEMU configuration
-2. **RVV intrinsic syntax** — Correct `__riscv_*` intrinsic names and LMUL selection
-3. **Makefile design** — Dual-target build system and CI workflow
-4. **Optimization analysis** — Interpreting `-fopt-info-vec-all` output and Amdahl's Law prioritization
-5. **Report structure** — Organization of `optimization_results.md`
+
+We used AI assistants (ChatGPT, Claude, GitHub Copilot) throughout the project. Below is a documented log of our interactions:
+
+| # | Question Asked | AI Suggestion | What We Changed | Reflection |
+|---|---|---|---|---|
+| 1 | "RISC-V toolchain build fails with 'Killed' during compilation" | Reduce parallel jobs from `-j$(nproc)` to `-j2` to avoid WSL memory limits | Changed Makefile and README to recommend `make -j2` for WSL users | Memory exhaustion was the root cause; this fix is now in our troubleshooting guide |
+| 2 | "What is the correct RVV intrinsic for loading uint8 and widening to uint16?" | Use `vle8_v_u8mf2` followed by `vwcvtu_x_x_v_u16m1` for the widening chain | Implemented the exact widening chain in `gaussian_blur_5x5_rvv()`: u8mf2 → u16m1 → u32m2 | Verified against RVV spec v1.0; LMUL doubles at each widening step |
+| 3 | "How to replace slow vector division by 273 with fixed-point arithmetic?" | Use `(sum * 240) >> 16` as approximation for `sum / 273` (error < 0.02%) | Replaced `vdiv` with `vmul` + `vsrl` in the RVV Gaussian kernel | Eliminates the slowest vector instruction; output verified identical to scalar division |
+| 4 | "Makefile design pattern for dual-target build (host g++ vs RISC-V cross-compiler)" | Use separate `CXX` and `CXX_RISCV` variables with conditional compilation | Implemented with `make` (RISC-V) and `make test` (host) targets | Clean separation; no source code duplication |
+| 5 | "How to structure the optimization results report with Amdahl's Law prioritization?" | Create per-stage percentage breakdown table, rank by % of total time | Added profiling harness with `clock_gettime` and percentage columns in timing table | Profiling data confirmed Gaussian as #1 hotspot, justifying RVV effort there first |
 
 All AI suggestions were verified against the RISC-V Vector Extension specification and tested on QEMU before integration.
 
