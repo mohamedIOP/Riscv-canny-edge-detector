@@ -1,8 +1,6 @@
 # RISC-V Vector (RVV 1.0) Canny Edge Detector
 
-This project implements a Canny Edge Detection pipeline targeting RISC-V (rv64gcv)
-and running on QEMU in user-mode emulation. The optimization journey goes from a
-clean scalar C++ baseline through compiler optimizations to hand-written RVV intrinsics.
+This project implements a Canny Edge Detection pipeline targeting RISC-V (rv64gcv) and running on QEMU in user-mode emulation. The optimization journey goes from a clean scalar C++ baseline through compiler optimizations to hand-written RVV intrinsics.
 
 This guide allows any newcomer to clone, build, test, and run the project from scratch.
 
@@ -14,13 +12,13 @@ If you are on Windows and do not have a Linux environment, use Windows Subsystem
 
 1. Open **PowerShell** as Administrator and run:
 ```powershell
-   wsl --install
+wsl --install
 ```
 2. Restart your computer if prompted.
 3. Open the new "Ubuntu" app and set up your UNIX username and password.
 4. Update your system:
 ```bash
-   sudo apt update && sudo apt upgrade -y
+sudo apt update && sudo apt upgrade -y
 ```
 
 ---
@@ -31,8 +29,8 @@ If you are on Windows and do not have a Linux environment, use Windows Subsystem
 ```bash
 sudo apt update
 sudo apt install -y autoconf automake build-essential bison flex texinfo gperf \
-  libtool patchutils bc cmake libglib2.0-dev libpixman-1-dev libslirp-dev \
-  ninja-build libmpc-dev libmpfr-dev libgmp-dev zlib1g-dev libexpat-dev
+    libtool patchutils bc cmake libglib2.0-dev libpixman-1-dev libslirp-dev \
+    ninja-build libmpc-dev libmpfr-dev libgmp-dev zlib1g-dev libexpat-dev
 ```
 
 ### Step 2: Build the RISC-V Toolchain
@@ -41,7 +39,7 @@ sudo apt install -y autoconf automake build-essential bison flex texinfo gperf \
 ```bash
 cd ~
 git clone https://github.com/riscv-collab/riscv-gnu-toolchain \
-  --recursive --depth 1 --shallow-submodules
+    --recursive --depth 1 --shallow-submodules
 cd riscv-gnu-toolchain
 ./configure --prefix=$HOME/riscv-toolchain --with-arch=rv64gcv --with-abi=lp64d
 make -j$(nproc)
@@ -64,10 +62,10 @@ make install
 **Troubleshooting:**
 - If you see "python venv creation failed":
 ```bash
-  sudo apt install -y python3-venv
-  ./configure --target-list=riscv64-linux-user --enable-plugins
-  make -j$(nproc)
-  sudo make install
+sudo apt install -y python3-venv
+./configure --target-list=riscv64-linux-user --enable-plugins
+make -j$(nproc)
+sudo make install
 ```
 
 ### Step 4: Add Tools to PATH
@@ -115,9 +113,7 @@ make
 ```bash
 make run
 ```
-This runs the complete Canny pipeline at **VLEN=128, 256, and 512**, prints a
-**per-stage timing report** (100 iterations for stability), and saves all stage
-outputs to `Output_Images/`.
+This runs the complete Canny pipeline at **VLEN=128, 256, and 512**, prints a **per-stage timing report** (100 iterations for stability), and saves all stage outputs to `Output_Images/`.
 
 | Output file | Contents |
 |---|---|
@@ -159,10 +155,7 @@ python3 view_image.py Output_Images/output_gaussian.raw 256 256
 
 ## ✅ Correctness Verification (OpenCV Reference)
 
-`reference_opencv.py` is an independent reference implementation of every scalar
-stage using OpenCV / NumPy. It re-derives Gaussian, Sobel, L1/L2 magnitude, and
-direction from the same input and compares them against the pipeline's `.raw`
-outputs, printing a per-stage PASS/FAIL table (max / mean / exact% / within-tol%).
+`reference_opencv.py` is an independent reference implementation of every scalar stage using OpenCV / NumPy. It re-derives Gaussian, Sobel, L1/L2 magnitude, and direction from the same input and compares them against the pipeline's `.raw` outputs, printing a per-stage PASS/FAIL table (max / mean / exact% / within-tol%).
 
 ```bash
 pip3 install opencv-python-headless numpy --break-system-packages
@@ -170,14 +163,9 @@ pip3 install opencv-python-headless numpy --break-system-packages
 python3 reference_opencv.py Input_Images/input.raw 256 256
 ```
 
-It uses two references on purpose: a **faithful** one (the project's exact
-integer `/273` Gaussian kernel + `cv2.Sobel`, zero-padded) which must match the
-pipeline to within ±1 LSB and is the PASS/FAIL gate, and an **informational**
-`cv2.GaussianBlur(sigma=1.0)` library reference (different float kernel, reported
-but never fails the build). Reference images and amplified difference heatmaps
-are written to `Reference_Images/`. The script returns a non-zero exit code on
-mismatch, so it can be dropped straight into CI. Options: `--tol`, `--outdir`,
-`--refdir`, `--l2`, `--no-save`, `--no-diff`, `--quiet`.
+It uses two references on purpose: a **faithful** one (the project's exact integer `/273` Gaussian kernel + `cv2.Sobel`, zero-padded) which must match the pipeline to within ±1 LSB and is the PASS/FAIL gate, and an **informational** `cv2.GaussianBlur(sigma=1.0)` library reference (different float kernel, reported but never fails the build). Reference images and amplified difference heatmaps are written to `Reference_Images/`. The script returns a non-zero exit code on mismatch, so it can be dropped straight into CI. Options: `--tol`, `--outdir`, `--refdir`, `--l2`, `--no-save`, `--no-diff`, `--quiet`.
+
+---
 
 ## 🖼️ Visual Pipeline (Native Host)
 
@@ -191,23 +179,36 @@ Outputs saved to `Output_Images/`.
 ---
 
 ## ✅ Run Unit Tests
+
+### Host-Side Tests (GoogleTest)
 ```bash
 make test
 ```
-GoogleTest runs natively on the host. All pipeline stages are tested for
-correctness (uniform image invariant, impulse response, edge direction, magnitude).
+GoogleTest runs natively on the host. All pipeline stages are tested for correctness (uniform image invariant, impulse response, edge direction, magnitude).
+
+### QEMU-Side Tests (Equivalence & Invariants)
+```bash
+make test_qemu
+```
+Runs 27 assertions on QEMU at VLEN=128, 256, and 512:
+- Scalar invariants (uniform image, impulse response, edge direction)
+- Tail-case stress tests (17×13, 33×29, 100×75, 101×77)
+- **RVV vs Scalar equivalence** (Gaussian and Magnitude L1 compared with ±1 tolerance)
+- Vector-length-agnostic verification
 
 ---
+
 ## ⏱️ Profiling and Optimization
 
+### Compiler Flag Sweep
 Run the compiler flag sweep to measure performance at each optimization level:
 ```bash
 make sweep      # builds binaries at -O0, -O2, -O3, -Os, -Ofast
 make run_sweep  # runs each binary and prints per-stage timing
 ```
-
 Results are saved in `docs/optimization_results.md`.
 
+### Auto-Vectorization Analysis
 To reproduce the auto-vectorization analysis:
 ```bash
 riscv64-unknown-elf-g++ -static -march=rv64gcv -mabi=lp64d -O3 -std=c++17 \
@@ -216,45 +217,111 @@ riscv64-unknown-elf-g++ -static -march=rv64gcv -mabi=lp64d -O3 -std=c++17 \
 
 riscv64-unknown-elf-objdump -d canny_vec_report | grep -c "vset"
 ```
+
+### Separable Filter Experiment
+Compare 2D Gaussian (25 muls/pixel) vs separable (10 muls/pixel):
+```bash
+make separable
+```
+Results saved to `separable_results.txt` (5.83× speedup observed).
+
+### Pre-Padding Experiment
+Test if removing boundary checks enables compiler auto-vectorization:
+```bash
+make prepad_experiment
+```
+Results saved to `prepad_results.txt` (9.02× speedup observed).
+
+### Auto-Vectorization Investigation
+Run both prepad and separable experiments together:
+```bash
+make autovec_investigation
+```
+
 ---
+
+## 📊 RVV Intrinsic Optimization
+
+### LMUL Experiments
+Test different vector length multipliers (LMUL=1, 2, 4) for RVV kernels:
+```bash
+make lmul_experiment
+```
+Results documented in `LMUL_RESULTS.md` (LMUL=4 identified as sweet spot).
+
+### RVV Code Walkthrough
+The RVV implementations are in:
+- `Phase 2/src/gaussian.cpp` — `gaussian_blur_5x5_rvv()` with strip-mining, fixed-point division
+- `Phase 2/src/magnitude.cpp` — `magnitude_l1_rvv()` with vector reduction (`vredmax`)
+
+Every `__riscv_*` intrinsic is annotated with:
+1. **What operation it performs**
+2. **Why this LMUL was chosen**
+3. **How it behaves across different VLEN values**
+
+---
+
 ## 📁 Project Structure
 
 ```
 .
-├── .github/workflows/ci.yml         # CI: builds toolchain, QEMU, runs tests, VLEN sweep
+├── .github/
+│   └── workflows/
+│       └── ci.yml                          # CI: builds toolchain, QEMU, runs tests, VLEN sweep
 ├── docs/
-│   └── optimization_results.md      # Full optimization report
-├── Important_Results/               # Result screenshots and images
+│   └── optimization_results.md             # Full optimization report with all data
+├── Important_Results/                      # Result screenshots and images
+├── Input_Images/                           # Input raw images (not committed)
+├── Output_Images/                          # Pipeline outputs (not committed)
 ├── Phase 2/
-│   ├── include/                     # Headers: convolution, direction, gaussian, magnitude, sobel
-│   └── src/                        # Scalar + RVV implementations
+│   ├── include/
+│   │   ├── convolution.hpp                 # Generic template-based convolution kernel
+│   │   ├── direction.hpp                   # Gradient direction interface
+│   │   ├── gaussian.hpp                    # Gaussian blur (scalar + separable + RVV)
+│   │   ├── magnitude.hpp                   # Magnitude L1/L2 (scalar + RVV)
+│   │   └── sobel.hpp                       # Sobel gradient (Gx/Gy) interface
+│   └── src/
+│       ├── direction.cpp                   # Scalar direction implementation
+│       ├── gaussian.cpp                    # Scalar 2D, separable, and RVV Gaussian
+│       ├── magnitude.cpp                   # Scalar L1/L2 and RVV L1 magnitude
+│       └── sobel.cpp                       # Scalar Sobel Gx/Gy implementation
 ├── src/
-│   ├── pipeline.cpp                 # Generic convolve2D template (reference)
-│   ├── pipeline.hpp                 # Template interface
-│   └── profiler.hpp                 # Bare-metal clock_gettime harness
+│   ├── pipeline.cpp                        # Generic convolve2D template (reference)
+│   ├── pipeline.hpp                        # Template interface
+│   └── profiler.hpp                        # Bare-metal clock_gettime profiling harness
 ├── tests/
-│   ├── qemu_equivalence_test.cpp    # QEMU-side: scalar invariants + RVV equivalence (27 tests)
-│   └── test_pipeline.cpp            # Host-side GoogleTest (14+ unit tests)
-├── main.cpp                         # RISC-V entry point: pipeline + profiling + RVV speedup
-├── visual_pipeline.cpp              # Native host pipeline for visualization
-├── Makefile                         # Dual-target: make, run, test, sweep, test_qemu
-├── generate_image.py                # Generate synthetic test images
-├── convert_image.py                 # Convert any photo to raw grayscale
-├── view_image.py                    # Visualize raw output files
-├── reference_opencv.py              # OpenCV reference verifier (PASS/FAIL per stage)
-├── LMUL_RESULTS.md                  # LMUL=1/2/4 performance sweep (VLEN=128/256/512)
-├── prepad_results.txt               # Pre-padding experiment: 9.02× speedup
-├── separable_results.txt            # Separable filter: 5.83× speedup
-├── vec_report.txt                   # Raw auto-vectorization compiler output
-├── Input_Images/                    # Input raw images (not committed)
-└── Output_Images/                   # Pipeline outputs (not committed)
+│   ├── qemu_equivalence_test.cpp           # QEMU-side: scalar invariants + RVV equivalence (27 tests)
+│   └── test_pipeline.cpp                   # Host-side GoogleTest (14+ unit tests)
+├── main.cpp                                # RISC-V entry point: pipeline + profiling + RVV speedup
+├── visual_pipeline.cpp                     # Native host pipeline for visualization
+├── Makefile                                # Dual-target build system
+├── generate_image.py                       # Generate synthetic test images
+├── convert_image.py                        # Convert any photo to raw grayscale
+├── view_image.py                           # Visualize raw output files
+├── reference_opencv.py                     # OpenCV reference verifier (PASS/FAIL per stage)
+├── LMUL_RESULTS.md                         # LMUL=1/2/4 performance sweep data
+├── prepad_results.txt                      # Pre-padding experiment results
+├── separable_results.txt                   # Separable filter benchmark results
+├── vec_report.txt                          # Raw auto-vectorization compiler output
+└── readme.md                               # This file
 ```
+
 ---
+
 ## 📊 Optimization Results
 
-Profiling data, compiler flag sweep timings, and binary sizes are documented in
-`docs/optimization_results.md`. This file will be updated as RVV intrinsic
-implementations are completed.
+Profiling data, compiler flag sweep timings, binary sizes, auto-vectorization analysis, QEMU configuration experiments, and RVV intrinsic results are documented in `docs/optimization_results.md`.
+
+Key findings:
+- **`-O2` is the sweet spot** (25.32 ms) — faster than `-O3` (28.71 ms) due to instruction cache pressure
+- **Gaussian and Sobel are not auto-vectorized** — blocked by boundary check control flow
+- **Magnitude L1 and Direction are partially auto-vectorized** — 129 vset instructions found
+- **Separable filter: 5.83× speedup** over 2D convolution
+- **Pre-padding: 9.02× speedup** — proves boundary checks prevent vectorization
+- **RVV Gaussian: 1.59× speedup** at VLEN=128 (Magnitude L1)
+- **LMUL=4 is the sweet spot** for RVV kernels
+
+---
 
 ## 🎯 Makefile Targets
 
@@ -263,9 +330,48 @@ implementations are completed.
 | `make` | Build RISC-V binary at -O2 (fastest per our profiling sweep) |
 | `make run` | Run full pipeline on QEMU at VLEN 128, 256, 512 with per-stage timing |
 | `make test` | Run GoogleTest suite natively |
-| `make test_qemu` | Run QEMU equivalence tests at VLEN 128, 256, 512 |
+| `make test_qemu` | Run QEMU equivalence tests at VLEN 128, 256, 512 (27 assertions) |
 | `make visual` | Build native host pipeline binary |
 | `make sweep` | Build binaries at -O0, -O2, -O3, -Os, -Ofast and print sizes |
 | `make run_sweep` | Run timing measurements at all optimization levels |
 | `make qemu_eq_test` | Build QEMU equivalence test binary |
+| `make separable` | Run separable filter benchmark |
+| `make prepad_experiment` | Run pre-padding auto-vectorization experiment |
+| `make separable_autovec` | Run separable filter auto-vectorization analysis |
+| `make autovec_investigation` | Run both prepad and separable experiments |
+| `make lmul_experiment` | Run LMUL=1/2/4 performance sweep |
 | `make clean` | Remove all binaries and output .raw files |
+
+---
+
+## 👥 Team & AI Usage
+
+This project was developed by a team of three students with the following responsibilities:
+
+| Student | Role | Focus |
+|---|---|---|
+| **Student A** | Infrastructure | Toolchain, QEMU, Makefile, CI, profiling harness, compiler sweep |
+| **Student B** | Pipeline | Scalar pipeline, OpenCV reference, separable filter, auto-vectorization analysis |
+| **Student C** | Testing & Vectorization | GoogleTest, RVV intrinsics, LMUL experiments, equivalence tests |
+
+### AI Usage Log
+We used AI assistants (ChatGPT, Claude, GitHub Copilot) for:
+1. **Debugging build errors** — RISC-V toolchain compilation issues, QEMU configuration
+2. **RVV intrinsic syntax** — Correct `__riscv_*` intrinsic names and LMUL selection
+3. **Makefile design** — Dual-target build system and CI workflow
+4. **Optimization analysis** — Interpreting `-fopt-info-vec-all` output and Amdahl's Law prioritization
+5. **Report structure** — Organization of `optimization_results.md`
+
+All AI suggestions were verified against the RISC-V Vector Extension specification and tested on QEMU before integration.
+
+---
+
+## 📝 License
+
+[Add your license here — e.g., MIT, GPL, or university course license]
+
+## 🙏 Acknowledgments
+
+- RISC-V GNU Toolchain: https://github.com/riscv-collab/riscv-gnu-toolchain
+- QEMU: https://github.com/qemu/qemu
+- GoogleTest: https://github.com/google/googletest
