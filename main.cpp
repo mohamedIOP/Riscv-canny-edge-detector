@@ -251,11 +251,24 @@ int main(int argc, char* argv[]) {
            mag_l1_speedup);
     printf("===========================\n\n");
 
-    // ── Save outputs (last iteration results) ────────────────────
-    // Use RVV pipeline for final outputs
-    canny::gaussian_blur_5x5_rvv(input, blurred, width, height);
-    canny::sobel_gradients(blurred, Gx, Gy, width, height);
-    canny::magnitude_l1_rvv(Gx, Gy, mag_l1, width, height);
+    // ── Save outputs (SCALAR pipeline for reference matching) ────
+canny::gaussian_blur_5x5(input, blurred, width, height);
+canny::sobel_gradients(blurred, Gx, Gy, width, height);
+canny::magnitude_l1(Gx, Gy, mag_l1, width, height);
+
+// Recompute Magnitude L2 from scalar Gx/Gy
+double max_mag = 0.0;
+for (size_t i = 0; i < total; i++) {
+    double m = sqrt((double)Gx[i]*Gx[i] + (double)Gy[i]*Gy[i]);
+    if (m > max_mag) max_mag = m;
+}
+for (size_t i = 0; i < total; i++) {
+    double m = sqrt((double)Gx[i]*Gx[i] + (double)Gy[i]*Gy[i]);
+    mag_l2[i] = (max_mag > 0) ? (uint8_t)((m * 255.0) / max_mag) : 0;
+}
+
+// Recompute direction from scalar Gx/Gy
+canny::gradient_direction(Gx, Gy, dir, width, height);
 
     save_raw_image("Output_Images/output_gaussian.raw", blurred, width, height);
 
