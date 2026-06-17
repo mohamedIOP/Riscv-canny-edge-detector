@@ -84,7 +84,7 @@ run_sweep: sweep
 
 clean:
 	rm -f $(TARGET) runTests visual_pipeline qemu_eq_test
-	rm -f canny_O0 canny_O2 canny_O3 canny_Os canny_Ofast
+	rm -f canny_O0 canny_O2 canny_O3 canny_Os canny_Ofast canny_vec_report
 	rm -f Output_Images/*.raw
 	rm -f output_gaussian.raw output_sobel_gx.raw output_sobel_gy.raw \
 	      output_magnitude_l1.raw output_direction.raw \
