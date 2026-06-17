@@ -79,12 +79,12 @@ Phase 2/src/separable_autovec_analysis.cpp:204:68: missed: statement clobbers me
 Phase 2/src/separable_autovec_analysis.cpp:142:28: note: ***** Analysis succeeded with vector mode V16QI
 Phase 2/src/separable_autovec_analysis.cpp:142:28: note: SLPing BB part
 Phase 2/src/separable_autovec_analysis.cpp:123:28: note: Costing subgraph: 
-Phase 2/src/separable_autovec_analysis.cpp:123:28: note: node 0x3556f878 (max_nunits=2, refcnt=1) vector(2) unsigned char
+Phase 2/src/separable_autovec_analysis.cpp:123:28: note: node 0x2a04a878 (max_nunits=2, refcnt=1) vector(2) unsigned char
 Phase 2/src/separable_autovec_analysis.cpp:123:28: note: op template: *_1151 = _1152;
 Phase 2/src/separable_autovec_analysis.cpp:123:28: note: 	stmt 0 *_1151 = _1152;
 Phase 2/src/separable_autovec_analysis.cpp:123:28: note: 	stmt 1 *_1208 = _1209;
-Phase 2/src/separable_autovec_analysis.cpp:123:28: note: 	children 0x3556fe78
-Phase 2/src/separable_autovec_analysis.cpp:123:28: note: node (external) 0x3556fe78 (max_nunits=1, refcnt=1) vector(2) unsigned char
+Phase 2/src/separable_autovec_analysis.cpp:123:28: note: 	children 0x2a04ae78
+Phase 2/src/separable_autovec_analysis.cpp:123:28: note: node (external) 0x2a04ae78 (max_nunits=1, refcnt=1) vector(2) unsigned char
 Phase 2/src/separable_autovec_analysis.cpp:123:28: note: 	{ _1152, _1209 }
 Phase 2/src/separable_autovec_analysis.cpp:123:28: note: Cost model analysis: 
 Phase 2/src/separable_autovec_analysis.cpp:123:28: note: Cost model analysis for part in loop 21:
@@ -92,26 +92,26 @@ Phase 2/src/separable_autovec_analysis.cpp:123:28: note: Cost model analysis for
   Scalar cost: 24
 Phase 2/src/separable_autovec_analysis.cpp:123:28: missed: not vectorized: vectorization is not profitable.
 Phase 2/src/separable_autovec_analysis.cpp:132:28: note: Costing subgraph: 
-Phase 2/src/separable_autovec_analysis.cpp:132:28: note: node 0x3556ff78 (max_nunits=4, refcnt=1) vector(4) unsigned char
+Phase 2/src/separable_autovec_analysis.cpp:132:28: note: node 0x2a04af78 (max_nunits=4, refcnt=1) vector(4) unsigned char
 Phase 2/src/separable_autovec_analysis.cpp:132:28: note: op template: *_1585 = _1586;
 Phase 2/src/separable_autovec_analysis.cpp:132:28: note: 	stmt 0 *_1585 = _1586;
 Phase 2/src/separable_autovec_analysis.cpp:132:28: note: 	stmt 1 *_305 = _936;
 Phase 2/src/separable_autovec_analysis.cpp:132:28: note: 	stmt 2 *_490 = _489;
 Phase 2/src/separable_autovec_analysis.cpp:132:28: note: 	stmt 3 *_163 = _289;
-Phase 2/src/separable_autovec_analysis.cpp:132:28: note: 	children 0x35570678
-Phase 2/src/separable_autovec_analysis.cpp:132:28: note: node (external) 0x35570678 (max_nunits=1, refcnt=1) vector(4) unsigned char
+Phase 2/src/separable_autovec_analysis.cpp:132:28: note: 	children 0x2a04b678
+Phase 2/src/separable_autovec_analysis.cpp:132:28: note: node (external) 0x2a04b678 (max_nunits=1, refcnt=1) vector(4) unsigned char
 Phase 2/src/separable_autovec_analysis.cpp:132:28: note: 	{ _1586, _936, _489, _289 }
 Phase 2/src/separable_autovec_analysis.cpp:132:28: note: Cost model analysis: 
 Phase 2/src/separable_autovec_analysis.cpp:132:28: note: Cost model analysis for part in loop 21:
   Vector cost: 48
   Scalar cost: 48
 Phase 2/src/separable_autovec_analysis.cpp:142:28: note: Costing subgraph: 
-Phase 2/src/separable_autovec_analysis.cpp:142:28: note: node 0x355706f8 (max_nunits=2, refcnt=1) vector(2) unsigned char
+Phase 2/src/separable_autovec_analysis.cpp:142:28: note: node 0x2a04b6f8 (max_nunits=2, refcnt=1) vector(2) unsigned char
 Phase 2/src/separable_autovec_analysis.cpp:142:28: note: op template: *_1038 = _1039;
 Phase 2/src/separable_autovec_analysis.cpp:142:28: note: 	stmt 0 *_1038 = _1039;
 Phase 2/src/separable_autovec_analysis.cpp:142:28: note: 	stmt 1 *_1094 = _1095;
-Phase 2/src/separable_autovec_analysis.cpp:142:28: note: 	children 0x35570b78
-Phase 2/src/separable_autovec_analysis.cpp:142:28: note: node (external) 0x35570b78 (max_nunits=1, refcnt=1) vector(2) unsigned char
+Phase 2/src/separable_autovec_analysis.cpp:142:28: note: 	children 0x2a04bb78
+Phase 2/src/separable_autovec_analysis.cpp:142:28: note: node (external) 0x2a04bb78 (max_nunits=1, refcnt=1) vector(2) unsigned char
 Phase 2/src/separable_autovec_analysis.cpp:142:28: note: 	{ _1039, _1095 }
 Phase 2/src/separable_autovec_analysis.cpp:142:28: note: Cost model analysis: 
 Phase 2/src/separable_autovec_analysis.cpp:142:28: note: Cost model analysis for part in loop 21:
@@ -120,14 +120,14 @@ Phase 2/src/separable_autovec_analysis.cpp:142:28: note: Cost model analysis for
 Phase 2/src/separable_autovec_analysis.cpp:142:28: missed: not vectorized: vectorization is not profitable.
 Phase 2/src/separable_autovec_analysis.cpp:142:28: note: Basic block will be vectorized using SLP
 Phase 2/src/separable_autovec_analysis.cpp:142:28: note: Vectorizing SLP tree:
-Phase 2/src/separable_autovec_analysis.cpp:142:28: note: node 0x3556ff78 (max_nunits=4, refcnt=1) vector(4) unsigned char
+Phase 2/src/separable_autovec_analysis.cpp:142:28: note: node 0x2a04af78 (max_nunits=4, refcnt=1) vector(4) unsigned char
 Phase 2/src/separable_autovec_analysis.cpp:142:28: note: op template: *_1585 = _1586;
 Phase 2/src/separable_autovec_analysis.cpp:142:28: note: 	stmt 0 *_1585 = _1586;
 Phase 2/src/separable_autovec_analysis.cpp:142:28: note: 	stmt 1 *_305 = _936;
 Phase 2/src/separable_autovec_analysis.cpp:142:28: note: 	stmt 2 *_490 = _489;
 Phase 2/src/separable_autovec_analysis.cpp:142:28: note: 	stmt 3 *_163 = _289;
-Phase 2/src/separable_autovec_analysis.cpp:142:28: note: 	children 0x35570678
-Phase 2/src/separable_autovec_analysis.cpp:142:28: note: node (external) 0x35570678 (max_nunits=1, refcnt=1) vector(4) unsigned char
+Phase 2/src/separable_autovec_analysis.cpp:142:28: note: 	children 0x2a04b678
+Phase 2/src/separable_autovec_analysis.cpp:142:28: note: node (external) 0x2a04b678 (max_nunits=1, refcnt=1) vector(4) unsigned char
 Phase 2/src/separable_autovec_analysis.cpp:142:28: note: 	{ _1586, _936, _489, _289 }
 Phase 2/src/separable_autovec_analysis.cpp:142:28: note: ------>vectorizing SLP node starting from: *_1585 = _1586;
 Phase 2/src/separable_autovec_analysis.cpp:142:28: note: vect_is_simple_use: operand (unsigned char) sum_304, type of def: internal
@@ -144,31 +144,31 @@ Phase 2/src/../include/convolution.hpp:24:23: missed: couldn't vectorize loop
 Phase 2/src/../include/convolution.hpp:24:23: missed: not vectorized: loop nest containing two or more consecutive inner loops cannot be vectorized
 Phase 2/src/../include/convolution.hpp:25:27: missed: couldn't vectorize loop
 Phase 2/src/../include/convolution.hpp:25:27: missed: not vectorized: control flow in loop.
-Phase 2/src/gaussian.cpp:16:6: note: vectorized 0 loops in function.
+Phase 2/src/gaussian.cpp:20:6: note: vectorized 0 loops in function.
 Phase 2/src/../include/convolution.hpp:34:58: note: ***** Analysis failed with vector mode V16QI
 Phase 2/src/../include/convolution.hpp:34:58: note: ***** The result for vector mode V16QI would be the same
 Phase 2/src/../include/convolution.hpp:34:58: note: ***** Re-trying analysis with vector mode V8QI
 Phase 2/src/../include/convolution.hpp:34:58: note: ***** Analysis failed with vector mode V8QI
 Phase 2/src/../include/convolution.hpp:34:58: note: ***** Re-trying analysis with vector mode V4QI
 Phase 2/src/../include/convolution.hpp:34:58: note: ***** Analysis failed with vector mode V4QI
-Phase 2/src/gaussian.cpp:56:23: missed: couldn't vectorize loop
-Phase 2/src/gaussian.cpp:56:23: missed: not vectorized: loop nest containing two or more consecutive inner loops cannot be vectorized
-Phase 2/src/gaussian.cpp:57:27: missed: couldn't vectorize loop
-Phase 2/src/gaussian.cpp:57:27: missed: not vectorized: control flow in loop.
-Phase 2/src/gaussian.cpp:57:27: missed: couldn't vectorize loop
-Phase 2/src/gaussian.cpp:57:27: missed: not vectorized: control flow in loop.
-Phase 2/src/gaussian.cpp:57:27: missed: couldn't vectorize loop
-Phase 2/src/gaussian.cpp:57:27: missed: not vectorized: control flow in loop.
-Phase 2/src/gaussian.cpp:57:27: missed: couldn't vectorize loop
-Phase 2/src/gaussian.cpp:57:27: missed: not vectorized: control flow in loop.
-Phase 2/src/gaussian.cpp:38:23: missed: couldn't vectorize loop
-Phase 2/src/gaussian.cpp:38:23: missed: not vectorized: loop nest containing two or more consecutive inner loops cannot be vectorized
-Phase 2/src/gaussian.cpp:39:27: missed: couldn't vectorize loop
-Phase 2/src/gaussian.cpp:39:27: missed: not vectorized: control flow in loop.
-Phase 2/src/gaussian.cpp:39:27: missed: couldn't vectorize loop
-Phase 2/src/gaussian.cpp:39:27: missed: not vectorized: control flow in loop.
-Phase 2/src/gaussian.cpp:30:6: note: vectorized 0 loops in function.
-Phase 2/src/gaussian.cpp:35:44: missed: statement clobbers memory: temp_58 = aligned_alloc (64, _1);
-Phase 2/src/gaussian.cpp:73:9: missed: statement clobbers memory: free (temp_58);
-Phase 2/src/gaussian.cpp:74:1: note: ***** Analysis failed with vector mode V16QI
-Phase 2/src/gaussian.cpp:74:1: note: ***** Skipping vector mode V16QI, which would repeat the analysis for V16QI
+Phase 2/src/gaussian.cpp:60:23: missed: couldn't vectorize loop
+Phase 2/src/gaussian.cpp:60:23: missed: not vectorized: loop nest containing two or more consecutive inner loops cannot be vectorized
+Phase 2/src/gaussian.cpp:61:27: missed: couldn't vectorize loop
+Phase 2/src/gaussian.cpp:61:27: missed: not vectorized: control flow in loop.
+Phase 2/src/gaussian.cpp:61:27: missed: couldn't vectorize loop
+Phase 2/src/gaussian.cpp:61:27: missed: not vectorized: control flow in loop.
+Phase 2/src/gaussian.cpp:61:27: missed: couldn't vectorize loop
+Phase 2/src/gaussian.cpp:61:27: missed: not vectorized: control flow in loop.
+Phase 2/src/gaussian.cpp:61:27: missed: couldn't vectorize loop
+Phase 2/src/gaussian.cpp:61:27: missed: not vectorized: control flow in loop.
+Phase 2/src/gaussian.cpp:42:23: missed: couldn't vectorize loop
+Phase 2/src/gaussian.cpp:42:23: missed: not vectorized: loop nest containing two or more consecutive inner loops cannot be vectorized
+Phase 2/src/gaussian.cpp:43:27: missed: couldn't vectorize loop
+Phase 2/src/gaussian.cpp:43:27: missed: not vectorized: control flow in loop.
+Phase 2/src/gaussian.cpp:43:27: missed: couldn't vectorize loop
+Phase 2/src/gaussian.cpp:43:27: missed: not vectorized: control flow in loop.
+Phase 2/src/gaussian.cpp:34:6: note: vectorized 0 loops in function.
+Phase 2/src/gaussian.cpp:39:44: missed: statement clobbers memory: temp_58 = aligned_alloc (64, _1);
+Phase 2/src/gaussian.cpp:77:9: missed: statement clobbers memory: free (temp_58);
+Phase 2/src/gaussian.cpp:78:1: note: ***** Analysis failed with vector mode V16QI
+Phase 2/src/gaussian.cpp:78:1: note: ***** Skipping vector mode V16QI, which would repeat the analysis for V16QI
