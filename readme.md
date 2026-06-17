@@ -366,10 +366,6 @@ All AI suggestions were verified against the RISC-V Vector Extension specificati
 
 ---
 
-## 📝 License
-
-[Add your license here — e.g., MIT, GPL, or university course license]
-
 ## 🙏 Acknowledgments
 
 - RISC-V GNU Toolchain: https://github.com/riscv-collab/riscv-gnu-toolchain
