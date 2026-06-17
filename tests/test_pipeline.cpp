@@ -4,6 +4,8 @@
 #include "../Phase 2/include/magnitude.hpp"
 #include "../Phase 2/include/direction.hpp"
 #include "../Phase 2/include/sobel.hpp"
+#include "../Phase 2/include/nms.hpp"
+#include "../Phase 2/include/threshold.hpp"
 #include <vector>
 #include <cmath>
 #include <algorithm>
@@ -16,6 +18,157 @@ using namespace std;
 // ================================================================
 TEST(SanityCheck, OnePlusOne) {
     EXPECT_EQ(1 + 1, 2);  // if this fails, GoogleTest itself is broken
+}
+// ================================================================
+// NON-MAXIMUM SUPPRESSION TESTS (BONUS — Stage 3)
+// ================================================================
+// TEST: BorderIsZeroed
+// --------------------------------
+// IDEA: NMS needs a full neighbourhood, so the 1-pixel border can
+// never be evaluated. The implementation must leave it at 0.
+TEST(NMS, BorderIsZeroed) {
+size_t W = 8, H = 8;
+    vector<uint8_t> mag(W * H, 200);   // strong everywhere
+    vector<uint8_t> dir(W * H, 0);
+    vector<uint8_t> out(W * H, 123);   // garbage to prove it gets overwritten
+
+    canny::non_max_suppression(mag.data(), dir.data(), out.data(), W, H);
+
+    for (size_t x = 0; x < W; x++) {
+        EXPECT_EQ(out[x], 0);                 // top row
+        EXPECT_EQ(out[(H - 1) * W + x], 0);   // bottom row
+    }
+    for (size_t y = 0; y < H; y++) {
+        EXPECT_EQ(out[y * W], 0);             // left col
+        EXPECT_EQ(out[y * W + (W - 1)], 0);   // right col
+    }
+}
+// TEST: KeepsHorizontalRidgePeak
+// --------------------------------
+// IDEA: With a horizontal magnitude ramp 10,20,30,20,10 and direction 0
+// (gradient horizontal → compare left/right), only the central peak (30)
+// is a local maximum. The flanking 20s must be suppressed to 0.
+TEST(NMS, KeepsHorizontalRidgePeak) {
+    size_t W = 5, H = 3;
+    vector<uint8_t> mag(W * H, 0);
+    vector<uint8_t> dir(W * H, 0);   // all horizontal gradient
+    vector<uint8_t> out(W * H, 0);
+
+    // Middle row: 10 20 30 20 10
+    uint8_t row[5] = {10, 20, 30, 20, 10};
+    for (size_t x = 0; x < W; x++) mag[1 * W + x] = row[x];
+
+    canny::non_max_suppression(mag.data(), dir.data(), out.data(), W, H);
+
+    EXPECT_EQ(out[1 * W + 2], 30);  // peak kept
+    EXPECT_EQ(out[1 * W + 1], 0);   // left shoulder suppressed
+    EXPECT_EQ(out[1 * W + 3], 0);   // right shoulder suppressed
+}
+
+// TEST: SinglePixelSurvives
+// --------------------------------
+// IDEA: One bright pixel on a black field is >= all its (zero) neighbours
+// in every direction, so NMS must keep it unchanged.
+TEST(NMS, SinglePixelSurvives) {
+    size_t W = 5, H = 5;
+    vector<uint8_t> mag(W * H, 0);
+    vector<uint8_t> dir(W * H, 2);   // vertical gradient (arbitrary)
+    vector<uint8_t> out(W * H, 0);
+
+    mag[2 * W + 2] = 180;
+    canny::non_max_suppression(mag.data(), dir.data(), out.data(), W, H);
+
+    EXPECT_EQ(out[2 * W + 2], 180);
+}
+
+// ================================================================
+// DOUBLE THRESHOLD TESTS (BONUS — Stage 4)
+// ================================================================
+
+// TEST: ThreeClassesAssigned
+// --------------------------------
+// IDEA: With low=20, high=50, values below 20 → 0, [20,50) → weak (128),
+// >=50 → strong (255).
+TEST(Threshold, ThreeClassesAssigned) {
+    size_t W = 3, H = 1;
+    vector<uint8_t> in  = {10, 30, 60};
+    vector<uint8_t> out(W * H, 99);
+
+    canny::double_threshold(in.data(), out.data(), W, H, 20, 50);
+
+    EXPECT_EQ(out[0], canny::EDGE_NONE);    // 10  < low
+    EXPECT_EQ(out[1], canny::EDGE_WEAK);    // 20 <= 30 < 50
+    EXPECT_EQ(out[2], canny::EDGE_STRONG);  // 60 >= high
+}
+
+// TEST: BoundaryValuesInclusive
+// --------------------------------
+// IDEA: A value exactly equal to a threshold takes the higher class
+// (>= semantics): low itself is weak, high itself is strong.
+TEST(Threshold, BoundaryValuesInclusive) {
+    size_t W = 2, H = 1;
+    vector<uint8_t> in  = {20, 50};
+    vector<uint8_t> out(W * H, 0);
+
+    canny::double_threshold(in.data(), out.data(), W, H, 20, 50);
+
+    EXPECT_EQ(out[0], canny::EDGE_WEAK);    // == low  → weak
+    EXPECT_EQ(out[1], canny::EDGE_STRONG);  // == high → strong
+}
+
+// ================================================================
+// HYSTERESIS TESTS (BONUS — Stage 5)
+// ================================================================
+
+// TEST: WeakChainConnectedToStrongIsKept
+// --------------------------------
+// IDEA: A run [STRONG, WEAK, WEAK, NONE, WEAK]. The two weak pixels touching
+// the strong one are promoted to edges; the isolated weak pixel after the
+// gap is discarded.
+TEST(Hysteresis, WeakChainConnectedToStrongIsKept) {
+    size_t W = 5, H = 1;
+    using namespace canny;
+    vector<uint8_t> in = {EDGE_STRONG, EDGE_WEAK, EDGE_WEAK, EDGE_NONE, EDGE_WEAK};
+    vector<uint8_t> out(W * H, 0);
+
+    hysteresis(in.data(), out.data(), W, H);
+
+    EXPECT_EQ(out[0], 255);  // strong
+    EXPECT_EQ(out[1], 255);  // weak, connected
+    EXPECT_EQ(out[2], 255);  // weak, connected through pixel 1
+    EXPECT_EQ(out[3], 0);    // none
+    EXPECT_EQ(out[4], 0);    // weak, isolated → dropped
+}
+
+// TEST: IsolatedWeakIsDropped
+// --------------------------------
+// IDEA: Weak pixels with no strong pixel anywhere must all vanish.
+TEST(Hysteresis, IsolatedWeakIsDropped) {
+    size_t W = 4, H = 4;
+    vector<uint8_t> in(W * H, canny::EDGE_WEAK);
+    vector<uint8_t> out(W * H, 0);
+
+    canny::hysteresis(in.data(), out.data(), W, H);
+
+    for (size_t i = 0; i < W * H; i++)
+        EXPECT_EQ(out[i], 0);
+}
+
+// TEST: DiagonalConnectivity
+// --------------------------------
+// IDEA: Hysteresis uses 8-connectivity, so a weak pixel touching a strong
+// one only diagonally must still be promoted.
+TEST(Hysteresis, DiagonalConnectivity) {
+    size_t W = 3, H = 3;
+    using namespace canny;
+    vector<uint8_t> in(W * H, EDGE_NONE);
+    in[0 * W + 0] = EDGE_STRONG;   // top-left
+    in[1 * W + 1] = EDGE_WEAK;     // centre, diagonal neighbour
+    vector<uint8_t> out(W * H, 0);
+    hysteresis(in.data(), out.data(), W, H);
+
+    EXPECT_EQ(out[0 * W + 0], 255);
+    EXPECT_EQ(out[1 * W + 1], 255);  // promoted via diagonal
 }
 
 // ================================================================

@@ -8,6 +8,8 @@
 #include "sobel.hpp"
 #include "magnitude.hpp"
 #include "direction.hpp"
+#include "nms.hpp"          // Stage 3: non-maximum suppression (bonus)
+#include "threshold.hpp"    // Stages 4-5: double threshold + hysteresis (bonus)
 #include "./src/profiler.hpp"
 
 using namespace std;
@@ -111,6 +113,9 @@ int main(int argc, char* argv[]) {
     uint8_t*  dir_vis = (uint8_t*)aligned_alloc(64, total);
     uint8_t*  gx_vis  = (uint8_t*)aligned_alloc(64, total);
     uint8_t*  gy_vis  = (uint8_t*)aligned_alloc(64, total);
+    uint8_t*  nms     = (uint8_t*)aligned_alloc(64, total);  // Stage 3 (bonus)
+    uint8_t*  thresh  = (uint8_t*)aligned_alloc(64, total);  // Stage 4 (bonus)
+    uint8_t*  edges   = (uint8_t*)aligned_alloc(64, total);  // Stage 5 (bonus)
 
     // ── Timing accumulators ───────────────────────────────────────
     uint64_t t_start, t_end;
@@ -121,6 +126,9 @@ int main(int argc, char* argv[]) {
     uint64_t acc_mag_l1_rvv      = 0;
     uint64_t acc_mag_l2          = 0;
     uint64_t acc_dir             = 0;
+    uint64_t acc_nms             = 0;   // Stage 3 (bonus)
+    uint64_t acc_thresh          = 0;   // Stage 4 (bonus)
+    uint64_t acc_hyst            = 0;   // Stage 5 (bonus)
 
     printf("-> Running %d iterations for stable timing...\n", ITERATIONS);
 
@@ -178,6 +186,27 @@ int main(int argc, char* argv[]) {
         canny::gradient_direction(Gx, Gy, dir, width, height);
         t_end = now_ns();
         acc_dir += (t_end - t_start);
+
+        // ── Bonus stages: full Canny (3=NMS, 4=threshold, 5=hysteresis) ──
+        // Inherently data-dependent / branchy → scalar by design.
+
+        // Stage 3 (bonus): Non-maximum suppression — thin edges to 1px
+        t_start = now_ns();
+        canny::non_max_suppression(mag_l1, dir, nms, width, height);
+        t_end = now_ns();
+        acc_nms += (t_end - t_start);
+
+        // Stage 4 (bonus): Double threshold → strong / weak / none
+        t_start = now_ns();
+        canny::double_threshold(nms, thresh, width, height, 20, 50);
+        t_end = now_ns();
+        acc_thresh += (t_end - t_start);
+
+        // Stage 5 (bonus): Hysteresis — connect weak edges to strong ones
+        t_start = now_ns();
+        canny::hysteresis(thresh, edges, width, height);
+        t_end = now_ns();
+        acc_hyst += (t_end - t_start);
     }
 
     // ── Scalar timing table ───────────────────────────────────────
@@ -188,8 +217,11 @@ int main(int argc, char* argv[]) {
         {"Magnitude L1",  0, ns_to_ms(acc_mag_l1_scalar   / ITERATIONS), 0},
         {"Magnitude L2",  0, ns_to_ms(acc_mag_l2           / ITERATIONS), 0},
         {"Direction",     0, ns_to_ms(acc_dir              / ITERATIONS), 0},
+        {"NMS (bonus)",       0, ns_to_ms(acc_nms    / ITERATIONS), 0},
+        {"Threshold (bonus)", 0, ns_to_ms(acc_thresh / ITERATIONS), 0},
+        {"Hysteresis (bonus)",0, ns_to_ms(acc_hyst   / ITERATIONS), 0},
     };
-    print_timing_table(scalar_stages, 5, ITERATIONS, 0);
+    print_timing_table(scalar_stages, 8, ITERATIONS, 0);
 
     // ── RVV timing table ──────────────────────────────────────────
     printf("\n--- RVV Pipeline ---\n");
@@ -240,12 +272,21 @@ int main(int argc, char* argv[]) {
     for (size_t i = 0; i < total; i++) dir_vis[i] = dir[i] * 85;
     save_raw_image("Output_Images/output_direction.raw", dir_vis, width, height);
 
+    // ── Bonus stages: run on the final L1 magnitude and save each ──
+    canny::non_max_suppression(mag_l1, dir, nms, width, height);
+    canny::double_threshold(nms, thresh, width, height, 20, 50);
+    canny::hysteresis(thresh, edges, width, height);
+    save_raw_image("Output_Images/output_nms.raw",       nms,    width, height);
+    save_raw_image("Output_Images/output_threshold.raw", thresh, width, height);
+    save_raw_image("Output_Images/output_edges.raw",     edges,  width, height);
+
     // ── Cleanup ───────────────────────────────────────────────────
     free(input); free(blurred);
     free(Gx); free(Gy);
     free(mag_l1); free(mag_l2);
     free(dir); free(dir_vis);
     free(gx_vis); free(gy_vis);
+    free(nms); free(thresh); free(edges);
 
     printf("--- RISC-V Canny Pipeline End ---\n");
     return 0;

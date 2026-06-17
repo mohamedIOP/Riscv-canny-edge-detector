@@ -34,6 +34,8 @@
 #include "../Phase 2/include/sobel.hpp"
 #include "../Phase 2/include/magnitude.hpp"
 #include "../Phase 2/include/direction.hpp"
+#include "../Phase 2/include/nms.hpp"
+#include "../Phase 2/include/threshold.hpp"
 
 // ============================================================
 // Minimal assert harness (no GoogleTest on QEMU bare-metal)
@@ -622,6 +624,156 @@ static void test_rvv_magnitude_l1_equivalence() {
 }
 
 // ============================================================
+// Bonus Stage Tests (NMS, double threshold, hysteresis)
+// ============================================================
+// These full-Canny stages are scalar (data-dependent control
+// flow), so the goal here is property/invariant correctness and
+// determinism across VLEN — not RVV equivalence.
+// ============================================================
+
+// Test 16: NMS — 1-pixel border is always suppressed to 0.
+static void test_nms_border_zero() {
+    printf("\n[NMS] Border ring is zeroed\n");
+    const size_t W = 100, H = 75, N = W * H;
+    uint8_t* mag = (uint8_t*)aligned_alloc(64, N);
+    uint8_t* dir = (uint8_t*)aligned_alloc(64, N);
+    uint8_t* out = (uint8_t*)aligned_alloc(64, N);
+    memset(mag, 200, N);   // strong everywhere
+    memset(dir, 0,   N);   // horizontal gradient
+    memset(out, 9,   N);
+
+    canny::non_max_suppression(mag, dir, out, W, H);
+
+    int bad = 0;
+    for (size_t x = 0; x < W; x++) {
+        if (out[x] != 0) bad++;
+        if (out[(H - 1) * W + x] != 0) bad++;
+    }
+    for (size_t y = 0; y < H; y++) {
+        if (out[y * W] != 0) bad++;
+        if (out[y * W + (W - 1)] != 0) bad++;
+    }
+    ASSERT_EQ(bad, 0, "nms_border_zero");
+
+    free(mag); free(dir); free(out);
+}
+
+// Test 17: NMS — keeps a 1D ridge peak, suppresses the shoulders.
+static void test_nms_ridge_peak() {
+    printf("[NMS] Horizontal ridge peak kept, shoulders suppressed\n");
+    const size_t W = 7, H = 3, N = W * H;
+    uint8_t* mag = (uint8_t*)aligned_alloc(64, N);
+    uint8_t* dir = (uint8_t*)aligned_alloc(64, N);
+    uint8_t* out = (uint8_t*)aligned_alloc(64, N);
+    memset(mag, 0, N);
+    memset(dir, 0, N);   // horizontal gradient → compare left/right
+
+    // middle row ramp: 0 10 20 30 20 10 0
+    uint8_t row[7] = {0, 10, 20, 30, 20, 10, 0};
+    for (size_t x = 0; x < W; x++) mag[1 * W + x] = row[x];
+
+    canny::non_max_suppression(mag, dir, out, W, H);
+
+    ASSERT_EQ(out[1 * W + 3], 30, "nms_peak_kept");
+    ASSERT_EQ(out[1 * W + 2], 0,  "nms_left_shoulder_suppressed");
+    ASSERT_EQ(out[1 * W + 4], 0,  "nms_right_shoulder_suppressed");
+
+    free(mag); free(dir); free(out);
+}
+
+// Test 18: Double threshold — correct three-way classification.
+static void test_double_threshold() {
+    printf("\n[Threshold] Three-class classification\n");
+    const size_t W = 6, H = 1, N = W * H;
+    uint8_t* in  = (uint8_t*)aligned_alloc(64, N);
+    uint8_t* out = (uint8_t*)aligned_alloc(64, N);
+    uint8_t vals[6] = {0, 19, 20, 49, 50, 255};
+    for (size_t i = 0; i < N; i++) in[i] = vals[i];
+
+    canny::double_threshold(in, out, W, H, 20, 50);
+
+    ASSERT_EQ(out[0], canny::EDGE_NONE,   "thr_0_none");
+    ASSERT_EQ(out[1], canny::EDGE_NONE,   "thr_19_none");
+    ASSERT_EQ(out[2], canny::EDGE_WEAK,   "thr_20_weak");
+    ASSERT_EQ(out[3], canny::EDGE_WEAK,   "thr_49_weak");
+    ASSERT_EQ(out[4], canny::EDGE_STRONG, "thr_50_strong");
+    ASSERT_EQ(out[5], canny::EDGE_STRONG, "thr_255_strong");
+
+    free(in); free(out);
+}
+
+// Test 19: Hysteresis — connected weak chain kept, isolated weak dropped.
+static void test_hysteresis_trace() {
+    printf("[Hysteresis] Connected chain kept, isolated weak dropped\n");
+    const size_t W = 5, H = 1, N = W * H;
+    uint8_t* in  = (uint8_t*)aligned_alloc(64, N);
+    uint8_t* out = (uint8_t*)aligned_alloc(64, N);
+
+    in[0] = canny::EDGE_STRONG;
+    in[1] = canny::EDGE_WEAK;
+    in[2] = canny::EDGE_WEAK;
+    in[3] = canny::EDGE_NONE;
+    in[4] = canny::EDGE_WEAK;   // isolated past the gap
+
+    canny::hysteresis(in, out, W, H);
+
+    ASSERT_EQ(out[0], 255, "hyst_strong");
+    ASSERT_EQ(out[1], 255, "hyst_weak_connected_1");
+    ASSERT_EQ(out[2], 255, "hyst_weak_connected_2");
+    ASSERT_EQ(out[3], 0,   "hyst_none");
+    ASSERT_EQ(out[4], 0,   "hyst_weak_isolated_dropped");
+
+    free(in); free(out);
+}
+
+// Test 20: Full Canny (incl. bonus stages) — deterministic across VLEN.
+static void test_full_canny_deterministic() {
+    printf("\n[Pipeline] Full Canny (with bonus stages) — deterministic\n");
+    const size_t W = 100, H = 75, N = W * H;
+
+    uint8_t* in    = (uint8_t*)aligned_alloc(64, N);
+    uint8_t* blur  = (uint8_t*)aligned_alloc(64, N);
+    int16_t* gx    = (int16_t*)aligned_alloc(64, N * sizeof(int16_t));
+    int16_t* gy    = (int16_t*)aligned_alloc(64, N * sizeof(int16_t));
+    uint8_t* mag   = (uint8_t*)aligned_alloc(64, N);
+    uint8_t* dir   = (uint8_t*)aligned_alloc(64, N);
+    uint8_t* nms   = (uint8_t*)aligned_alloc(64, N);
+    uint8_t* thr   = (uint8_t*)aligned_alloc(64, N);
+    uint8_t* e1    = (uint8_t*)aligned_alloc(64, N);
+    uint8_t* e2    = (uint8_t*)aligned_alloc(64, N);
+
+    fill_random(in, N, 42);
+
+    canny::gaussian_blur_5x5(in, blur, W, H);
+    canny::sobel_gradients(blur, gx, gy, W, H);
+    canny::magnitude_l1(gx, gy, mag, W, H);
+    canny::gradient_direction(gx, gy, dir, W, H);
+    canny::non_max_suppression(mag, dir, nms, W, H);
+    canny::double_threshold(nms, thr, W, H, 20, 50);
+
+    canny::hysteresis(thr, e1, W, H);
+    canny::hysteresis(thr, e2, W, H);   // second run — must be identical
+
+    // Determinism
+    ASSERT_EQ(compare_buffers_u8(e1, e2, N, 0), 0, "canny_deterministic");
+
+    // Output is strictly binary (0 or 255)
+    int non_binary = 0;
+    for (size_t i = 0; i < N; i++)
+        if (e1[i] != 0 && e1[i] != 255) non_binary++;
+    ASSERT_EQ(non_binary, 0, "canny_output_binary");
+
+    // Every final edge must have survived NMS (edges ⊆ NMS support)
+    int leaked = 0;
+    for (size_t i = 0; i < N; i++)
+        if (e1[i] == 255 && nms[i] == 0) leaked++;
+    ASSERT_EQ(leaked, 0, "canny_edges_subset_of_nms");
+
+    free(in); free(blur); free(gx); free(gy); free(mag);
+    free(dir); free(nms); free(thr); free(e1); free(e2);
+}
+
+// ============================================================
 // main
 // ============================================================
 int main() {
@@ -646,6 +798,13 @@ int main() {
     // RVV equivalence tests — scalar vs RVV at current VLEN
     test_rvv_gaussian_equivalence();
     test_rvv_magnitude_l1_equivalence();
+
+    // Bonus stage tests — full Canny (NMS, threshold, hysteresis)
+    test_nms_border_zero();
+    test_nms_ridge_peak();
+    test_double_threshold();
+    test_hysteresis_trace();
+    test_full_canny_deterministic();
 
     printf("\n===========================================\n");
     printf("  Results: %d passed, %d failed\n", g_passed, g_failed);

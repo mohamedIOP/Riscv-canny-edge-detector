@@ -41,31 +41,31 @@ Phase 2/src/../include/convolution.hpp:24:23: missed: couldn't vectorize loop
 Phase 2/src/../include/convolution.hpp:24:23: missed: not vectorized: loop nest containing two or more consecutive inner loops cannot be vectorized
 Phase 2/src/../include/convolution.hpp:25:27: missed: couldn't vectorize loop
 Phase 2/src/../include/convolution.hpp:25:27: missed: not vectorized: control flow in loop.
-Phase 2/src/gaussian.cpp:16:6: note: vectorized 0 loops in function.
+Phase 2/src/gaussian.cpp:20:6: note: vectorized 0 loops in function.
 Phase 2/src/../include/convolution.hpp:34:58: note: ***** Analysis failed with vector mode V16QI
 Phase 2/src/../include/convolution.hpp:34:58: note: ***** The result for vector mode V16QI would be the same
 Phase 2/src/../include/convolution.hpp:34:58: note: ***** Re-trying analysis with vector mode V8QI
 Phase 2/src/../include/convolution.hpp:34:58: note: ***** Analysis failed with vector mode V8QI
 Phase 2/src/../include/convolution.hpp:34:58: note: ***** Re-trying analysis with vector mode V4QI
 Phase 2/src/../include/convolution.hpp:34:58: note: ***** Analysis failed with vector mode V4QI
-Phase 2/src/gaussian.cpp:56:23: missed: couldn't vectorize loop
-Phase 2/src/gaussian.cpp:56:23: missed: not vectorized: loop nest containing two or more consecutive inner loops cannot be vectorized
-Phase 2/src/gaussian.cpp:57:27: missed: couldn't vectorize loop
-Phase 2/src/gaussian.cpp:57:27: missed: not vectorized: control flow in loop.
-Phase 2/src/gaussian.cpp:57:27: missed: couldn't vectorize loop
-Phase 2/src/gaussian.cpp:57:27: missed: not vectorized: control flow in loop.
-Phase 2/src/gaussian.cpp:57:27: missed: couldn't vectorize loop
-Phase 2/src/gaussian.cpp:57:27: missed: not vectorized: control flow in loop.
-Phase 2/src/gaussian.cpp:57:27: missed: couldn't vectorize loop
-Phase 2/src/gaussian.cpp:57:27: missed: not vectorized: control flow in loop.
-Phase 2/src/gaussian.cpp:38:23: missed: couldn't vectorize loop
-Phase 2/src/gaussian.cpp:38:23: missed: not vectorized: loop nest containing two or more consecutive inner loops cannot be vectorized
-Phase 2/src/gaussian.cpp:39:27: missed: couldn't vectorize loop
-Phase 2/src/gaussian.cpp:39:27: missed: not vectorized: control flow in loop.
-Phase 2/src/gaussian.cpp:39:27: missed: couldn't vectorize loop
-Phase 2/src/gaussian.cpp:39:27: missed: not vectorized: control flow in loop.
-Phase 2/src/gaussian.cpp:30:6: note: vectorized 0 loops in function.
-Phase 2/src/gaussian.cpp:35:44: missed: statement clobbers memory: temp_58 = aligned_alloc (64, _1);
-Phase 2/src/gaussian.cpp:73:9: missed: statement clobbers memory: free (temp_58);
-Phase 2/src/gaussian.cpp:74:1: note: ***** Analysis failed with vector mode V16QI
-Phase 2/src/gaussian.cpp:74:1: note: ***** Skipping vector mode V16QI, which would repeat the analysis for V16QI
+Phase 2/src/gaussian.cpp:60:23: missed: couldn't vectorize loop
+Phase 2/src/gaussian.cpp:60:23: missed: not vectorized: loop nest containing two or more consecutive inner loops cannot be vectorized
+Phase 2/src/gaussian.cpp:61:27: missed: couldn't vectorize loop
+Phase 2/src/gaussian.cpp:61:27: missed: not vectorized: control flow in loop.
+Phase 2/src/gaussian.cpp:61:27: missed: couldn't vectorize loop
+Phase 2/src/gaussian.cpp:61:27: missed: not vectorized: control flow in loop.
+Phase 2/src/gaussian.cpp:61:27: missed: couldn't vectorize loop
+Phase 2/src/gaussian.cpp:61:27: missed: not vectorized: control flow in loop.
+Phase 2/src/gaussian.cpp:61:27: missed: couldn't vectorize loop
+Phase 2/src/gaussian.cpp:61:27: missed: not vectorized: control flow in loop.
+Phase 2/src/gaussian.cpp:42:23: missed: couldn't vectorize loop
+Phase 2/src/gaussian.cpp:42:23: missed: not vectorized: loop nest containing two or more consecutive inner loops cannot be vectorized
+Phase 2/src/gaussian.cpp:43:27: missed: couldn't vectorize loop
+Phase 2/src/gaussian.cpp:43:27: missed: not vectorized: control flow in loop.
+Phase 2/src/gaussian.cpp:43:27: missed: couldn't vectorize loop
+Phase 2/src/gaussian.cpp:43:27: missed: not vectorized: control flow in loop.
+Phase 2/src/gaussian.cpp:34:6: note: vectorized 0 loops in function.
+Phase 2/src/gaussian.cpp:39:44: missed: statement clobbers memory: temp_58 = aligned_alloc (64, _1);
+Phase 2/src/gaussian.cpp:77:9: missed: statement clobbers memory: free (temp_58);
+Phase 2/src/gaussian.cpp:78:1: note: ***** Analysis failed with vector mode V16QI
+Phase 2/src/gaussian.cpp:78:1: note: ***** Skipping vector mode V16QI, which would repeat the analysis for V16QI

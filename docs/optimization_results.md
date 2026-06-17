@@ -163,3 +163,21 @@ Gaussian would show significant speedup because:
 1. Vector instructions execute in parallel on real hardware
 2. The 25-coefficient inner loop processes multiple pixels per clock cycle
 3. LMUL=4 (our sweet spot) would process 4× more elements per instruction
+---
+
+## Bonus Stages — Full Canny (NMS, Threshold, Hysteresis)
+
+The pipeline is extended past the minimum Sobel deliverable to a complete Canny
+edge detector. The three added stages are **scalar by design**:
+
+| Stage | Why it stays scalar |
+|---|---|
+| Non-maximum suppression | Neighbour selection branches on the per-pixel gradient direction (a `switch` in the inner loop) — divergent control flow defeats both auto-vectorization and a clean RVV mapping. |
+| Double threshold | Trivially cheap (one compare per pixel); by Amdahl's law, vectorizing it yields no meaningful speedup. |
+| Hysteresis | A data-dependent flood fill (stack-based BFS from strong seeds). The memory access pattern is irregular and sequential by nature — not a SIMD workload. |
+
+This is the same reasoning applied to the Direction stage earlier: **profile
+first, and only vectorize hot, branch-free kernels.** The bonus stages are
+validated for correctness (host GoogleTest, QEMU property/determinism tests, and
+a faithful OpenCV/NumPy reference in `reference_opencv.py`) rather than optimized
+for throughput.

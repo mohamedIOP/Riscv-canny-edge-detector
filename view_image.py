@@ -69,12 +69,18 @@ def view_all_stages(width, height):
         ('Output_Images/output_sobel_gx.raw',      'Sobel Gx'),
         ('Output_Images/output_sobel_gy.raw',      'Sobel Gy'),
         ('Output_Images/output_magnitude_l1.raw',  'Magnitude L1'),
-        ('Output_Images/output_128.raw',           'Magnitude L2 (edges)'),
+        ('Output_Images/output_128.raw',           'Magnitude L2'),
         ('Output_Images/output_direction.raw',     'Gradient Direction'),
+        ('Output_Images/output_nms.raw',           'NMS (thinned)'),
+        ('Output_Images/output_threshold.raw',     'Double Threshold'),
+        ('Output_Images/output_edges.raw',         'Canny Edges (final)'),
     ]
 
-    fig, axes = plt.subplots(1, len(stages), figsize=(22, 4))
+    # 2 rows so 9 panels stay readable
+    ncols = (len(stages) + 1) // 2
+    fig, axes = plt.subplots(2, ncols, figsize=(4 * ncols, 8))
     fig.suptitle('Canny Pipeline — All Stages', fontsize=14)
+    axes = axes.flatten()
 
     for ax, (path, title) in zip(axes, stages):
         if not os.path.exists(path):
@@ -92,6 +98,10 @@ def view_all_stages(width, height):
         img = np.fromfile(path, dtype=np.uint8).reshape(height, width)
         ax.imshow(img, cmap='gray', vmin=0, vmax=255)
         ax.set_title(title)
+        ax.axis('off')
+
+    # hide any unused panels
+    for ax in axes[len(stages):]:
         ax.axis('off')
 
     plt.tight_layout()

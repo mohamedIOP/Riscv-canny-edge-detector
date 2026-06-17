@@ -125,6 +125,9 @@ This runs the complete Canny pipeline at **VLEN=128, 256, and 512**, prints a **
 | `output_256.raw` | Edge strength — L2 norm (VLEN=256 run) |
 | `output_512.raw` | Edge strength — L2 norm (VLEN=512 run) |
 | `output_direction.raw` | Gradient direction (0/85/170/255) |
+| `output_nms.raw` | **Bonus** — non-maximum suppression (thinned edges) |
+| `output_threshold.raw` | **Bonus** — double threshold (0 / 128 / 255) |
+| `output_edges.raw` | **Bonus** — final Canny edges (binary 0/255) |
 
 ---
 
@@ -166,8 +169,33 @@ python3 reference_opencv.py Input_Images/input.raw 256 256
 It uses two references on purpose: a **faithful** one (the project's exact integer `/273` Gaussian kernel + `cv2.Sobel`, zero-padded) which must match the pipeline to within ±1 LSB and is the PASS/FAIL gate, and an **informational** `cv2.GaussianBlur(sigma=1.0)` library reference (different float kernel, reported but never fails the build). Reference images and amplified difference heatmaps are written to `Reference_Images/`. The script returns a non-zero exit code on mismatch, so it can be dropped straight into CI. Options: `--tol`, `--outdir`, `--refdir`, `--l2`, `--no-save`, `--no-diff`, `--quiet`.
 
 ---
+## 🏆 Bonus: Full Canny Pipeline (NMS + Thresholding + Hysteresis)
 
-## 🖼️ Visual Pipeline (Native Host)
+Beyond the minimum deliverable (Gaussian + Sobel), the pipeline implements the
+remaining three Canny stages, all in clean scalar C++:
+
+- **Stage 3 — Non-Maximum Suppression** (`Phase 2/src/nms.cpp`): thins the
+  gradient magnitude to single-pixel ridges by keeping a pixel only if it is a
+  local maximum against the two neighbours lying along its quantized gradient
+  direction (0/1/2/3 from the direction stage).
+- **Stage 4 — Double Threshold** (`Phase 2/src/threshold.cpp`): classifies each
+  pixel as strong (≥ high), weak (≥ low), or none, using thresholds
+  `low=20, high=50` on the normalized magnitude.
+- **Stage 5 — Hysteresis** (`Phase 2/src/threshold.cpp`): an explicit
+  stack-based (non-recursive) 8-connected flood fill that promotes weak pixels
+  connected to a strong edge and discards the rest, producing a binary edge map.
+
+These stages are **scalar by design**: their control flow is data-dependent
+(neighbour choice branches on direction; hysteresis is a flood fill), so they
+are not auto-vectorization or RVV-intrinsic targets — consistent with the
+profile-then-optimize philosophy used throughout the project. They are covered
+by host GoogleTest unit tests, QEMU-side property/determinism tests, and the
++OpenCV reference verifier (all three reproduced faithfully in
+`reference_opencv.py`).
+
+The CI workflow (`.github/workflows/ci.yml`) builds the project and runs the
+host GoogleTest suite on every push (the **+1 CI bonus**).
+
 
 Run the pipeline natively on your PC (no QEMU needed) for fast visual debugging:
 ```bash
