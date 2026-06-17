@@ -186,7 +186,8 @@ int main(int argc, char* argv[]) {
         canny::gradient_direction(Gx, Gy, dir, width, height);
         t_end = now_ns();
         acc_dir += (t_end - t_start);
-         // ── Bonus stages: full Canny (3=NMS, 4=threshold, 5=hysteresis) ──
+
+        // ── Bonus stages: full Canny (3=NMS, 4=threshold, 5=hysteresis) ──
         // Inherently data-dependent / branchy → scalar by design.
 
         // Stage 3 (bonus): Non-maximum suppression — thin edges to 1px
@@ -198,12 +199,12 @@ int main(int argc, char* argv[]) {
         // Stage 4 (bonus): Double threshold → strong / weak / none
         t_start = now_ns();
         canny::double_threshold(nms, thresh, width, height, 20, 50);
-       t_end = now_ns();
-       acc_thresh += (t_end - t_start);
+        t_end = now_ns();
+        acc_thresh += (t_end - t_start);
 
         // Stage 5 (bonus): Hysteresis — connect weak edges to strong ones
         t_start = now_ns();
-       canny::hysteresis(thresh, edges, width, height);
+        canny::hysteresis(thresh, edges, width, height);
         t_end = now_ns();
         acc_hyst += (t_end - t_start);
     }
@@ -271,7 +272,7 @@ int main(int argc, char* argv[]) {
     for (size_t i = 0; i < total; i++) dir_vis[i] = dir[i] * 85;
     save_raw_image("Output_Images/output_direction.raw", dir_vis, width, height);
 
-     // ── Bonus stages: run on the final L1 magnitude and save each ──
+    // ── Bonus stages: run on the final L1 magnitude and save each ──
     canny::non_max_suppression(mag_l1, dir, nms, width, height);
     canny::double_threshold(nms, thresh, width, height, 20, 50);
     canny::hysteresis(thresh, edges, width, height);
