@@ -5,6 +5,8 @@
 #include "sobel.hpp"
 #include "magnitude.hpp"
 #include "direction.hpp"
+#include "nms.hpp"
+#include "threshold.hpp"
 #include <cmath>
 
 using namespace std;
@@ -74,7 +76,26 @@ int main(int argc, char* argv[]) {
     // ── Step 6: Gradient Direction ────────────
     vector<uint8_t> dir_out(total);
     canny::gradient_direction(Gx.data(), Gy.data(), dir_out.data(), width, height);
-    // Scale 0-3 → 0/85/170/255 for visibility
+   // ── Step 7: Non-Maximum Suppression (bonus) ───
+    // Run on the (un-scaled) direction labels, using L1 magnitude.
+    vector<uint8_t> nms(total);
+    canny::non_max_suppression(mag_l1.data(), dir_out.data(), nms.data(), width, height);
+    writeImage("./Output_Images/output_nms.raw", nms);
+    cout << "NMS done -> output_nms.raw" << endl;
+
+    // ── Step 8: Double Threshold (bonus) ──────────
+    vector<uint8_t> thresh(total);
+    canny::double_threshold(nms.data(), thresh.data(), width, height, 20, 50);
+    writeImage("./Output_Images/output_threshold.raw", thresh);
+    cout << "Double threshold done -> output_threshold.raw" << endl;
+
+    // ── Step 9: Hysteresis (bonus) ────────────────
+    vector<uint8_t> edges(total);
+    canny::hysteresis(thresh.data(), edges.data(), width, height);
+    writeImage("./Output_Images/output_edges.raw", edges);
+    cout << "Hysteresis done -> output_edges.raw (final Canny edges)" << endl;
+
+    // Scale 0-3 -> 0/85/170/255 for visibility, then save direction
     for (int i = 0; i < total; i++) dir_out[i] *= 85;
     writeImage("./Output_Images/output_direction.raw", dir_out);
     cout << "Direction done → output_direction.raw" << endl;
