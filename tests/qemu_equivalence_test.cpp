@@ -566,13 +566,67 @@ static void test_tail_case_sizes() {
         free(in); free(out); free(gx); free(gy); free(mag); free(dir);
     }
 }
+// ============================================================
+// Test 14: RVV Gaussian vs Scalar — ±1 tolerance
+// ============================================================
+static void test_rvv_gaussian_equivalence() {
+    printf("\n[RVV] Gaussian RVV vs Scalar — equivalence at current VLEN\n");
+
+    const size_t W = 100, H = 75;
+    const size_t N = W * H;
+
+    uint8_t* in         = (uint8_t*)aligned_alloc(64, N);
+    uint8_t* out_scalar = (uint8_t*)aligned_alloc(64, N);
+    uint8_t* out_rvv    = (uint8_t*)aligned_alloc(64, N);
+
+    fill_random(in, N, 42);
+
+    canny::gaussian_blur_5x5(in, out_scalar, W, H);
+    canny::gaussian_blur_5x5_rvv(in, out_rvv, W, H);
+
+    int mismatches = compare_buffers_u8(out_scalar, out_rvv, N, 1);
+    ASSERT_EQ(mismatches, 0, "rvv_gaussian_vs_scalar_tol1");
+
+    free(in); free(out_scalar); free(out_rvv);
+}
+
+// ============================================================
+// Test 15: RVV Magnitude L1 vs Scalar — ±1 tolerance
+// ============================================================
+static void test_rvv_magnitude_l1_equivalence() {
+    printf("[RVV] Magnitude L1 RVV vs Scalar — equivalence at current VLEN\n");
+
+    const size_t W = 100, H = 75;
+    const size_t N = W * H;
+
+    int16_t* gx         = (int16_t*)aligned_alloc(64, N * sizeof(int16_t));
+    int16_t* gy         = (int16_t*)aligned_alloc(64, N * sizeof(int16_t));
+    uint8_t* out_scalar = (uint8_t*)aligned_alloc(64, N);
+    uint8_t* out_rvv    = (uint8_t*)aligned_alloc(64, N);
+
+    uint32_t s = 99;
+    for (size_t i = 0; i < N; i++) {
+        s ^= s << 13; s ^= s >> 17; s ^= s << 5;
+        gx[i] = (int16_t)(s & 0x1FF) - 256;
+        s ^= s << 13; s ^= s >> 17; s ^= s << 5;
+        gy[i] = (int16_t)(s & 0x1FF) - 256;
+    }
+
+    canny::magnitude_l1(gx, gy, out_scalar, W, H);
+    canny::magnitude_l1_rvv(gx, gy, out_rvv, W, H);
+
+    int mismatches = compare_buffers_u8(out_scalar, out_rvv, N, 1);
+    ASSERT_EQ(mismatches, 0, "rvv_magnitude_l1_vs_scalar_tol1");
+
+    free(gx); free(gy); free(out_scalar); free(out_rvv);
+}
 
 // ============================================================
 // main
 // ============================================================
 int main() {
     printf("===========================================\n");
-    printf("  QEMU Equivalence Tests — Scalar Pipeline \n");
+    printf("  QEMU Equivalence Tests — Scalar + RVV   \n");
     printf("===========================================\n");
 
     test_gaussian_uniform();
@@ -588,8 +642,10 @@ int main() {
     test_direction_diagonal();
     test_full_pipeline_equivalence();
     test_tail_case_sizes();
-    test_gaussian_scalar_vs_rvv();
-    test_magnitude_scalar_vs_rvv();
+
+    // RVV equivalence tests — scalar vs RVV at current VLEN
+    test_rvv_gaussian_equivalence();
+    test_rvv_magnitude_l1_equivalence();
 
     printf("\n===========================================\n");
     printf("  Results: %d passed, %d failed\n", g_passed, g_failed);

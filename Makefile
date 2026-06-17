@@ -123,6 +123,8 @@ qemu_eq_test:
 		"Phase 2"/src/magnitude.cpp \
 		"Phase 2"/src/direction.cpp \
 		-o qemu_eq_test
+
+test_qemu: qemu_eq_test
 	@echo "--- VLEN=128 ---"
 	$(QEMU) -cpu $(QEMU_CPU),vlen=128 ./qemu_eq_test
 	@echo "--- VLEN=256 ---"
@@ -161,4 +163,3 @@ autovec_investigation: prepad_experiment separable_autovec
 	@echo "=== Investigation complete ==="
 	@echo "See prepad_vec_report.txt and separable_vec_report.txt"	
 
-test_qemu: qemu_eq_test
