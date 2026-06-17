@@ -88,10 +88,7 @@ int main(int argc, char* argv[]) {
     size_t height               = atoi(argv[3]);
     const char* output_filename = argv[4];
     size_t total                = width * height;
-
-    // Number of iterations for stable timing
-    // More iterations = more stable average
-    const int ITERATIONS = 100;
+    const int ITERATIONS        = 100;
 
     printf("--- RISC-V Canny Pipeline Start ---\n");
 
@@ -115,38 +112,54 @@ int main(int argc, char* argv[]) {
     uint8_t*  gx_vis  = (uint8_t*)aligned_alloc(64, total);
     uint8_t*  gy_vis  = (uint8_t*)aligned_alloc(64, total);
 
-    // ── Timing variables ─────────────────────────────────────────
+    // ── Timing accumulators ───────────────────────────────────────
     uint64_t t_start, t_end;
-    uint64_t acc_gaussian = 0;
-    uint64_t acc_sobel    = 0;
-    uint64_t acc_mag_l1   = 0;
-    uint64_t acc_mag_l2   = 0;
-    uint64_t acc_dir      = 0;
+    uint64_t acc_gaussian_scalar = 0;
+    uint64_t acc_gaussian_rvv    = 0;
+    uint64_t acc_sobel           = 0;
+    uint64_t acc_mag_l1_scalar   = 0;
+    uint64_t acc_mag_l1_rvv      = 0;
+    uint64_t acc_mag_l2          = 0;
+    uint64_t acc_dir             = 0;
 
     printf("-> Running %d iterations for stable timing...\n", ITERATIONS);
 
     // ── Timing loop ───────────────────────────────────────────────
     for (int iter = 0; iter < ITERATIONS; iter++) {
 
-        // Stage 1: Gaussian Blur
+        // Stage 1a: Gaussian scalar
         t_start = now_ns();
         canny::gaussian_blur_5x5(input, blurred, width, height);
         t_end = now_ns();
-        acc_gaussian += (t_end - t_start);
+        acc_gaussian_scalar += (t_end - t_start);
 
-        // Stage 2: Sobel Gradients
+        // Stage 1b: Gaussian RVV
+        // Uses scalar for border + RVV for interior (strip-mining, LMUL=2)
+        t_start = now_ns();
+        canny::gaussian_blur_5x5_rvv(input, blurred, width, height);
+        t_end = now_ns();
+        acc_gaussian_rvv += (t_end - t_start);
+
+        // Stage 2: Sobel (scalar only — only 4% of time, not worth RVV)
         t_start = now_ns();
         canny::sobel_gradients(blurred, Gx, Gy, width, height);
         t_end = now_ns();
         acc_sobel += (t_end - t_start);
 
-        // Stage 3: Magnitude L1
+        // Stage 3a: Magnitude L1 scalar
         t_start = now_ns();
         canny::magnitude_l1(Gx, Gy, mag_l1, width, height);
         t_end = now_ns();
-        acc_mag_l1 += (t_end - t_start);
+        acc_mag_l1_scalar += (t_end - t_start);
 
-        // Stage 4: Magnitude L2
+        // Stage 3b: Magnitude L1 RVV
+        // Uses vneg+vmax for abs, vadd for sum, vredmax for global max
+        t_start = now_ns();
+        canny::magnitude_l1_rvv(Gx, Gy, mag_l1, width, height);
+        t_end = now_ns();
+        acc_mag_l1_rvv += (t_end - t_start);
+
+        // Stage 4: Magnitude L2 (scalar — sqrt not vectorizable)
         t_start = now_ns();
         double max_mag = 0.0;
         for (size_t i = 0; i < total; i++) {
@@ -160,24 +173,58 @@ int main(int argc, char* argv[]) {
         t_end = now_ns();
         acc_mag_l2 += (t_end - t_start);
 
-        // Stage 5: Gradient Direction
+        // Stage 5: Direction (scalar)
         t_start = now_ns();
         canny::gradient_direction(Gx, Gy, dir, width, height);
         t_end = now_ns();
         acc_dir += (t_end - t_start);
     }
 
-    // ── Print timing table ────────────────────────────────────────
-    StageTiming stages[] = {
-        {"Gaussian 5x5",  0, ns_to_ms(acc_gaussian / ITERATIONS), 0},
-        {"Sobel Gx/Gy",   0, ns_to_ms(acc_sobel    / ITERATIONS), 0},
-        {"Magnitude L1",  0, ns_to_ms(acc_mag_l1   / ITERATIONS), 0},
-        {"Magnitude L2",  0, ns_to_ms(acc_mag_l2   / ITERATIONS), 0},
-        {"Direction",     0, ns_to_ms(acc_dir       / ITERATIONS), 0},
+    // ── Scalar timing table ───────────────────────────────────────
+    printf("\n--- Scalar Pipeline ---\n");
+    StageTiming scalar_stages[] = {
+        {"Gaussian 5x5",  0, ns_to_ms(acc_gaussian_scalar / ITERATIONS), 0},
+        {"Sobel Gx/Gy",   0, ns_to_ms(acc_sobel           / ITERATIONS), 0},
+        {"Magnitude L1",  0, ns_to_ms(acc_mag_l1_scalar   / ITERATIONS), 0},
+        {"Magnitude L2",  0, ns_to_ms(acc_mag_l2           / ITERATIONS), 0},
+        {"Direction",     0, ns_to_ms(acc_dir              / ITERATIONS), 0},
     };
-    print_timing_table(stages, 5, ITERATIONS, 0);
+    print_timing_table(scalar_stages, 5, ITERATIONS, 0);
+
+    // ── RVV timing table ──────────────────────────────────────────
+    printf("\n--- RVV Pipeline ---\n");
+    StageTiming rvv_stages[] = {
+        {"Gaussian RVV",     0, ns_to_ms(acc_gaussian_rvv  / ITERATIONS), 0},
+        {"Sobel Gx/Gy",      0, ns_to_ms(acc_sobel         / ITERATIONS), 0},
+        {"Magnitude L1 RVV", 0, ns_to_ms(acc_mag_l1_rvv    / ITERATIONS), 0},
+        {"Magnitude L2",     0, ns_to_ms(acc_mag_l2         / ITERATIONS), 0},
+        {"Direction",        0, ns_to_ms(acc_dir            / ITERATIONS), 0},
+    };
+    print_timing_table(rvv_stages, 5, ITERATIONS, 0);
+
+    // ── Speedup summary ───────────────────────────────────────────
+    double gaussian_speedup = ns_to_ms(acc_gaussian_scalar / ITERATIONS) /
+                              ns_to_ms(acc_gaussian_rvv    / ITERATIONS);
+    double mag_l1_speedup   = ns_to_ms(acc_mag_l1_scalar   / ITERATIONS) /
+                              ns_to_ms(acc_mag_l1_rvv      / ITERATIONS);
+
+    printf("=== RVV Speedup Summary ===\n");
+    printf("Gaussian  scalar: %.4f ms  RVV: %.4f ms  speedup: %.2fx\n",
+           ns_to_ms(acc_gaussian_scalar / ITERATIONS),
+           ns_to_ms(acc_gaussian_rvv    / ITERATIONS),
+           gaussian_speedup);
+    printf("Mag L1    scalar: %.4f ms  RVV: %.4f ms  speedup: %.2fx\n",
+           ns_to_ms(acc_mag_l1_scalar / ITERATIONS),
+           ns_to_ms(acc_mag_l1_rvv   / ITERATIONS),
+           mag_l1_speedup);
+    printf("===========================\n\n");
 
     // ── Save outputs (last iteration results) ────────────────────
+    // Use RVV pipeline for final outputs
+    canny::gaussian_blur_5x5_rvv(input, blurred, width, height);
+    canny::sobel_gradients(blurred, Gx, Gy, width, height);
+    canny::magnitude_l1_rvv(Gx, Gy, mag_l1, width, height);
+
     save_raw_image("Output_Images/output_gaussian.raw", blurred, width, height);
 
     for (size_t i = 0; i < total; i++) {

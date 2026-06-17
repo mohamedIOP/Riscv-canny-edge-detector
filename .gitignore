@@ -8,6 +8,7 @@ canny_O2
 canny_O3
 canny_Ofast
 canny_Os
+canny_vec_report
 # Ignore all object files
 *.o
 
