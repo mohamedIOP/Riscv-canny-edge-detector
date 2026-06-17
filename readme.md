@@ -221,27 +221,33 @@ riscv64-unknown-elf-objdump -d canny_vec_report | grep -c "vset"
 
 ```
 .
-├── main.cpp                      # RISC-V entry point — full pipeline + profiling
-├── visual_pipeline.cpp           # Native host pipeline for visualization
-├── Makefile                      # Dual-target: RISC-V + host, compiler sweep
-├── generate_image.py             # Generates 256×256 synthetic test image
-├── convert_image.py              # Converts any photo to raw grayscale
-├── view_image.py                 # Visualizes raw output files
-├── src/
-│   ├── pipeline.cpp              # Generic 2D convolution template
-│   ├── pipeline.hpp              # Convolution template interface
-│   └── profiler.hpp              # Per-stage timing harness (clock_gettime)
-├── Phase 2/
-│   ├── include/                  # Headers: gaussian, sobel, magnitude, direction, convolution
-│   └── src/                     # Scalar C++ implementations
-├── tests/
-│   ├── test_pipeline.cpp         # GoogleTest unit tests (host-side)
-│   └── qemu_equivalence_test.cpp # QEMU-side equivalence tests at VLEN 128/256/512
+├── .github/workflows/ci.yml         # CI: builds toolchain, QEMU, runs tests, VLEN sweep
 ├── docs/
-│   └── optimization_results.md  # Profiling data, flag sweep, auto-vec, RVV results
-├── vec_report.txt                # Raw auto-vectorization compiler output
-├── Input_Images/                 # Input raw images (not committed)
-└── Output_Images/                # Pipeline outputs (not committed)
+│   └── optimization_results.md      # Full optimization report
+├── Important_Results/               # Result screenshots and images
+├── Phase 2/
+│   ├── include/                     # Headers: convolution, direction, gaussian, magnitude, sobel
+│   └── src/                        # Scalar + RVV implementations
+├── src/
+│   ├── pipeline.cpp                 # Generic convolve2D template (reference)
+│   ├── pipeline.hpp                 # Template interface
+│   └── profiler.hpp                 # Bare-metal clock_gettime harness
+├── tests/
+│   ├── qemu_equivalence_test.cpp    # QEMU-side: scalar invariants + RVV equivalence (27 tests)
+│   └── test_pipeline.cpp            # Host-side GoogleTest (14+ unit tests)
+├── main.cpp                         # RISC-V entry point: pipeline + profiling + RVV speedup
+├── visual_pipeline.cpp              # Native host pipeline for visualization
+├── Makefile                         # Dual-target: make, run, test, sweep, test_qemu
+├── generate_image.py                # Generate synthetic test images
+├── convert_image.py                 # Convert any photo to raw grayscale
+├── view_image.py                    # Visualize raw output files
+├── reference_opencv.py              # OpenCV reference verifier (PASS/FAIL per stage)
+├── LMUL_RESULTS.md                  # LMUL=1/2/4 performance sweep (VLEN=128/256/512)
+├── prepad_results.txt               # Pre-padding experiment: 9.02× speedup
+├── separable_results.txt            # Separable filter: 5.83× speedup
+├── vec_report.txt                   # Raw auto-vectorization compiler output
+├── Input_Images/                    # Input raw images (not committed)
+└── Output_Images/                   # Pipeline outputs (not committed)
 ```
 ---
 ## 📊 Optimization Results
