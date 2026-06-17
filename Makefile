@@ -1,16 +1,23 @@
 CXX = riscv64-unknown-elf-g++
 TARGET = canny
 CXXFLAGS = -static -march=rv64gcv -mabi=lp64d -O2 -std=c++17 -I"Phase 2/include"
+# Scalar pipeline sources shared by every target (host + RISC-V).
+# Bonus stages (nms, threshold) are pure scalar C++ and build everywhere.
+SRCS = "Phase 2"/src/gaussian.cpp \
+       "Phase 2"/src/sobel.cpp \
+       "Phase 2"/src/magnitude.cpp \
+       "Phase 2"/src/direction.cpp \
+       "Phase 2"/src/nms.cpp \
+       "Phase 2"/src/threshold.cpp
+
++QEMU = qemu-riscv64
++QEMU_CPU = rv64,v=true
++
 
 all: $(TARGET)
 
 $(TARGET): main.cpp
-	$(CXX) $(CXXFLAGS) main.cpp \
-		"Phase 2"/src/gaussian.cpp \
-		"Phase 2"/src/sobel.cpp \
-		"Phase 2"/src/magnitude.cpp \
-		"Phase 2"/src/direction.cpp \
-		-o $(TARGET)
+	$(CXX) $(CXXFLAGS) main.cpp $(SRCS) -o $(TARGET)
 
 run: $(TARGET)
 	@echo "=== VLEN=128 ==="
@@ -24,44 +31,24 @@ sweep:
 	@echo "=== Building at all optimization levels ==="
 	@echo "--- O0 ---"
 	$(CXX) -static -march=rv64gcv -mabi=lp64d -O0 -std=c++17 \
-		-I"Phase 2/include" main.cpp \
-		"Phase 2"/src/gaussian.cpp \
-		"Phase 2"/src/sobel.cpp \
-		"Phase 2"/src/magnitude.cpp \
-		"Phase 2"/src/direction.cpp \
-		-o canny_O0
+		-I"Phase 2/include" main.cpp $(SRCS) -o canny_O0
+
 	@echo "--- O2 ---"
 	$(CXX) -static -march=rv64gcv -mabi=lp64d -O2 -std=c++17 \
-		-I"Phase 2/include" main.cpp \
-		"Phase 2"/src/gaussian.cpp \
-		"Phase 2"/src/sobel.cpp \
-		"Phase 2"/src/magnitude.cpp \
-		"Phase 2"/src/direction.cpp \
-		-o canny_O2
+		-I"Phase 2/include" main.cpp $(SRCS) -o canny_O2
+
 	@echo "--- O3 ---"
 	$(CXX) -static -march=rv64gcv -mabi=lp64d -O3 -std=c++17 \
-		-I"Phase 2/include" main.cpp \
-		"Phase 2"/src/gaussian.cpp \
-		"Phase 2"/src/sobel.cpp \
-		"Phase 2"/src/magnitude.cpp \
-		"Phase 2"/src/direction.cpp \
-		-o canny_O3
+		-I"Phase 2/include" main.cpp $(SRCS) -o canny_O3
+
 	@echo "--- Os ---"
 	$(CXX) -static -march=rv64gcv -mabi=lp64d -Os -std=c++17 \
-		-I"Phase 2/include" main.cpp \
-		"Phase 2"/src/gaussian.cpp \
-		"Phase 2"/src/sobel.cpp \
-		"Phase 2"/src/magnitude.cpp \
-		"Phase 2"/src/direction.cpp \
-		-o canny_Os
+		-I"Phase 2/include" main.cpp $(SRCS) -o canny_Os
+
 	@echo "--- Ofast ---"
 	$(CXX) -static -march=rv64gcv -mabi=lp64d -Ofast -std=c++17 \
-		-I"Phase 2/include" main.cpp \
-		"Phase 2"/src/gaussian.cpp \
-		"Phase 2"/src/sobel.cpp \
-		"Phase 2"/src/magnitude.cpp \
-		"Phase 2"/src/direction.cpp \
-		-o canny_Ofast
+	-I"Phase 2/include" main.cpp $(SRCS) -o canny_Ofast
+
 	@echo "=== Binary sizes ==="
 	ls -la canny_O0 canny_O2 canny_O3 canny_Os canny_Ofast
 
@@ -88,40 +75,29 @@ clean:
 	rm -f Output_Images/*.raw
 	rm -f output_gaussian.raw output_sobel_gx.raw output_sobel_gy.raw \
 	      output_magnitude_l1.raw output_direction.raw \
+              output_nms.raw output_threshold.raw output_edges.raw \
 	      output_128.raw output_256.raw output_512.raw
 
 test:
 	g++ -std=c++17 \
 	-I"Phase 2/include" \
 	tests/test_pipeline.cpp \
-	src/pipeline.cpp \
-	"Phase 2"/src/gaussian.cpp \
-	"Phase 2"/src/sobel.cpp \
-	"Phase 2"/src/magnitude.cpp \
-	"Phase 2"/src/direction.cpp \
+	src/pipeline.cpp $(SRCS) \
 	-lgtest -lgtest_main -pthread \
 	-o runTests
 	./runTests
 
 visual:
 	g++ -std=c++17 -I"Phase 2/include" -I"Phase 2/src" visual_pipeline.cpp \
-	"Phase 2"/src/gaussian.cpp \
-	"Phase 2"/src/sobel.cpp \
-	"Phase 2"/src/magnitude.cpp \
-	"Phase 2"/src/direction.cpp \
+	$(SRCS) \
 	-o visual_pipeline
 
-QEMU = qemu-riscv64
-QEMU_CPU = rv64,v=true
+
 
 qemu_eq_test:
 	$(CXX) $(CXXFLAGS) \
 		-I"Phase 2/include" \
-		tests/qemu_equivalence_test.cpp \
-		"Phase 2"/src/gaussian.cpp \
-		"Phase 2"/src/sobel.cpp \
-		"Phase 2"/src/magnitude.cpp \
-		"Phase 2"/src/direction.cpp \
+		tests/qemu_equivalence_test.cpp $(SRCS) \
 		-o qemu_eq_test
 
 test_qemu: qemu_eq_test
