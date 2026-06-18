@@ -76,7 +76,9 @@ The `-Os` build shows an anomalous Magnitude L1 scalar timing of **0.54 ms** (vs
 
 ## Auto-Vectorization Analysis (-O3, -fopt-info-vec-all)
 
-Vector instructions in binary: **129 vset instructions** (via objdump -d | grep -c "vset")
+Vector instructions in binary: **299 vset instructions** (via objdump -d | grep -c "vset")
+
+"The higher count (299 vs. 129) reflects the addition of bonus stages (NMS, threshold, hysteresis) and the scalar output recomputation, which provided more loop bodies for the compiler to auto-vectorize."
 
 | Stage | Auto-vectorized? | Reason |
 |---|---|---|
