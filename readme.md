@@ -349,7 +349,7 @@ Key findings:
 - **Separable filter: 5.83× speedup** over 2D convolution
 - **Pre-padding: 9.02× speedup** — proves boundary checks prevent vectorization
 - **RVV Gaussian: 0.12–0.39× on QEMU** (slower due to emulation overhead, would be 2–4× on real hardware)
-- **RVV Magnitude L1: 1.59× speedup** at VLEN=128 (Magnitude L1)
+- **RVV Magnitude L1: 1.62× speedup at VLEN=128**; 0.96× at VLEN=256, 1.00× at VLEN=512 (QEMU emulation overhead dominates at wider VLEN)
 - **LMUL=4 is the sweet spot** for RVV kernels
 - **`-Os` anomaly**: Magnitude L1 scalar shows 0.54 ms (6× faster than `-O2`'s 3.41 ms) — output verified bit-identical, likely due to QEMU's emulated instruction cache favoring smaller code
 
