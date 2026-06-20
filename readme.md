@@ -220,7 +220,7 @@ GoogleTest runs natively on the host. All pipeline stages are tested for correct
 ```bash
 make test_qemu
 ```
-Runs 27 assertions on QEMU at VLEN=128, 256, and 512:
+Runs 45 assertions on QEMU at VLEN=128, 256, and 512:
 - Scalar invariants (uniform image, impulse response, edge direction)
 - Tail-case stress tests (17×13, 33×29, 100×75, 101×77)
 - **RVV vs Scalar equivalence** (Gaussian and Magnitude L1 compared with ±1 tolerance)
@@ -320,7 +320,7 @@ Every `__riscv_*` intrinsic is annotated with:
 │   ├── pipeline.hpp                        # Template interface
 │   └── profiler.hpp                        # Bare-metal clock_gettime profiling harness
 ├── tests/
-│   ├── qemu_equivalence_test.cpp           # QEMU-side: scalar invariants + RVV equivalence (27 tests)
+│   ├── qemu_equivalence_test.cpp           # QEMU-side: scalar invariants + RVV equivalence (45 tests)
 │   └── test_pipeline.cpp                   # Host-side GoogleTest (14+ unit tests)
 ├── main.cpp                                # RISC-V entry point: pipeline + profiling + RVV speedup
 ├── visual_pipeline.cpp                     # Native host pipeline for visualization
@@ -362,7 +362,7 @@ Key findings:
 | `make` | Build RISC-V binary at -O2 (fastest per our profiling sweep) |
 | `make run` | Run full pipeline on QEMU at VLEN 128, 256, 512 with per-stage timing |
 | `make test` | Run GoogleTest suite natively |
-| `make test_qemu` | Run QEMU equivalence tests at VLEN 128, 256, 512 (27 assertions) |
+| `make test_qemu` | Run QEMU equivalence tests at VLEN 128, 256, 512 (45 assertions) |
 | `make visual` | Build native host pipeline binary |
 | `make sweep` | Build binaries at -O0, -O2, -O3, -Os, -Ofast and print sizes |
 | `make run_sweep` | Run timing measurements at all optimization levels |
